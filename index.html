@@ -179,6 +179,14 @@ h1, h2, h3 { margin:0; font-family:var(--display); text-wrap:balance }
 .who a { justify-self:start; font:700 13px var(--display); color:var(--pulse); text-decoration:none } .who a:hover { text-decoration:underline }
 
 /* Studio */
+.team { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px }
+@media (max-width:820px) { .team { grid-template-columns:1fr } }
+.team article { border:1px solid var(--line); border-radius:18px; padding:22px; display:grid; gap:10px; align-content:start; background:var(--night2) }
+.team img { width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--pulse) }
+.team h3 { font-size:20px; font-weight:700 }
+.team .role { font-size:12px; color:var(--pulse); letter-spacing:.04em }
+.team p { color:var(--dim); font-size:15px }
+.team a { justify-self:start; font:700 13px var(--display); color:var(--pulse); text-decoration:none } .team a:hover { text-decoration:underline }
 .studio { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:40px; align-items:center }
 @media (max-width:900px) { .studio { grid-template-columns:1fr } }
 .studio .big { font:800 clamp(28px,3.6vw,44px)/1.1 var(--display) }
@@ -227,7 +235,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#FFFFFF"/><path d="M46.84 41.96 A28 28 0 0 1 78.08 60.00 A28 28 0 0 1 46.84 78.04 A28 28 0 0 1 46.84 41.96Z" fill="#FF2E88"/><g fill="none" stroke="#0B0B10" stroke-width="5.5"><circle cx="68.25" cy="60.00" r="28"/><circle cx="51.75" cy="69.53" r="28"/><circle cx="51.75" cy="50.47" r="28"/></g></svg>
       <span><b>MINDSPLAY</b><small>STUDIOS</small></span>
     </a>
-    <nav aria-label="Main"><a href="#why">Why MindsPlay</a><a href="#grow">Grow</a><a href="#games">Games</a><a href="#how">How we build</a><a href="#join">Join</a></nav>
+    <nav aria-label="Main"><a href="#why">Why MindsPlay</a><a href="#grow">Grow</a><a href="#games">Games</a><a href="#team">Team</a><a href="play.html">Play Xed</a></nav>
     <div class="xp">
       <span class="lv" id="lv">LV 1</span>
       <span class="bar" title="Your XP on this site"><i id="xpbar"></i></span>
@@ -307,11 +315,11 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <article class="gcard feature">
         <div class="gart"><img src="img/m03-quest.jpg" alt="Xed gameplay: a hero carrying glow-berries"></div>
         <div class="gbody">
-          <div class="meta"><span class="live">Pilot · Jan 2027</span><span>Ages 6–12</span><span>Maths</span><span>Windows · Mac</span></div>
+          <div class="meta"><span class="live">Out now</span><span>Ages 6–12</span><span>Maths</span><span>Windows · Mac · Browser demo</span></div>
           <h3>Xed</h3>
           <p>A maths adventure across six worlds. Pick a hero, help villagers, find Star Shards and beat bosses. Every quest is real maths, and every question is read aloud.</p>
           <p class="skills">Builds: counting, place value, times tables, fractions, decimals, algebra, problem solving.</p>
-          <div class="row"><a class="btn pink" href="xed.html" id="xedmore"><span class="tri"></span>Know more about Xed</a></div>
+          <div class="row"><a class="btn pink" href="play.html"><span class="tri"></span>Play free in your browser</a><a class="btn line" href="xed.html" id="xedmore">Know more about Xed</a></div>
         </div>
       </article>
       <article class="gcard half">
@@ -383,7 +391,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     </div>
     <div class="who">
       <article class="hot"><span class="mono" style="color:var(--pulse)">Kids and teens</span><h3>Join the playtest crew</h3><ul><li>Play our games before anyone else</li><li>Vote on features and names</li><li>Get credited in the game</li><li>Parent permission needed under 18</li></ul><a href="#join">Sign up →</a></article>
-      <article><span class="mono" style="color:var(--dim)">Parents</span><h3>Games you can say yes to</h3><ul><li>Xed home access from April 2027</li><li>Free first week, then GHS 49 a month</li><li>See every skill your child masters</li></ul><a href="xed.html#classes">Xed for families →</a></article>
+      <article><span class="mono" style="color:var(--dim)">Parents</span><h3>Games you can say yes to</h3><ul><li>Try Xed free in your browser</li><li>Free first week, then from GHS 49 a month</li><li>See every skill your child masters</li></ul><a href="signup.html?from=studio">Start a free week →</a></article>
       <article><span class="mono" style="color:var(--dim)">Schools</span><h3>Pilot Xed free</h3><ul><li>Four places, January–March 2027</li><li>Training, support and class reports</li><li>Partner schools earn 5% of parent subscriptions</li></ul><a href="#join">Apply for the pilot →</a></article>
       <article><span class="mono" style="color:var(--dim)">Partners and investors</span><h3>Build with us</h3><ul><li>A studio, not a single app</li><li>A path of games from 6 to 17</li><li>Built in Ghana, ready for Africa</li></ul><a href="#join">Talk to us →</a></article>
     </div>
@@ -395,13 +403,27 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     <div style="display:grid;gap:18px">
       <span class="mono eyebrow">The studio</span>
       <p class="big">A games studio in Accra on a mission to make <em>play</em> the way Africa’s kids and teens grow.</p>
-      <p class="dim" style="max-width:56ch">We’re a small team of game developers, teachers and artists. We started with maths because it’s where most children get stuck. We won’t stop there.</p>
+      <p class="dim" style="max-width:56ch">We’re a small team of engineers, artists and educators. We started with maths because it’s where most children get stuck. We won’t stop there.</p>
     </div>
     <div class="nums">
-      <div><b>1</b><span>game in school pilots</span></div>
+      <div><b>1</b><span>game out now, Xed</span></div>
       <div><b>4</b><span>more in development</span></div>
       <div><b>288</b><span>maths skills inside Xed</span></div>
       <div><b>0</b><span>ads, ever</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="team">
+  <div class="wrap">
+    <div class="head">
+      <span class="mono eyebrow">The team</span>
+      <h2>The people making the games.</h2>
+    </div>
+    <div class="team">
+      <article><img src="img/team-triumph-tetteh.jpg" alt="Triumph Tetteh" loading="lazy"><h3>Triumph Tetteh</h3><span class="mono role">Co-founder and CEO · Game developer</span><p>Aerospace engineer and STEM education consultant. Builds the games and the platform behind them.</p><a href="https://www.linkedin.com/in/triumphtetteh" target="_blank" rel="noopener">LinkedIn →</a></article>
+      <article><img src="img/team-felix-quaye.jpg" alt="Felix Quaye" loading="lazy"><h3>Felix Quaye</h3><span class="mono role">Co-founder · Game designer</span><p>Engineer turned graphic designer, illustrator and animator. Shapes our worlds, characters and play.</p><a href="https://www.linkedin.com/in/felix-quaye/" target="_blank" rel="noopener">LinkedIn →</a></article>
+      <article><img src="img/team-nora-sosu.jpg" alt="Nora Sosu" loading="lazy"><h3>Nora Sosu</h3><span class="mono role">School partnerships</span><p>Teaching specialist in Accra. Brings the classroom view and works with our partner schools.</p><a href="https://www.linkedin.com/in/nora-sosu98/" target="_blank" rel="noopener">LinkedIn →</a></article>
     </div>
   </div>
 </section>
