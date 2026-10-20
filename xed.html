@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xed · MindsPlay Studios</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Xed: A Maths Adventure. Six worlds, 288 skills, one adventure for Class 1 to 6. A MindsPlay Studios game.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<style>
+/* Layout: the site is a game. A pinned HUD (logo, level, XP bar, quest log) sits over a night-indigo world; each section is a "level" with slanted panel edges; a playable Make-10 Blitz sits mid-page. Single dark arcade theme by choice. */
+:root {
+  --night:#0E0D24; --deep:#17164A; --panel:#211F5C; --edge:#3A38A0;
+  --gold:#F5B700; --coral:#FF6F59; --leaf:#2E9E57; --sky:#4CB7E8;
+  --text:#F3F3FF; --dim:#ABAAD8;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend","Segoe UI",system-ui,sans-serif;
+  --pixel:"Silkscreen","Courier New",monospace;
+  color-scheme:dark;
+}
+* { box-sizing:border-box }
+[hidden] { display:none !important }
+html { background:var(--night) }
+body { background:var(--night); color:var(--text); font:400 16px/1.6 var(--body); margin:0; overflow-x:hidden }
+a { color:inherit }
+img { display:block }
+.wrap { max-width:1180px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+.px { font-family:var(--pixel); letter-spacing:.04em; text-transform:uppercase }
+h1, h2, h3 { font-family:var(--display); margin:0; text-wrap:balance; line-height:1 }
+h2 { font-size:clamp(38px,6vw,68px); font-weight:800 }
+h3 { font-size:24px; font-weight:800 }
+p { margin:0 }
+:focus-visible { outline:3px solid var(--gold); outline-offset:3px; border-radius:6px }
+
+/* HUD */
+.hud { position:sticky; top:env(safe-area-inset-top, 0px); z-index:20; background:rgba(14,13,36,.88); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:2px solid var(--edge) }
+.hud .wrap { display:flex; align-items:center; gap:16px; padding-block:10px }
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; font:800 22px/1 var(--display); flex:none }
+.logo svg { width:36px; height:36px }
+.logo small { display:block; font:600 9px/1 var(--body); letter-spacing:.2em; color:var(--dim); text-transform:uppercase; margin-top:2px }
+.hud nav { display:flex; gap:18px; margin-left:12px; font-size:14px }
+.hud nav a { text-decoration:none; color:var(--dim) } .hud nav a:hover { color:var(--text) }
+.xp { margin-left:auto; display:flex; align-items:center; gap:10px; min-width:0 }
+.lv { font-family:var(--pixel); font-size:13px; background:var(--gold); color:var(--night); padding:4px 8px; border-radius:6px; white-space:nowrap }
+.bar { width:clamp(70px,14vw,180px); height:12px; background:var(--deep); border:2px solid var(--edge); border-radius:999px; overflow:hidden }
+.bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--leaf),var(--gold)); transition:width .5s }
+.questbtn { font:600 13px var(--body); background:var(--panel); color:var(--text); border:2px solid var(--edge); border-radius:999px; padding:6px 12px; cursor:pointer; white-space:nowrap }
+.questbtn b { color:var(--gold) }
+.questlog { position:absolute; right:max(16px, env(safe-area-inset-right, 0px)); top:calc(100% + 8px); width:min(320px, calc(100vw - 32px)); background:var(--deep); border:2px solid var(--edge); border-radius:14px; padding:16px; display:grid; gap:10px; box-shadow:0 20px 50px rgba(0,0,0,.5) }
+.questlog h4 { margin:0; font:400 13px var(--pixel); color:var(--gold) }
+.questlog ul { list-style:none; margin:0; padding:0; display:grid; gap:8px; font-size:14px }
+.questlog li { display:grid; grid-template-columns:22px 1fr auto; gap:8px; align-items:start; color:var(--dim) }
+.questlog li.done { color:var(--text) }
+.questlog li .ck { width:18px; height:18px; border:2px solid var(--edge); border-radius:5px; margin-top:2px }
+.questlog li.done .ck { background:var(--leaf); border-color:var(--leaf) }
+.questlog li .xpv { font:400 11px var(--pixel); color:var(--gold) }
+.hudwrap { position:relative }
+@media (max-width:820px) { .hud nav { display:none } }
+@media (max-width:420px) { .logo small { display:none } .bar { width:56px } }
+
+/* Hero */
+.hero { position:relative; isolation:isolate; overflow:hidden; border-bottom:4px solid var(--gold) }
+.hero > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2 }
+.hero::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(14,13,36,.96) 0%, rgba(14,13,36,.82) 42%, rgba(14,13,36,.15) 100%), linear-gradient(0deg, rgba(14,13,36,.9), transparent 40%) }
+.hero .wrap { padding-block:clamp(64px,10vw,120px) clamp(56px,8vw,96px); display:grid; gap:22px; max-width:1180px }
+.hero .tag { justify-self:start; font:400 12px var(--pixel); color:var(--night); background:var(--sky); padding:5px 10px; border-radius:6px }
+.hero h1 { font-size:clamp(52px,10vw,124px); font-weight:800; line-height:.88; max-width:9ch }
+.hero h1 span { color:var(--gold); display:block }
+.hero p { max-width:44ch; font-size:clamp(17px,2vw,20px); color:#DADAF5 }
+.ctas { display:flex; flex-wrap:wrap; gap:12px }
+.btn { display:inline-flex; align-items:center; gap:10px; font:800 19px/1 var(--display); padding:16px 26px 14px; border-radius:14px; text-decoration:none; border:none; cursor:pointer; transition:transform .12s, box-shadow .12s }
+.btn.primary { background:var(--gold); color:var(--night); box-shadow:0 6px 0 #B98900 }
+.btn.ghost { background:rgba(255,255,255,.08); color:var(--text); box-shadow:inset 0 0 0 2px var(--edge), 0 6px 0 #0A0A1E }
+.btn:hover { transform:translateY(-2px) } .btn:active { transform:translateY(4px); box-shadow:0 2px 0 #0A0A1E }
+.btn kbd { font:400 11px var(--pixel); border:1.5px solid currentColor; border-radius:4px; padding:2px 5px; opacity:.8 }
+.ticker { display:flex; gap:28px; flex-wrap:wrap; font:400 12px var(--pixel); color:var(--dim); margin-top:8px }
+.ticker b { color:var(--text); font-weight:400 }
+
+/* Levels */
+.level { padding-block:clamp(64px,9vw,112px); position:relative }
+.level-head { display:grid; gap:14px; margin-bottom:40px; max-width:760px }
+.lvtag { font:400 13px var(--pixel); color:var(--gold); display:flex; align-items:center; gap:10px }
+.lvtag::before { content:""; width:28px; height:3px; background:currentColor }
+.level-head p { color:var(--dim); font-size:18px; max-width:56ch }
+.slant { background:var(--deep); clip-path:polygon(0 3vw, 100% 0, 100% calc(100% - 3vw), 0 100%); padding-block:calc(clamp(64px,9vw,112px) + 3vw) }
+
+/* Now playing */
+.game { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:28px; align-items:start }
+@media (max-width:900px) { .game { grid-template-columns:1fr } }
+.screen { position:relative; border:4px solid var(--edge); border-radius:18px; overflow:hidden; background:#000; aspect-ratio:16/9; max-width:100% }
+.screen img { width:100%; height:100%; object-fit:cover; transition:opacity .25s }
+.screen .cap { position:absolute; left:12px; bottom:12px; font:400 12px var(--pixel); background:rgba(14,13,36,.85); padding:6px 10px; border-radius:6px }
+.thumbs { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:10px }
+.thumbs button { padding:0; border:3px solid transparent; border-radius:10px; overflow:hidden; cursor:pointer; background:none; aspect-ratio:16/10 }
+.thumbs button img { width:100%; height:100%; object-fit:cover; opacity:.6 }
+.thumbs button[aria-pressed="true"] { border-color:var(--gold) } .thumbs button[aria-pressed="true"] img, .thumbs button:hover img { opacity:1 }
+.card { background:var(--panel); border:2px solid var(--edge); border-radius:18px; padding:24px; display:grid; gap:16px }
+.card .title { display:flex; gap:14px; align-items:center }
+.card .title svg { width:64px; height:64px; flex:none }
+.card .title h3 { font-size:36px }
+.card .title p { color:var(--dim); font-size:14px }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.stat { background:var(--deep); border-radius:12px; padding:12px 14px; display:grid; gap:2px }
+.stat b { font:800 30px/1 var(--display); color:var(--gold); font-variant-numeric:tabular-nums }
+.stat span { font-size:13px; color:var(--dim) }
+.chips { display:flex; flex-wrap:wrap; gap:6px }
+.chip { font:400 11px var(--pixel); padding:5px 9px; border-radius:6px; background:var(--deep); color:var(--dim) }
+.chip.on { background:var(--leaf); color:#fff }
+.chip.soon { box-shadow:inset 0 0 0 1.5px var(--edge) }
+
+/* World map */
+.map { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; position:relative }
+.map::before { content:""; position:absolute; left:8%; right:8%; top:44px; height:6px; background:repeating-linear-gradient(90deg,var(--edge) 0 14px,transparent 14px 24px); z-index:0 }
+.node { position:relative; z-index:1; display:grid; justify-items:center; gap:10px; text-align:center; background:none; border:none; color:var(--text); cursor:pointer; font:inherit; padding:0 }
+.node .orb { width:92px; height:92px; border-radius:50%; display:grid; place-items:center; font:800 40px/1 var(--display); border:5px solid var(--night); box-shadow:0 0 0 3px var(--edge); transition:transform .15s, box-shadow .15s }
+.node:hover .orb { transform:translateY(-4px) }
+.node[aria-pressed="true"] .orb { box-shadow:0 0 0 4px var(--gold), 0 0 32px rgba(245,183,0,.45); transform:scale(1.06) }
+.node .nm { font:800 18px/1.05 var(--display) }
+.node .cl { font:400 11px var(--pixel); color:var(--dim) }
+.worldinfo { margin-top:32px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:24px; align-items:center; background:var(--panel); border:2px solid var(--edge); border-radius:18px; padding:24px }
+.worldinfo img { width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:12px }
+.worldinfo h3 { font-size:40px }
+.worldinfo .skills { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px }
+.worldinfo .skills span { font-size:13px; background:var(--deep); border-radius:999px; padding:4px 12px }
+.worldinfo .meta { font:400 12px var(--pixel); color:var(--gold); margin-bottom:6px }
+@media (max-width:820px) {
+  .map { grid-template-columns:repeat(3,minmax(0,1fr)); row-gap:24px } .map::before { display:none }
+  .worldinfo { grid-template-columns:1fr }
+}
+@media (max-width:420px) { .node .orb { width:72px; height:72px; font-size:30px } .node .nm { font-size:15px } }
+
+/* Moves (features) */
+.moves { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:900px) { .moves { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media (max-width:560px) { .moves { grid-template-columns:1fr } }
+.move { background:var(--panel); border-radius:18px; overflow:hidden; display:grid; grid-template-rows:auto 1fr; border:2px solid var(--edge); transition:transform .15s, border-color .15s }
+.move:hover { transform:translateY(-4px) rotate(-.4deg); border-color:var(--gold) }
+.move img { width:100%; aspect-ratio:16/9; object-fit:cover }
+.move div { padding:18px 20px 22px; display:grid; gap:6px; align-content:start }
+.move .k { font:400 11px var(--pixel); color:var(--sky) }
+.move p { color:var(--dim); font-size:15px }
+
+/* Blitz */
+.blitz { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:32px; align-items:center }
+@media (max-width:900px) { .blitz { grid-template-columns:1fr } }
+.arcade { background:radial-gradient(120% 90% at 50% 0%, #2C2A86, #121040); border:4px solid var(--gold); border-radius:24px; padding:24px; display:grid; gap:18px; box-shadow:0 0 0 6px var(--night), 0 0 0 8px var(--edge), 0 30px 60px rgba(0,0,0,.45); min-width:0 }
+.arcade .top { display:flex; justify-content:space-between; gap:8px; font:400 14px var(--pixel); flex-wrap:wrap }
+.arcade .top b { color:var(--gold); font-weight:400 }
+.timer { height:10px; background:rgba(0,0,0,.35); border-radius:999px; overflow:hidden }
+.timer i { display:block; height:100%; width:100%; background:var(--sky); transition:width .1s linear }
+.sum { text-align:center; font:800 clamp(56px,10vw,96px)/1 var(--display); font-variant-numeric:tabular-nums; min-height:1em }
+.sum .q { color:var(--gold); display:inline-block; min-width:.7em }
+.opts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px }
+.opt { font:800 34px/1 var(--display); padding:18px 0 14px; border-radius:14px; border:none; cursor:pointer; background:var(--text); color:var(--night); box-shadow:0 6px 0 #9C9BC7; position:relative; transition:transform .08s }
+.opt small { position:absolute; top:6px; left:8px; font:400 10px var(--pixel); opacity:.5 }
+.opt:active { transform:translateY(4px); box-shadow:0 2px 0 #9C9BC7 }
+.opt.good { background:var(--leaf); color:#fff; box-shadow:0 6px 0 #1E6E3C }
+.opt.bad { background:var(--coral); color:#fff; box-shadow:0 6px 0 #B44735; animation:shake .3s }
+.opt:disabled { cursor:default }
+@keyframes shake { 25% { transform:translateX(-5px) } 75% { transform:translateX(5px) } }
+.combo { text-align:center; font:400 14px var(--pixel); color:var(--coral); min-height:1.2em }
+.arcade .msg { text-align:center; color:var(--dim); font-size:15px; min-height:1.4em }
+.arcade .start { justify-self:center }
+.rules { display:grid; gap:16px }
+.rules ol { margin:0; padding-left:22px; display:grid; gap:6px; color:var(--dim) }
+.best { display:flex; gap:12px; flex-wrap:wrap }
+.best .stat { min-width:130px }
+
+/* Library */
+.shelf { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:820px) { .shelf { grid-template-columns:1fr } }
+.cart { border-radius:18px; padding:22px; min-height:260px; display:grid; align-content:space-between; gap:18px; position:relative; overflow:hidden; border:2px solid var(--edge) }
+.cart.live { background:linear-gradient(160deg,#2E9E57,#1A6B3A); border-color:var(--leaf) }
+.cart.locked { background:repeating-linear-gradient(135deg,var(--deep) 0 18px,#141344 18px 36px) }
+.cart .slot { font:400 12px var(--pixel); opacity:.85 }
+.cart h3 { font-size:40px }
+.cart p { color:rgba(255,255,255,.82); font-size:15px }
+.cart.locked h3 { color:var(--dim) }
+.cart .lock { width:54px; height:54px; border-radius:14px; background:var(--panel); display:grid; place-items:center; border:2px solid var(--edge) }
+.cart .lock svg { width:26px; height:26px }
+
+/* Pick your class */
+.classes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:900px) { .classes { grid-template-columns:1fr } }
+.cls { background:var(--panel); border:2px solid var(--edge); border-radius:18px; padding:24px; display:grid; gap:14px; align-content:start }
+.cls .role { font:400 12px var(--pixel); padding:5px 10px; border-radius:6px; justify-self:start; color:var(--night) }
+.cls ul { margin:0; padding:0; list-style:none; display:grid; gap:8px; color:var(--dim); font-size:15px }
+.cls li { display:grid; grid-template-columns:18px 1fr; gap:10px }
+.cls li::before { content:""; width:10px; height:10px; margin-top:7px; background:var(--gold); transform:rotate(45deg) }
+.price { font:800 46px/1 var(--display) } .price small { font:500 15px var(--body); color:var(--dim) }
+
+/* Join */
+.join { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:32px; align-items:start }
+@media (max-width:860px) { .join { grid-template-columns:1fr } }
+form { background:var(--panel); border:2px solid var(--edge); border-radius:18px; padding:24px; display:grid; gap:14px }
+label { display:grid; gap:6px; font-size:14px; color:var(--dim) }
+input, select { font:500 16px var(--body); background:var(--night); color:var(--text); border:2px solid var(--edge); border-radius:10px; padding:12px 14px; width:100% }
+input:focus, select:focus { border-color:var(--gold); outline:none }
+.out { background:var(--night); border:2px dashed var(--gold); border-radius:12px; padding:14px; display:grid; gap:10px; font-size:14px }
+.out pre { margin:0; white-space:pre-wrap; font:500 14px/1.5 var(--body); color:var(--text) }
+.contact { display:grid; gap:12px; color:var(--dim) }
+.contact b { color:var(--text) }
+
+/* Footer */
+footer { border-top:4px solid var(--gold); background:#0A0920 }
+footer .wrap { padding-block:40px; display:flex; flex-wrap:wrap; gap:24px; justify-content:space-between; align-items:flex-end; color:var(--dim); font-size:14px }
+.shard { background:none; border:none; padding:4px; cursor:pointer; opacity:.35; transition:opacity .2s, transform .2s }
+.shard:hover { opacity:1; transform:rotate(20deg) scale(1.2) }
+.shard svg { width:18px; height:18px; display:block }
+
+/* Toasts */
+.toasts { position:fixed; z-index:50; left:50%; transform:translateX(-50%); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); display:grid; gap:8px; width:min(380px, calc(100vw - 32px)); pointer-events:none }
+.toast { background:var(--deep); border:2px solid var(--gold); border-radius:14px; padding:12px 16px; display:grid; grid-template-columns:40px 1fr auto; gap:12px; align-items:center; box-shadow:0 16px 40px rgba(0,0,0,.5); animation:pop .35s ease-out }
+.toast .ic { width:40px; height:40px; border-radius:10px; background:var(--gold); display:grid; place-items:center; color:var(--night); font:800 22px var(--display) }
+.toast small { display:block; font:400 10px var(--pixel); color:var(--gold) }
+.toast b { font:800 17px/1.1 var(--display) }
+.toast .xpv { font:400 13px var(--pixel); color:var(--leaf) }
+@keyframes pop { from { transform:translateY(20px) scale(.95); opacity:0 } }
+canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important } }
+  :root { padding-top:env(safe-area-inset-top, 0px); padding-bottom:env(safe-area-inset-bottom, 0px) }
+.back { font:600 13px var(--body); color:var(--dim); text-decoration:none; border:2px solid var(--edge); border-radius:999px; padding:5px 12px; white-space:nowrap }
+.back:hover { color:var(--text); border-color:var(--text) }
+.endorse { display:inline-flex; align-items:center; gap:8px; font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); text-decoration:none }
+.endorse svg { width:20px; height:20px }
+@media (max-width:520px) { .back span { display:none } }
+</style>
+</head>
+<body>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header class="hud">
+  <div class="wrap hudwrap">
+    <a class="back" href="./" aria-label="Back to MindsPlay Studios">← <span>MindsPlay</span></a>
+    <a class="logo" href="#top" aria-label="Xed home"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="60" fill="#2E9E57"/><rect x="52" y="18" width="16" height="84" rx="8" fill="#F5B700" transform="rotate(45 60 60)"/><rect x="52" y="18" width="16" height="84" rx="8" fill="#F5B700" transform="rotate(-45 60 60)"/><rect x="80" y="14" width="18" height="18" rx="3" fill="#4CB7E8" transform="rotate(45 89 23)"/><circle cx="60" cy="60" r="7" fill="#2B2A7A"/></svg><span>Xed<small>A Maths Adventure</small></span></a>
+    <nav aria-label="Main"><a href="#xed">Xed</a><a href="#worlds">Worlds</a><a href="#blitz">Play now</a><a href="#games">More games</a><a href="#join">Join</a></nav>
+    <div class="xp">
+      <span class="lv" id="lv">LV 1</span>
+      <span class="bar" title="Your XP on this site"><i id="xpbar"></i></span>
+      <button class="questbtn" id="questbtn" type="button" aria-expanded="false" aria-controls="questlog">Quests <b id="qcount">0/8</b></button>
+    </div>
+    <div class="questlog" id="questlog" hidden>
+      <h4>Quest log</h4>
+      <ul id="quests"></ul>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <img src="img/m01-title.jpg" alt="">
+  <div class="wrap">
+    <a class="endorse" href="./" style="color:#DADAF5"><svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#FFFFFF"/><path d="M46.84 41.96 A28 28 0 0 1 78.08 60.00 A28 28 0 0 1 46.84 78.04 A28 28 0 0 1 46.84 41.96Z" fill="#FF2E88"/><g fill="none" stroke="#0B0B10" stroke-width="5.5"><circle cx="68.25" cy="60.00" r="28"/><circle cx="51.75" cy="69.53" r="28"/><circle cx="51.75" cy="50.47" r="28"/></g></svg>A MindsPlay Studios game</a>
+    <h1>Every quest <span>is real maths.</span></h1>
+    <p>Pick a hero, explore six worlds and beat the bosses. Xed turns the whole of primary maths, Class 1 to 6, into one big adventure, and every question is read aloud.</p>
+    <div class="ctas">
+      <a class="btn primary" href="#blitz" id="pressstart">Press start <kbd>↵</kbd></a>
+      <a class="btn ghost" href="#xed">Meet Xed</a>
+    </div>
+    <div class="ticker"><span><b>6</b> worlds</span><span><b>288</b> skills</span><span><b>12</b> heroes</span><span><b>0</b> ads</span><span>Pilot <b>Jan 2027</b></span></div>
+  </div>
+</section>
+
+<section class="level" id="xed" data-quest="xed">
+  <div class="wrap">
+    <div class="level-head">
+      <span class="lvtag">Level 1 · Now playing</span>
+      <h2>Xed: A Maths Adventure</h2>
+      <p>Pick a hero. Explore six worlds. Help villagers, find Star Shards, beat bosses. Every quest, every puzzle and every boss fight is real maths, and every question is read aloud.</p>
+    </div>
+    <div class="game">
+      <div>
+        <div class="screen"><img id="shot" src="img/m03-quest.jpg" alt="Xed gameplay: a hero carrying glow-berries to a jar"><span class="cap" id="shotcap">Quest · Pip’s glow-berries</span></div>
+        <div class="thumbs" id="thumbs" role="group" aria-label="Screenshots"></div>
+      </div>
+      <aside class="card">
+        <div class="title">
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="#2E9E57"/><rect x="26" y="52" width="68" height="16" rx="8" fill="#F5B700" transform="rotate(45 60 60)"/><rect x="26" y="52" width="68" height="16" rx="8" fill="#F5B700" transform="rotate(-45 60 60)"/><circle cx="60" cy="60" r="10" fill="#2B2A7A"/><rect x="78" y="18" width="20" height="20" rx="4" fill="#4CB7E8" transform="rotate(45 88 28)"/></svg>
+          <div><h3>Xed</h3><p>Action-adventure · Maths</p></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>6</b><span>worlds, one per class</span></div>
+          <div class="stat"><b>288</b><span>maths skills to master</span></div>
+          <div class="stat"><b>12</b><span>heroes to play as</span></div>
+          <div class="stat"><b>6</b><span>weapons to unlock</span></div>
+        </div>
+        <div class="chips"><span class="chip on">Windows</span><span class="chip on">Mac</span><span class="chip soon">Android · soon</span><span class="chip">Class 1–6</span><span class="chip">Voiced</span><span class="chip">No ads</span></div>
+        <a class="btn primary" href="#join" style="justify-content:center">Get early access</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="level slant" id="worlds" data-quest="worlds">
+  <div class="wrap">
+    <div class="level-head">
+      <span class="lvtag">Level 2 · World map</span>
+      <h2>Six worlds. One for every class.</h2>
+      <p>Start in Sprout Meadow and climb all the way to the Sky Citadel. Each world has its own villagers, secrets, tools and a boss at the top. Tap a world to scout it.</p>
+    </div>
+    <div class="map" id="map" role="group" aria-label="Worlds"></div>
+    <div class="worldinfo" aria-live="polite">
+      <img id="wimg" src="img/m06-counting.jpg" alt="">
+      <div>
+        <div class="meta" id="wmeta"></div>
+        <h3 id="wname"></h3>
+        <p id="wdesc" style="color:var(--dim);margin-top:10px"></p>
+        <div class="skills" id="wskills"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="level" id="moves" data-quest="moves">
+  <div class="wrap">
+    <div class="level-head">
+      <span class="lvtag">Level 3 · Your moves</span>
+      <h2>Not a worksheet with a skin.</h2>
+      <p>Xed plays like a real adventure game. The maths is the gameplay.</p>
+    </div>
+    <div class="moves">
+      <article class="move"><img src="img/m03-quest.jpg" alt="Hero carrying glow-berries" loading="lazy"><div><span class="k">Quests</span><h3>Pick it up. Count it. Throw it.</h3><p>Carry berries, stack planks, fill jars. Villagers need help, and only the right number works.</p></div></article>
+      <article class="move"><img src="img/m05-boss.jpg" alt="Boss fight with estimate targets" loading="lazy"><div><span class="k">Boss fights</span><h3>Out-think the boss.</h3><p>Hit the right answer to land the blow. Every world ends with a boss who tests everything you learned.</p></div></article>
+      <article class="move"><img src="img/wheel.jpg" alt="Weapon wheel" loading="lazy"><div><span class="k">Weapon wheel</span><h3>Six weapons. Three powers.</h3><p>Sword, boomerang, slingshot and more. Dash, Shield and a Helper critter when things get tough.</p></div></article>
+      <article class="move"><img src="img/lesson.jpg" alt="Sage Libra's lesson scroll" loading="lazy"><div><span class="k">Lesson scrolls</span><h3>Stuck? Sage has you.</h3><p>Sage Libra the owl explains every new skill out loud before you need it. Replay any lesson, any time.</p></div></article>
+      <article class="move"><img src="img/m04-camp.jpg" alt="Hero wearing a crown at Home Camp" loading="lazy"><div><span class="k">Home Camp</span><h3>Earn the drip.</h3><p>Crowns, capes, pets and golden swords. All earned with coins from maths. Nothing is bought with real money.</p></div></article>
+      <article class="move"><img src="img/journal.jpg" alt="Adventure Journal" loading="lazy"><div><span class="k">Adventure Journal</span><h3>See your stats.</h3><p>Stars, badges and every skill you’ve mastered, in one journal. Parents and teachers can check it too.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="level slant" id="blitz" data-quest="blitz">
+  <div class="wrap blitz">
+    <div class="rules">
+      <span class="lvtag">Level 4 · Mini-game</span>
+      <h2>Make-10 Blitz</h2>
+      <p style="color:var(--dim);font-size:18px">A taste of Xed’s number bonds. Thirty seconds on the clock. How high can you go?</p>
+      <ol>
+        <li>Find the missing number that makes the total.</li>
+        <li>Tap it, or press keys 1 to 4.</li>
+        <li>Answer in a row to build a combo. Combos multiply your points.</li>
+        <li>Hit a 5-combo and the totals jump from 10 to 20 to 100.</li>
+      </ol>
+      <div class="best">
+        <div class="stat"><b id="hi">0</b><span>your best score</span></div>
+        <div class="stat"><b id="maxc">0</b><span>your best combo</span></div>
+      </div>
+    </div>
+    <div class="arcade" id="arcade">
+      <div class="top"><span>Score <b id="score">0</b></span><span>Make <b id="target">10</b></span><span>Time <b id="time">30</b></span></div>
+      <div class="timer"><i id="timerbar"></i></div>
+      <div class="sum" id="sum">7 + <span class="q">?</span> = 10</div>
+      <div class="opts" id="opts"></div>
+      <div class="combo" id="combo"></div>
+      <p class="msg" id="msg">Press Start, or hit Enter.</p>
+      <button class="btn primary start" id="go" type="button">Start</button>
+    </div>
+  </div>
+</section>
+
+<section class="level" id="games" data-quest="games">
+  <div class="wrap">
+    <div class="level-head">
+      <span class="lvtag">Level 5 · More from the studio</span>
+      <h2>Xed is game one.</h2>
+      <p>MindsPlay Studios is building more games for kids and teens: money, coding, reading and science. See what’s coming.</p>
+    </div>
+    <a class="btn primary" href="./#games">See MindsPlay’s upcoming games</a>
+  </div>
+</section>
+
+<section class="level slant" id="classes" data-quest="classes">
+  <div class="wrap">
+    <div class="level-head">
+      <span class="lvtag">Level 6 · Choose your class</span>
+      <h2>Player, parent or school?</h2>
+    </div>
+    <div class="classes">
+      <article class="cls"><span class="role" style="background:var(--sky)">Player</span><h3>Play Xed</h3><ul><li>Make your own profile and pick your hero</li><li>Join with your school and class</li><li>Earn coins, XP, Star Shards and gear</li><li>15 minutes a day is enough to level up</li></ul></article>
+      <article class="cls"><span class="role" style="background:var(--gold)">Parent</span><h3>Home access</h3><div class="price">GHS 49 <small>/ month</small></div><ul><li>First week free</li><li>GHS 490 a year, or GHS 25 for a second child</li><li>See every skill your child masters</li><li>No ads, no loot boxes, no strangers</li></ul></article>
+      <article class="cls"><span class="role" style="background:var(--leaf);color:#fff">School</span><h3>Pilot and partner</h3><div class="price">Free <small>pilot, Jan–Mar 2027</small></div><ul><li>Four places for primary schools in Greater Accra</li><li>Installation, teacher training and weekly visits</li><li>Class reports for every pupil</li><li>Partner schools earn 5% of parent subscriptions</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<section class="level" id="join" data-quest="join">
+  <div class="wrap join">
+    <div class="level-head" style="margin:0">
+      <span class="lvtag">Final level · Join the party</span>
+      <h2>Get in early.</h2>
+      <p>Tell us who you are and we’ll write the message for you. Send it to us on WhatsApp or by email and we’ll reply within two days.</p>
+      <div class="contact">
+        <p>WhatsApp: <b>[+233 number]</b></p>
+        <p>Email: <b>hello@mindsplaystudiogh.com</b></p>
+        <p>Socials: <b>@mindsplaystudios</b> on Facebook, Instagram, TikTok, LinkedIn and X</p>
+      </div>
+    </div>
+    <form id="joinform" novalidate>
+      <label for="who">I am a
+        <select id="who"><option value="parent">Parent</option><option value="school">School head or teacher</option><option value="player">Player</option><option value="partner">Partner or investor</option></select>
+      </label>
+      <label for="nm">First name<input id="nm" autocomplete="given-name" placeholder="Ama" required></label>
+      <label for="sch">School<input id="sch" placeholder="Name of school"></label>
+      <label for="idea">What game should we make next? (optional)<input id="idea" placeholder="e.g. a science adventure"></label>
+      <button class="btn primary" type="submit" style="justify-content:center">Write my message</button>
+      <div class="out" id="out" hidden>
+        <pre id="outtext"></pre>
+        <button class="questbtn" id="copymsg" type="button" style="justify-self:start">Copy message</button>
+        <span style="color:var(--dim)">Paste it into WhatsApp or an email to us. Nothing is sent from this page.</span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div style="display:grid;gap:6px">
+      <b style="font:800 22px var(--display);color:var(--text)">Xed: A Maths Adventure</b>
+      <a class="endorse" href="./"><svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#FFFFFF"/><path d="M46.84 41.96 A28 28 0 0 1 78.08 60.00 A28 28 0 0 1 46.84 78.04 A28 28 0 0 1 46.84 41.96Z" fill="#FF2E88"/><g fill="none" stroke="#0B0B10" stroke-width="5.5"><circle cx="68.25" cy="60.00" r="28"/><circle cx="51.75" cy="69.53" r="28"/><circle cx="51.75" cy="50.47" r="28"/></g></svg>A MindsPlay Studios game</a>
+      <span>© 2026 MindsPlay Studios, Accra</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="px" style="font-size:11px">#XedQuest #LearnWithPlay</span>
+      <button class="shard" id="shard" type="button" aria-label="A hidden Star Shard"><svg viewBox="0 0 20 20"><path d="M10 1 L13 8 L19 10 L13 12 L10 19 L7 12 L1 10 L7 8 Z" fill="#4CB7E8"/></svg></button>
+    </div>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const store = { get(k, d) { try { const v = localStorage.getItem("xed_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem("xed_" + k, JSON.stringify(v)); } catch {} } };
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Quests and XP ---------- */
+const QUESTS = [
+  { id:"start",  name:"Press start",          xp:50 },
+  { id:"xed",    name:"Meet Xed",             xp:50 },
+  { id:"worlds", name:"Scout all six worlds", xp:120 },
+  { id:"blitz",  name:"Score 100 in Blitz",   xp:150 },
+  { id:"combo",  name:"Land a 10-combo",      xp:200 },
+  { id:"games",  name:"Find out what’s next", xp:50 },
+  { id:"join",   name:"Write your message",   xp:100 },
+  { id:"shard",  name:"Find the hidden Star Shard", xp:250 },
+];
+const done = new Set(store.get("quests", []));
+const scouted = new Set(store.get("scouted", []));
+const LV = [0, 100, 250, 450, 700, 1000];
+function xp() { return QUESTS.filter(q => done.has(q.id)).reduce((s, q) => s + q.xp, 0); }
+function renderHud() {
+  const x = xp(); let lv = 1; while (lv < LV.length && x >= LV[lv]) lv++;
+  const lo = LV[lv - 1], hi = LV[lv] ?? (lo + 300);
+  $("lv").textContent = lv >= LV.length ? "LV MAX" : "LV " + lv;
+  $("xpbar").style.width = (lv >= LV.length ? 100 : Math.min(100, (x - lo) / (hi - lo) * 100)) + "%";
+  $("qcount").textContent = done.size + "/" + QUESTS.length;
+  $("quests").innerHTML = QUESTS.map(q => `<li class="${done.has(q.id) ? "done" : ""}"><span class="ck"></span><span>${q.name}${q.id === "worlds" && !done.has("worlds") ? ` (${scouted.size}/6)` : ""}</span><span class="xpv">+${q.xp}</span></li>`).join("");
+}
+function toast(title, sub, xpv, icon = "★") {
+  const t = document.createElement("div"); t.className = "toast";
+  t.innerHTML = `<span class="ic">${icon}</span><span><small>${sub}</small><b></b></span><span class="xpv">${xpv}</span>`;
+  t.querySelector("b").textContent = title;
+  $("toasts").appendChild(t); setTimeout(() => t.remove(), 3200);
+}
+function complete(id) {
+  if (done.has(id)) return; const q = QUESTS.find(q => q.id === id); if (!q) return;
+  done.add(id); store.set("quests", [...done]); renderHud();
+  toast(q.name, "Quest complete", "+" + q.xp + " XP");
+  burst(innerWidth / 2, innerHeight - 90, 26);
+  if (done.size === QUESTS.length) setTimeout(() => { toast("All quests done. Legend.", "Achievement", "LV MAX", "♛"); burst(innerWidth / 2, innerHeight / 2, 90); }, 900);
+}
+$("questbtn").addEventListener("click", () => { const log = $("questlog"); log.hidden = !log.hidden; $("questbtn").setAttribute("aria-expanded", String(!log.hidden)); });
+document.addEventListener("click", e => { if (!e.target.closest(".hudwrap")) { $("questlog").hidden = true; $("questbtn").setAttribute("aria-expanded", "false"); } });
+$("pressstart").addEventListener("click", () => complete("start"));
+$("shard").addEventListener("click", e => { complete("shard"); const r = e.currentTarget.getBoundingClientRect(); burst(r.left + 10, r.top, 40); });
+new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting && ["xed", "games"].includes(en.target.dataset.quest)) complete(en.target.dataset.quest); }), { threshold:.35 })
+  .observe($("xed"));
+new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) complete("games"); }), { threshold:.35 }).observe($("games"));
+
+/* ---------- Confetti ---------- */
+const fx = $("fx"), ctx = fx.getContext("2d"); let parts = [], raf = 0;
+function size() { fx.width = innerWidth * devicePixelRatio; fx.height = innerHeight * devicePixelRatio; } size(); addEventListener("resize", size);
+const COLORS = ["#F5B700", "#FF6F59", "#2E9E57", "#4CB7E8", "#F3F3FF"];
+function burst(x, y, n) {
+  if (reduce) return;
+  for (let i = 0; i < n; i++) parts.push({ x, y, vx:(Math.random() - .5) * 9, vy:-Math.random() * 9 - 3, r:Math.random() * 6 + 3, c:COLORS[i % 5], a:Math.random() * 6, life:70 + Math.random() * 30 });
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+function tick() {
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); ctx.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.life-- > 0);
+  for (const p of parts) { p.vy += .28; p.x += p.vx; p.y += p.vy; p.a += .2; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.globalAlpha = Math.min(1, p.life / 30); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+  raf = parts.length ? requestAnimationFrame(tick) : 0;
+}
+
+/* ---------- Screenshots ---------- */
+const SHOTS = [
+  ["m03-quest", "Quest · Pip’s glow-berries"], ["m01-title", "Sprout Meadow"], ["m02-heroes", "12 heroes"],
+  ["m05-boss", "Boss fight · estimate it"], ["m04-camp", "Home Camp · crown and cape"], ["bridge", "Bo’s bridge · make 10"],
+];
+$("thumbs").innerHTML = SHOTS.map(([f, c], i) => `<button type="button" aria-pressed="${i === 0}" aria-label="${c}"><img src="img/${f}.jpg" alt="" loading="lazy"></button>`).join("");
+$("thumbs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return; const i = [...$("thumbs").children].indexOf(b);
+  [...$("thumbs").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+  $("shot").src = `img/${SHOTS[i][0]}.jpg`; $("shot").alt = "Xed screenshot: " + SHOTS[i][1]; $("shotcap").textContent = SHOTS[i][1];
+});
+
+/* ---------- World map ---------- */
+const WORLDS = [
+  { n:"Sprout Meadow", c:"Class 1", col:"#2E9E57", img:"m06-counting", d:"Green fields, friendly villagers and your first quests. Count, compare and build your first number bonds.", s:["Numbers to 20", "Halves", "Shapes", "O’clock"] },
+  { n:"Hundred Hills", c:"Class 2", col:"#4CB7E8", img:"m03-quest", d:"Rolling hills where numbers climb to 100. Your first taste of times tables and sharing.", s:["Numbers to 100", "First × and ÷", "Quarters", "Money"] },
+  { n:"Balance Highlands", c:"Class 3", col:"#F5B700", img:"bridge", d:"High ridges where everything must balance. Fractions and money get real.", s:["Fractions", "Money", "Times tables", "Measuring"] },
+  { n:"Frostpeak Tundra", c:"Class 4", col:"#9FD8F2", img:"m05-boss", d:"Ice and snow below zero. Go negative, think in thousands and read the map.", s:["Negative numbers", "Thousands", "Factors", "Percentages", "Coordinates"] },
+  { n:"Compass Isles", c:"Class 5", col:"#FF6F59", img:"m04-camp", d:"Islands across the sea. Navigate with decimals, primes and ratio.", s:["Decimals", "Primes", "Order of operations", "Ratio", "Angles"] },
+  { n:"Sky Citadel", c:"Class 6", col:"#8E8CF0", img:"m01-title", d:"The final world, floating above the clouds. Master algebra and take on the last boss.", s:["Algebra", "Brackets", "Cubes", "Four quadrants", "Probability"] },
+];
+$("map").innerHTML = WORLDS.map((w, i) => `<button class="node" type="button" aria-pressed="${i === 0}"><span class="orb" style="background:${w.col};color:#0E0D24">${i + 1}</span><span class="nm">${w.n}</span><span class="cl">${w.c}</span></button>`).join("");
+function showWorld(i, scout) {
+  const w = WORLDS[i];
+  [...$("map").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+  $("wmeta").textContent = `World ${i + 1} · ${w.c}`; $("wname").textContent = w.n; $("wdesc").textContent = w.d;
+  $("wimg").src = `img/${w.img}.jpg`; $("wimg").alt = `Xed screenshot for ${w.n}`;
+  $("wskills").innerHTML = w.s.map(s => `<span>${s}</span>`).join("");
+  if (scout) { scouted.add(i); store.set("scouted", [...scouted]); renderHud(); if (scouted.size === 6) complete("worlds"); }
+}
+$("map").addEventListener("click", e => { const b = e.target.closest(".node"); if (b) showWorld([...$("map").children].indexOf(b), true); });
+showWorld(0, false);
+
+/* ---------- Make-10 Blitz ---------- */
+let state = "idle", score = 0, combo = 0, bestCombo = 0, timeLeft = 30, target = 10, answer = 0, lock = false, endAt = 0, timerId = 0;
+let hi = store.get("hi", 0), maxc = store.get("maxc", 0);
+$("hi").textContent = hi; $("maxc").textContent = maxc;
+function targetFor(c) { return c >= 10 ? 100 : c >= 5 ? 20 : 10; }
+function next() {
+  target = targetFor(combo); $("target").textContent = target;
+  let a, b;
+  if (target === 100) { a = 10 * (1 + Math.floor(Math.random() * 9)); if (Math.random() < .5) a = 5 + 5 * Math.floor(Math.random() * 19); }
+  else a = 1 + Math.floor(Math.random() * (target - 1));
+  answer = target - a;
+  const opts = new Set([answer]);
+  const step = target === 100 ? 5 : 1;
+  while (opts.size < 4) { const d = (Math.floor(Math.random() * 6) - 3) * step || step * 2; const v = answer + d; if (v > 0 && v < target) opts.add(v); else opts.add(Math.max(1, Math.min(target - 1, answer + step * (opts.size + 1)))); }
+  const arr = [...opts].sort(() => Math.random() - .5).slice(0, 4);
+  if (!arr.includes(answer)) arr[0] = answer;
+  $("sum").innerHTML = `${a} + <span class="q">?</span> = ${target}`;
+  $("opts").innerHTML = arr.map((v, i) => `<button class="opt" type="button" data-v="${v}"><small>${i + 1}</small>${v}</button>`).join("");
+  lock = false;
+}
+function pick(btn) {
+  if (state !== "play" || lock || !btn) return; lock = true;
+  const v = +btn.dataset.v;
+  if (v === answer) {
+    combo++; bestCombo = Math.max(bestCombo, combo);
+    const mult = 1 + Math.floor(combo / 3); score += 10 * mult;
+    btn.classList.add("good"); $("sum").querySelector(".q").textContent = v;
+    $("combo").textContent = combo >= 3 ? `Combo x${combo} · ${mult}× points` : "";
+    if (combo === 5) toast("Totals now make 20", "Level up", "×2");
+    if (combo === 10) { toast("Totals now make 100", "Level up", "×4"); complete("combo"); }
+    const r = btn.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, combo >= 5 ? 14 : 6);
+    if (score >= 100) complete("blitz");
+    $("score").textContent = score; setTimeout(next, 220);
+  } else {
+    combo = 0; btn.classList.add("bad"); $("combo").textContent = "Combo lost";
+    [...$("opts").children].forEach(b => { if (+b.dataset.v === answer) b.classList.add("good"); });
+    setTimeout(next, 650);
+  }
+}
+function start() {
+  if (state === "play") return;
+  state = "play"; score = 0; combo = 0; bestCombo = 0; $("score").textContent = 0; $("combo").textContent = "";
+  $("msg").textContent = "Go! Keys 1 to 4 work too."; $("go").hidden = true; complete("start");
+  endAt = performance.now() + 30000; next();
+  clearInterval(timerId); timerId = setInterval(() => {
+    timeLeft = Math.max(0, (endAt - performance.now()) / 1000);
+    $("time").textContent = Math.ceil(timeLeft); $("timerbar").style.width = (timeLeft / 30 * 100) + "%";
+    if (timeLeft <= 0) end();
+  }, 100);
+}
+function end() {
+  clearInterval(timerId); state = "idle";
+  [...$("opts").children].forEach(b => b.disabled = true);
+  const newHi = score > hi; if (newHi) { hi = score; store.set("hi", hi); } if (bestCombo > maxc) { maxc = bestCombo; store.set("maxc", maxc); }
+  $("hi").textContent = hi; $("maxc").textContent = maxc;
+  $("msg").textContent = newHi ? `New best: ${score}! Can you beat it?` : `You scored ${score}. Best combo x${bestCombo}.`;
+  if (newHi && score > 0) { const r = $("arcade").getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 80, 60); }
+  $("go").textContent = "Play again"; $("go").hidden = false;
+}
+$("go").addEventListener("click", start);
+$("opts").addEventListener("click", e => pick(e.target.closest(".opt")));
+$("opts").innerHTML = [3, 4, 2, 5].map((v, i) => `<button class="opt" type="button" disabled data-v="${v}"><small>${i + 1}</small>${v}</button>`).join("");
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, select, textarea")) return;
+  if (state === "play" && /^[1-4]$/.test(e.key)) { pick($("opts").children[+e.key - 1]); e.preventDefault(); }
+  else if (e.key === "Enter" && state !== "play" && !e.target.closest("a, button")) {
+    const r = $("arcade").getBoundingClientRect();
+    if (r.top < innerHeight && r.bottom > 0) start(); else { complete("start"); $("blitz").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); }
+  }
+});
+
+/* ---------- Secret code ---------- */
+const CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"]; let ci = 0;
+document.addEventListener("keydown", e => { ci = e.key === CODE[ci] ? ci + 1 : (e.key === CODE[0] ? 1 : 0); if (ci === CODE.length) { ci = 0; toast("Old-school gamer spotted", "Secret", "+∞ respect", "↑"); for (let i = 0; i < 5; i++) setTimeout(() => burst(Math.random() * innerWidth, innerHeight * .4, 40), i * 180); } });
+
+/* ---------- Join form ---------- */
+$("joinform").addEventListener("submit", e => {
+  e.preventDefault();
+  const who = $("who").value, nm = $("nm").value.trim(), sch = $("sch").value.trim(), idea = $("idea").value.trim();
+  if (!nm) { $("nm").focus(); $("nm").setCustomValidity("Add your first name"); $("nm").reportValidity(); return; }
+  $("nm").setCustomValidity("");
+  const lines = {
+    parent: `Hi MindsPlay! I'm ${nm}, a parent${sch ? ` at ${sch}` : ""}. Please add me to the Xed early-access list.`,
+    school: `Hi MindsPlay! I'm ${nm}${sch ? ` from ${sch}` : ""}. We'd like to hear about piloting Xed in our school. Please get in touch to book a demo.`,
+    player: `Hi MindsPlay! I'm ${nm}${sch ? ` from ${sch}` : ""}. I want to play Xed! Please let me know when it's ready.`,
+    partner: `Hi MindsPlay! I'm ${nm}${sch ? ` (${sch})` : ""}. I'd like to talk about partnering with MindsPlay Studios.`,
+  };
+  $("outtext").textContent = lines[who] + (idea ? `\nIdea for your next game: ${idea}` : "");
+  $("out").hidden = false; complete("join");
+});
+$("copymsg").addEventListener("click", () => {
+  const t = $("outtext").textContent, b = $("copymsg");
+  const sel = () => { const r = document.createRange(); r.selectNodeContents($("outtext")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected, press Copy"; };
+  try { navigator.clipboard.writeText(t).then(() => { b.textContent = "Copied"; }, sel); } catch { sel(); }
+});
+
+renderHud();
+})();
+</script>
+</body>
+</html>
