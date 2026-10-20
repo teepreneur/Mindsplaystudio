@@ -1,0 +1,126 @@
+/* Shared look for the Xed family pages (sign up, account, download, play, admin): the Xed night-indigo arcade theme. */
+:root {
+  --night:#0E0D24; --deep:#17164A; --panel:#211F5C; --edge:#3A38A0;
+  --gold:#F5B700; --coral:#FF6F59; --leaf:#2E9E57; --sky:#4CB7E8;
+  --text:#F3F3FF; --dim:#ABAAD8; --bad:#FF8A7A;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend","Segoe UI",system-ui,sans-serif;
+  --pixel:"Silkscreen","Courier New",monospace;
+  color-scheme:dark;
+}
+* { box-sizing:border-box }
+[hidden] { display:none !important }
+html { background:var(--night) }
+body { background:var(--night); color:var(--text); font:400 16px/1.6 var(--body); margin:0; overflow-x:hidden; min-height:100vh }
+a { color:var(--sky) }
+img { display:block; max-width:100% }
+h1, h2, h3 { font-family:var(--display); margin:0; line-height:1.05; text-wrap:balance }
+h1 { font-size:clamp(36px,6vw,56px); font-weight:800 }
+h2 { font-size:clamp(26px,4vw,36px); font-weight:800 }
+h3 { font-size:22px; font-weight:800 }
+p { margin:0 }
+:focus-visible { outline:3px solid var(--gold); outline-offset:3px; border-radius:6px }
+.px { font-family:var(--pixel); letter-spacing:.04em; text-transform:uppercase }
+.wrap { max-width:1080px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+.narrow { max-width:620px }
+
+/* Top bar */
+.top { position:sticky; top:0; z-index:20; background:rgba(14,13,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:2px solid var(--edge) }
+.top .wrap { display:flex; align-items:center; gap:16px; padding-block:10px }
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font:800 22px/1 var(--display) }
+.logo svg { width:34px; height:34px }
+.logo small { display:block; font:600 9px/1 var(--body); letter-spacing:.2em; color:var(--dim); text-transform:uppercase; margin-top:2px }
+.top nav { margin-left:auto; display:flex; gap:14px; align-items:center; font-size:14px }
+.top nav a { color:var(--dim); text-decoration:none } .top nav a:hover { color:var(--text) }
+@media (max-width:560px) { .top nav .hide-sm { display:none } }
+
+main { padding-block:clamp(32px,6vw,64px) 80px }
+.stack { display:grid; gap:20px }
+.lead { color:var(--dim); font-size:18px; max-width:56ch }
+.muted { color:var(--dim) }
+.small { font-size:14px }
+.tag { justify-self:start; font:400 12px var(--pixel); color:var(--night); background:var(--sky); padding:5px 10px; border-radius:6px; text-transform:uppercase }
+
+/* Cards and panels */
+.card { background:var(--panel); border:2px solid var(--edge); border-radius:18px; padding:clamp(18px,3vw,28px); display:grid; gap:16px; min-width:0 }
+.card.gold { border-color:var(--gold) }
+.grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px }
+.grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:820px) { .grid3 { grid-template-columns:1fr 1fr } }
+@media (max-width:640px) { .grid2, .grid3 { grid-template-columns:1fr } }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; font:800 18px/1 var(--display); padding:15px 24px 13px; border-radius:14px; text-decoration:none; border:none; cursor:pointer; transition:transform .12s, box-shadow .12s; color:var(--night); background:var(--gold); box-shadow:0 5px 0 #B98900 }
+.btn:hover { transform:translateY(-2px) } .btn:active { transform:translateY(3px); box-shadow:0 2px 0 #B98900 }
+.btn.ghost { background:rgba(255,255,255,.08); color:var(--text); box-shadow:inset 0 0 0 2px var(--edge), 0 5px 0 #0A0A1E }
+.btn.small { font-size:15px; padding:10px 16px 9px }
+.btn.danger { background:transparent; color:var(--bad); box-shadow:inset 0 0 0 2px #6b3040 }
+.btn[disabled] { opacity:.55; cursor:wait; transform:none }
+.row { display:flex; flex-wrap:wrap; gap:12px; align-items:center }
+
+/* Forms */
+form { display:grid; gap:16px }
+label { display:grid; gap:6px; font-weight:500; font-size:15px }
+label .hint { font-weight:400; color:var(--dim); font-size:13px }
+input, select { font:400 17px var(--body); color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:12px; padding:12px 14px; width:100%; min-width:0 }
+input:focus, select:focus { border-color:var(--gold); outline:none }
+.check { display:flex; gap:10px; align-items:flex-start; font-weight:400 }
+.check input { width:22px; height:22px; flex:none; margin-top:2px; accent-color:var(--gold) }
+.err { color:var(--bad); font-size:15px; min-height:1px }
+.ok { color:#7EE2A0 }
+
+/* Steps */
+.steps { display:flex; gap:8px; font:400 12px var(--pixel); color:var(--dim); flex-wrap:wrap }
+.steps span { padding:5px 10px; border-radius:6px; background:var(--deep) }
+.steps span.on { background:var(--gold); color:var(--night) }
+
+/* School search */
+.results { display:grid; gap:6px }
+.results button { text-align:left; font:500 15px var(--body); color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:10px; padding:10px 12px; cursor:pointer }
+.results button:hover, .results button[aria-pressed="true"] { border-color:var(--gold) }
+.results button small { color:var(--dim) }
+
+/* Picture PIN */
+.pinpad { display:grid; grid-template-columns:repeat(3, 84px); gap:10px; justify-content:start }
+.pinpad button { width:84px; height:84px; padding:8px; background:#FFF7E6; border:3px solid transparent; border-radius:16px; cursor:pointer; transition:transform .1s }
+.pinpad button:hover { transform:scale(1.05) } .pinpad button:active { transform:scale(.95) }
+.pinpad img { width:100%; height:100% }
+.pinslots { display:flex; gap:10px }
+.pinslots span { width:56px; height:56px; border-radius:12px; background:rgba(255,255,255,.12); display:grid; place-items:center; padding:6px }
+.pinslots span.full { background:#FFF7E6 }
+.pinslots img { width:100% }
+.pinshow { display:flex; gap:8px; align-items:center }
+.pinshow img { width:44px; height:44px; background:#FFF7E6; border-radius:10px; padding:4px }
+
+/* Class code */
+.code { font:400 clamp(30px,6vw,44px)/1 var(--pixel); color:var(--gold); letter-spacing:.06em; background:var(--deep); border:2px dashed var(--gold); border-radius:14px; padding:14px 18px; justify-self:start; user-select:all }
+
+/* Plans */
+.plans { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px }
+@media (max-width:640px) { .plans { grid-template-columns:1fr } }
+.plan { text-align:left; font:inherit; color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:14px; padding:16px; cursor:pointer; display:grid; gap:4px }
+.plan[aria-pressed="true"] { border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,183,0,.25) }
+.plan b { font:800 28px/1 var(--display); color:var(--gold) }
+.plan .save { font:400 11px var(--pixel); color:var(--leaf) }
+.seg { display:inline-flex; background:var(--deep); border:2px solid var(--edge); border-radius:12px; padding:3px; gap:3px }
+.seg button { font:600 14px var(--body); color:var(--dim); background:none; border:none; padding:8px 14px; border-radius:9px; cursor:pointer }
+.seg button[aria-pressed="true"] { background:var(--panel); color:var(--text) }
+
+/* Status */
+.status { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+.pill { font:400 11px var(--pixel); padding:5px 9px; border-radius:6px; background:var(--deep); text-transform:uppercase }
+.pill.good { background:var(--leaf); color:#fff } .pill.warn { background:var(--gold); color:var(--night) } .pill.bad { background:var(--coral); color:var(--night) }
+.stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px }
+@media (max-width:640px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+.stat { background:var(--deep); border-radius:12px; padding:12px 14px; display:grid; gap:2px; min-width:0 }
+.stat b { font:800 28px/1 var(--display); color:var(--gold); font-variant-numeric:tabular-nums; overflow-wrap:anywhere }
+.stat span { font-size:13px; color:var(--dim) }
+
+table { width:100%; border-collapse:collapse; font-size:14px }
+th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--edge); vertical-align:top }
+th { color:var(--dim); font-weight:500 }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums }
+.scroll { overflow-x:auto }
+
+.toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--leaf); color:#fff; padding:12px 18px; border-radius:12px; font-weight:600; z-index:50; max-width:calc(100vw - 32px) }
+footer { border-top:2px solid var(--edge); padding-block:24px; color:var(--dim); font-size:14px }

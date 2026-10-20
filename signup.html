@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Start your free week · Xed</title>
+<meta name="description" content="Sign your child up for Xed: A Maths Adventure. The first week is free.">
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main class="wrap narrow stack">
+  <div class="steps" aria-label="Steps"><span data-step="1" class="on">1 · You</span><span data-step="2">2 · Your child</span><span data-step="3">3 · Play</span></div>
+
+  <!-- Step 1: the parent -->
+  <section id="s1" class="stack">
+    <span class="tag">First week free</span>
+    <h1>Start your child’s maths adventure</h1>
+    <p class="lead">Create your parent account, then add your child with their school and class. They get a class code and a picture PIN to sign in to Xed.</p>
+    <form id="parent" class="card" novalidate>
+      <label>Your name <input name="name" autocomplete="name" required></label>
+      <label>Email <input name="email" type="email" autocomplete="email" required></label>
+      <label>Phone (WhatsApp) <span class="hint">For renewal reminders. Optional.</span><input name="phone" type="tel" autocomplete="tel" placeholder="024 000 0000"></label>
+      <label>Password <span class="hint">At least 8 characters.</span><input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+      <label class="check"><input type="checkbox" name="consent" required><span>I’m the parent or guardian. I agree to the <a href="terms.html" target="_blank">terms</a> and to MindsPlay keeping my child’s first name and learning progress to run the game and show me reports. We never show ads or sell data.</span></label>
+      <p class="err" id="e1" role="alert"></p>
+      <button class="btn" type="submit">Create my account</button>
+      <p class="small muted">Already have an account? <a href="account.html">Log in</a></p>
+    </form>
+  </section>
+
+  <!-- Step 2: the child -->
+  <section id="s2" class="stack" hidden>
+    <h1>Add your child</h1>
+    <p class="lead">Children in the same class share one class code, so they’ll be able to play together in Xed later on.</p>
+    <form id="child" class="card" novalidate>
+      <label>Child’s first name <span class="hint">Shown in the game and their class list. Add an initial if needed, e.g. “Kofi A.”</span><input name="first_name" autocomplete="off" required maxlength="30"></label>
+      <div class="stack" style="gap:8px">
+        <label for="schoolq">School</label>
+        <input id="schoolq" placeholder="Start typing the school’s name" autocomplete="off">
+        <div class="results" id="schools"></div>
+        <div id="newschool" class="grid2" hidden>
+          <label>Town <input id="town" placeholder="e.g. Tema"></label>
+          <label>Region <select id="region"><option value="">Choose…</option><option>Greater Accra</option><option>Ashanti</option><option>Central</option><option>Eastern</option><option>Western</option><option>Western North</option><option>Volta</option><option>Oti</option><option>Northern</option><option>Savannah</option><option>North East</option><option>Upper East</option><option>Upper West</option><option>Bono</option><option>Bono East</option><option>Ahafo</option></select></label>
+        </div>
+      </div>
+      <div class="grid2">
+        <label>Class <select name="grade" required><option value="">Choose…</option>
+          <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
+          <option value="7">JHS 1</option><option value="8">JHS 2</option><option value="9">JHS 3</option></select></label>
+        <label>Class arm <span class="hint">e.g. A, B, Gold. Leave empty if there’s only one.</span><input name="arm" maxlength="12" autocomplete="off"></label>
+      </div>
+      <div class="stack" style="gap:8px">
+        <span style="font-weight:500">Picture PIN <span class="hint" style="display:block;font-weight:400;color:var(--dim);font-size:13px">Choose 4 pictures in order. Your child taps these to sign in, so pick ones they’ll remember.</span></span>
+        <div id="pin" class="stack" style="gap:12px"></div>
+      </div>
+      <p class="err" id="e2" role="alert"></p>
+      <button class="btn" type="submit">Add my child</button>
+    </form>
+  </section>
+
+  <!-- Step 3: done -->
+  <section id="s3" class="stack" hidden>
+    <span class="tag">You’re all set</span>
+    <h1 id="donetitle">Ready to play!</h1>
+    <div class="card gold">
+      <p>Your child signs in to Xed with:</p>
+      <div class="stack" style="gap:6px"><span class="px small muted">Class code</span><span class="code" id="code"></span></div>
+      <div class="stack" style="gap:6px"><span class="px small muted">Their name</span><b id="kidname" style="font:800 24px var(--display)"></b></div>
+      <div class="stack" style="gap:6px"><span class="px small muted">Picture PIN</span><span id="kidpin"></span></div>
+      <p class="small muted">Write these down for your child: we keep the pictures secret, so they can’t be shown again (you can choose new ones in your account). Classmates use the same class code with their own name and pictures.</p>
+    </div>
+    <div class="grid2">
+      <a class="card" href="download.html" style="text-decoration:none;color:inherit"><h3>Download Xed</h3><p class="muted">For Windows and Mac. Plays offline once signed in.</p></a>
+      <a class="card" href="account.html#pay" style="text-decoration:none;color:inherit"><h3>Your account</h3><p class="muted">Add another child, see progress, and pay when your free week ends.</p></a>
+    </div>
+    <button class="btn ghost" id="another" type="button">Add another child</button>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the demo</a><a href="account.html">Log in</a>');
+const from = new URLSearchParams(location.search).get('from') || document.referrer.replace(/^https?:\/\/([^/]+).*/, '$1') || 'direct';
+let school = null, pin = [];
+
+function step(n) {
+  [1, 2, 3].forEach(i => { $('#s' + i).hidden = i !== n; $(`[data-step="${i}"]`).classList.toggle('on', i === n); });
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+if (auth.token) step(2); else track('signup_view', from);
+
+$('#parent').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#e1'), async () => {
+    if (!f.get('consent')) throw new Error('Please tick the box to agree.');
+    const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: from } });
+    auth.token = r.token;
+    track('signup_done', from);
+    step(2);
+  });
+});
+
+// School search: pick a school, or add it if it isn't there yet.
+let timer;
+$('#schoolq').addEventListener('input', e => {
+  school = null;
+  clearTimeout(timer);
+  const q = e.target.value.trim();
+  timer = setTimeout(async () => {
+    if (q.length < 2) { $('#schools').innerHTML = ''; $('#newschool').hidden = true; return; }
+    const r = await api('/v1/schools?q=' + encodeURIComponent(q)).catch(() => ({ schools: [] }));
+    $('#schools').innerHTML = r.schools.map(s => `<button type="button" data-id="${s.id}" data-name="${esc(s.name)}">${esc(s.name)} <small>· ${esc(s.town)}</small></button>`).join('')
+      + `<button type="button" data-new>+ My school isn’t listed: add “${esc(q)}”</button>`;
+  }, 250);
+});
+$('#schools').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  $$('#schools button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  if (b.hasAttribute('data-new')) { school = null; $('#newschool').hidden = false; $('#town').focus(); }
+  else { school = { id: b.dataset.id, name: b.dataset.name }; $('#newschool').hidden = true; }
+});
+
+pinPicker($('#pin'), p => pin = p);
+
+$('#child').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#e2'), async () => {
+    if (!school) {
+      const name = $('#schoolq').value.trim();
+      if ($('#newschool').hidden || !name) throw new Error('Choose your child’s school from the list, or add it.');
+      const r = await api('/v1/schools', { method: 'POST', body: { name, town: $('#town').value, region: $('#region').value } });
+      school = r.school;
+    }
+    if (pin.length !== 4) throw new Error('Choose 4 pictures for the PIN.');
+    const r = await api('/v1/children', { method: 'POST', body: { first_name: f.get('first_name'), grade: +f.get('grade'), arm: f.get('arm'), school_id: school.id, pin } });
+    $('#code').textContent = r.child.class_code;
+    $('#kidname').textContent = r.child.first_name;
+    $('#kidpin').innerHTML = pinHtml(pin);
+    $('#donetitle').textContent = `${r.child.first_name} is ready to play!`;
+    step(3);
+  });
+});
+
+$('#another').addEventListener('click', () => { $('#child').reset(); school = null; $('#schools').innerHTML = ''; $('#newschool').hidden = true; pinPicker($('#pin'), p => pin = p); step(2); });
+</script>
+</body>
+</html>

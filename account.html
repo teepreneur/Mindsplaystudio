@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your account · Xed</title>
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main class="wrap stack">
+  <!-- Log in -->
+  <section id="login" class="stack narrow" hidden>
+    <h1>Log in</h1>
+    <form id="loginform" class="card" novalidate>
+      <label>Email <input name="email" type="email" autocomplete="email" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" id="le" role="alert"></p>
+      <button class="btn" type="submit">Log in</button>
+      <p class="small muted">New here? <a href="signup.html">Start a free week</a>. Forgot your password? Email <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a>.</p>
+    </form>
+  </section>
+
+  <!-- Dashboard -->
+  <section id="dash" class="stack" hidden>
+    <div class="row" style="justify-content:space-between">
+      <div class="stack" style="gap:6px"><h1 id="hello">Hello</h1><div class="status" id="status"></div></div>
+      <div class="row"><a class="btn small" href="download.html">Download Xed</a><button class="btn ghost small" id="logout" type="button">Log out</button></div>
+    </div>
+    <p class="ok" id="paidmsg" role="status" hidden></p>
+
+    <h2>Your children</h2>
+    <div class="grid2" id="kids"></div>
+    <details class="card" id="addkid">
+      <summary style="cursor:pointer;font:800 20px var(--display)">+ Add a child</summary>
+      <p class="muted small">Each extra child costs less. Add them here and they get their class code straight away.</p>
+      <a class="btn small" href="signup.html" style="justify-self:start">Add a child</a>
+    </details>
+
+    <h2 id="pay">Keep playing</h2>
+    <div class="card" id="paycard">
+      <p class="muted" id="paynote"></p>
+      <div class="plans" id="plans" role="group" aria-label="Plans"></div>
+      <div class="row">
+        <span class="muted small">Pay with</span>
+        <div class="seg" role="group" aria-label="Payment method">
+          <button type="button" data-ch="mobile_money" aria-pressed="true">Mobile Money</button>
+          <button type="button" data-ch="card" aria-pressed="false">Card</button>
+        </div>
+      </div>
+      <label class="check" id="renewbox" hidden><input type="checkbox" id="renew" checked><span>Renew automatically with this card at the end of each period. You can switch this off any time.</span></label>
+      <p class="err" id="pe" role="alert"></p>
+      <button class="btn" id="paybtn" type="button" style="justify-self:start">Pay</button>
+      <p class="small muted">Payments are handled securely by Paystack. Mobile Money (MTN, Telecel, AirtelTigo) pays for the period you choose; we’ll remind you before it ends.</p>
+    </div>
+    <label class="check card" id="autorenew" hidden><input type="checkbox" id="autorenewon"><span><b>Automatic renewal</b><br><span class="muted small">Charge my saved card when my plan ends.</span></span></label>
+
+    <h2>Payments</h2>
+    <div class="card scroll"><table><thead><tr><th>Date</th><th>Plan</th><th>Method</th><th class="num">Amount</th><th>Status</th><th>Access until</th></tr></thead><tbody id="pays"></tbody></table></div>
+  </section>
+</main>
+<footer><div class="wrap">MindsPlay Studios · Accra · <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> · <a href="terms.html">Terms &amp; privacy</a></div></footer>
+<script src="app.js"></script>
+<script>
+topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the demo</a>');
+let me = null, plan = 'term', channel = 'mobile_money';
+
+$('#loginform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#le'), async () => {
+    const r = await api('/v1/auth/login', { method: 'POST', body: { email: f.get('email'), password: f.get('password') } });
+    auth.token = r.token;
+    load();
+  });
+});
+$('#logout').addEventListener('click', () => auth.out());
+
+async function load() {
+  if (!auth.token) { $('#login').hidden = false; $('#dash').hidden = true; return; }
+  const ref = new URLSearchParams(location.search).get('ref') || new URLSearchParams(location.search).get('reference');
+  if (ref) {
+    try {
+      const v = await api('/v1/pay/verify?reference=' + encodeURIComponent(ref));
+      const m = $('#paidmsg');
+      m.hidden = false;
+      m.textContent = v.status === 'success' ? `Thank you! Payment received. Xed is unlocked until ${day(v.period_end)}.` : v.status === 'failed' ? 'That payment didn’t go through. Please try again.' : 'Your payment is still processing. This page will update when it’s confirmed.';
+      m.className = v.status === 'failed' ? 'err' : 'ok';
+      history.replaceState(null, '', 'account.html');
+    } catch (e) { /* shown below */ }
+  }
+  try { me = await api('/v1/me'); }
+  catch (e) { if (e.status === 401) { $('#login').hidden = false; $('#dash').hidden = true; return; } throw e; }
+  $('#login').hidden = true; $('#dash').hidden = false;
+  render();
+}
+
+function render() {
+  const p = me.parent, a = me.access;
+  $('#hello').textContent = `Hello, ${p.name.split(' ')[0]}`;
+  const pill = { paid: ['good', 'Paid'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'] }[a.status];
+  $('#status').innerHTML = `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${a.active ? 'Xed is unlocked until ' + day(a.until) : 'Access ended on ' + day(a.until) + '. Renew to keep playing.'}</span>`;
+
+  $('#kids').innerHTML = me.children.length ? me.children.map(k => `
+    <article class="card" data-id="${k.id}">
+      <div class="row" style="justify-content:space-between"><h3>${esc(k.first_name)}</h3><span class="muted small">${esc(k.class_label)} · ${esc(k.school)}</span></div>
+      <div class="stack" style="gap:4px"><span class="px small muted">Class code</span><span class="code">${esc(k.class_code)}</span></div>
+      <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="stat"><b>${k.progress.week_minutes}</b><span>minutes played this week</span></div>
+        <div class="stat"><b>${k.progress.week_answers ? Math.round(100 * k.progress.week_correct / k.progress.week_answers) + '%' : '—'}</b><span>right answers this week (${k.progress.week_answers} questions)</span></div>
+        <div class="stat"><b>${k.progress.week_mastered}</b><span>skills mastered this week</span></div>
+        <div class="stat"><b>${k.progress.total_mastered}</b><span>skills mastered in all</span></div>
+      </div>
+      <p class="small muted">Last played: ${k.last_seen ? day(k.last_seen) : 'not yet'}</p>
+      <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">Remove</button></div>
+      <div data-pinedit hidden class="stack"><div data-pad></div><p class="err" role="alert"></p><button class="btn small" data-act="savepin" type="button" style="justify-self:start">Save PIN</button></div>
+    </article>`).join('') : `<div class="card"><p>No children yet. <a href="signup.html">Add your child</a> to get their class code.</p></div>`;
+
+  // Prices for this family's number of children.
+  const n = Math.max(1, me.children.length);
+  const monthly = me.prices.month.total;
+  const names = { month: '1 month', term: '1 term · 3 months', year: '1 year' };
+  $('#plans').innerHTML = ['month', 'term', 'year'].map(k => {
+    const pr = me.prices[k], perMonth = pr.total / pr.months, save = Math.round(100 * (1 - perMonth / monthly));
+    return `<button type="button" class="plan" data-plan="${k}" aria-pressed="${k === plan}"><span class="muted small">${names[k]}</span><b>${cedis(pr.total)}</b><span class="small muted">${cedis(Math.round(perMonth))} a month${n > 1 ? ` · ${n} children` : ''}</span>${save > 0 ? `<span class="save">Save ${save}%</span>` : ''}</button>`;
+  }).join('');
+  $('#paynote').textContent = a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that.` : a.active ? 'Pay ahead: the new period starts when your current one ends.' : 'Choose a plan to unlock Xed again.';
+  $('#autorenew').hidden = !p.card_saved;
+  $('#autorenewon').checked = p.autorenew;
+  drawPay();
+
+  $('#pays').innerHTML = me.payments.length ? me.payments.map(x => `<tr><td>${day(x.paid_at || x.created_at)}</td><td>${esc(x.plan)}${x.children > 1 ? ' × ' + x.children : ''}</td><td>${x.channel === 'card' ? 'Card' : 'Mobile Money'}</td><td class="num">${cedis(x.amount)}</td><td>${esc(x.status)}</td><td>${day(x.period_end)}</td></tr>`).join('') : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>';
+}
+
+function drawPay() {
+  $$('#plans .plan').forEach(b => b.setAttribute('aria-pressed', b.dataset.plan === plan));
+  $$('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ch === channel));
+  $('#renewbox').hidden = channel !== 'card';
+  $('#paybtn').textContent = `Pay ${cedis(me.prices[plan].total)} with ${channel === 'card' ? 'card' : 'Mobile Money'}`;
+}
+$('#plans').addEventListener('click', e => { const b = e.target.closest('.plan'); if (b) { plan = b.dataset.plan; drawPay(); } });
+$('.seg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { channel = b.dataset.ch; drawPay(); } });
+$('#paybtn').addEventListener('click', e => busy(e.currentTarget, $('#pe'), async () => {
+  track('pay_view', plan + ',' + channel);
+  const r = await api('/v1/pay/start', { method: 'POST', body: { plan, channel, autorenew: $('#renew').checked } });
+  location.href = r.authorization_url;
+}));
+$('#autorenewon').addEventListener('change', e => api('/v1/pay/autorenew', { method: 'POST', body: { on: e.target.checked } }).then(() => toast(e.target.checked ? 'Automatic renewal is on.' : 'Automatic renewal is off.')).catch(err => { e.target.checked = !e.target.checked; alert(err.message); }));
+
+// Child actions: new picture PIN, remove.
+const pads = {};
+$('#kids').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const card = b.closest('[data-id]'), id = card.dataset.id, kid = me.children.find(k => k.id === id);
+  if (b.dataset.act === 'pin') {
+    const box = $('[data-pinedit]', card);
+    box.hidden = !box.hidden;
+    if (!box.hidden) pinPicker($('[data-pad]', box), p => pads[id] = p);
+  } else if (b.dataset.act === 'savepin') {
+    busy(b, $('.err', card), async () => {
+      if ((pads[id] || []).length !== 4) throw new Error('Choose 4 pictures.');
+      await api('/v1/children/' + id, { method: 'PATCH', body: { pin: pads[id] } });
+      $('[data-pinedit]', card).hidden = true;
+      toast(`${kid.first_name}'s new pictures are saved. Show them before they next play!`);
+    });
+  } else if (b.dataset.act === 'remove') {
+    if (!confirm(`Remove ${kid.first_name}? Their progress in Xed will be deleted for good.`)) return;
+    busy(b, null, async () => { await api('/v1/children/' + id, { method: 'DELETE' }); await load(); toast(`${kid.first_name} was removed.`); });
+  }
+});
+
+load().catch(e => alert(e.message));
+</script>
+</body>
+</html>

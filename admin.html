@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MindsPlay admin</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+.bars { display:flex; align-items:flex-end; gap:3px; height:120px }
+.bars i { flex:1; background:var(--sky); border-radius:3px 3px 0 0; min-height:2px; position:relative }
+.bars i:hover::after { content:attr(data-tip); position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:var(--deep); padding:3px 6px; border-radius:6px; font-size:12px; white-space:nowrap }
+.funnel { display:grid; gap:6px }
+.funnel div { display:grid; grid-template-columns:180px 1fr 70px; gap:10px; align-items:center; font-size:14px }
+.funnel span.b { height:14px; background:var(--leaf); border-radius:4px }
+@media (max-width:560px) { .funnel div { grid-template-columns:110px 1fr 50px } }
+</style>
+</head>
+<body>
+<main class="wrap stack">
+  <section id="gate" class="narrow stack">
+    <h1>Admin</h1>
+    <form id="gateform" class="card"><label>Admin token <input name="t" type="password" autocomplete="off" required></label><p class="err" id="ge"></p><button class="btn" type="submit">Open</button></form>
+  </section>
+  <section id="board" class="stack" hidden>
+    <div class="row" style="justify-content:space-between">
+      <h1>MindsPlay numbers</h1>
+      <div class="row"><select id="days" style="width:auto"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select><button class="btn ghost small" id="refresh" type="button">Refresh</button></div>
+    </div>
+    <div class="stats" id="top"></div>
+    <div class="grid2">
+      <div class="card"><h3>Players each day</h3><div class="bars" id="dailybars"></div><p class="small muted" id="dailynote"></p></div>
+      <div class="card"><h3>Website funnel</h3><div class="funnel" id="funnel"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Money</h3><div class="stats" style="grid-template-columns:1fr 1fr" id="money"></div><div class="scroll"><table><thead><tr><th>Plan</th><th>Method</th><th class="num">Payments</th><th class="num">Amount</th></tr></thead><tbody id="byplan"></tbody></table></div></div>
+      <div class="card"><h3>Learning</h3><div class="stats" style="grid-template-columns:1fr 1fr" id="learning"></div><p class="small muted">Hardest skills (lowest % right, 10+ answers)</p><div class="scroll"><table><tbody id="hardest"></tbody></table></div></div>
+    </div>
+    <div class="card"><h3>Schools</h3><div class="scroll"><table><thead><tr><th>School</th><th>Town</th><th class="num">Children</th><th class="num">Active this week</th><th>Pilot until</th></tr></thead><tbody id="schools"></tbody></table></div></div>
+    <div class="grid2">
+      <div class="card"><h3>Reminders to send</h3><p class="small muted">Parents without email reminders. Tap to WhatsApp them, then mark sent.</p><div id="reminders" class="stack" style="gap:8px"></div></div>
+      <div class="card"><h3>Where parents came from</h3><div class="scroll"><table><tbody id="sources"></tbody></table></div></div>
+    </div>
+    <div class="grid2">
+      <form class="card" id="schoolform"><h3>Add or update a school</h3>
+        <p class="small muted">Pilot schools play free until the date. Partner schools earn 5% of their parents’ payments.</p>
+        <label>School ID <span class="hint">Leave empty to add a new school. Find IDs in the schools CSV.</span><input name="id"></label>
+        <div class="grid2"><label>Name <input name="name" required></label><label>Town <input name="town" required></label></div>
+        <div class="grid2"><label>Region <input name="region"></label><label>Pilot until <input name="pilot_until" type="date"></label></div>
+        <label class="check"><input type="checkbox" name="partner"><span>Partner school (5% share)</span></label>
+        <p class="err" id="se"></p><button class="btn small" type="submit" style="justify-self:start">Save school</button>
+      </form>
+      <div class="card"><h3>Partner school shares</h3><div class="scroll"><table><thead><tr><th>School</th><th class="num">Paid in</th><th class="num">5% share</th></tr></thead><tbody id="shares"></tbody></table></div>
+        <h3>Download CSV</h3><div class="row" id="csv"></div></div>
+    </div>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+topBar('<a href="account.html">Parent view</a>');
+let token = sessionStorage.getItem('xed.admin');
+const get = p => api(p, { admin: token });
+const n = v => (v ?? 0).toLocaleString('en-GH');
+
+$('#gateform').addEventListener('submit', e => {
+  e.preventDefault();
+  token = new FormData(e.target).get('t');
+  busy(e.submitter, $('#ge'), async () => { await load(); sessionStorage.setItem('xed.admin', token); });
+});
+$('#refresh').addEventListener('click', () => load());
+$('#days').addEventListener('change', () => load());
+
+async function load() {
+  const m = await get('/v1/admin/metrics?days=' + $('#days').value);
+  $('#gate').hidden = true; $('#board').hidden = false;
+  const P = m.parents, C = m.children;
+  $('#top').innerHTML = [
+    [n(P.paying), 'paying families'], [n(P.in_trial), 'in their free week'], [cedis(m.money.mrr_pesewas), 'monthly recurring revenue'], [P.trial_to_paid != null ? P.trial_to_paid + '%' : '—', 'free week → paid'],
+    [n(C.total), 'children signed up'], [n(C.wau), 'played this week'], [n(m.schools.active_schools), 'schools · ' + n(m.schools.classes) + ' classes'], [n(P.new), 'new families (' + m.window_days + ' days)'],
+  ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+
+  const max = Math.max(1, ...m.daily.map(d => d.players));
+  $('#dailybars').innerHTML = m.daily.map(d => `<i style="height:${100 * d.players / max}%" data-tip="${d.day}: ${d.players} players, ${d.minutes} min"></i>`).join('') || '<p class="muted">No play yet.</p>';
+  $('#dailynote').textContent = `Today ${n(C.dau)} · this week ${n(C.wau)} · this month ${n(C.mau)} players. Average session ${m.play.avg_session_min} min.`;
+
+  const F = m.funnel, steps = [['signup_view', 'Sign-up page'], ['signup_done', 'Accounts made'], ['demo_start', 'Demo started'], ['demo_end', 'Demo finished'], ['demo_signup_click', 'Demo → sign up'], ['download', 'Downloads'], ['pay_view', 'Pay clicked']];
+  const fmax = Math.max(1, ...steps.map(([k]) => F[k]?.n || 0));
+  $('#funnel').innerHTML = steps.map(([k, l]) => `<div><span>${l}</span><span class="b" style="width:${100 * (F[k]?.n || 0) / fmax}%"></span><span class="num">${n(F[k]?.n)}</span></div>`).join('');
+
+  $('#money').innerHTML = [[cedis(m.money.revenue_pesewas), 'revenue in period'], [n(m.money.payments), 'payments'], [n(P.autorenew), 'on card auto-renew'], [n(P.lapsed), 'lapsed families']].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#byplan').innerHTML = m.money.by_plan.map(r => `<tr><td>${esc(r.plan)}</td><td>${esc(r.channel)}</td><td class="num">${n(r.n)}</td><td class="num">${cedis(r.amount)}</td></tr>`).join('') || '<tr><td class="muted">No payments yet.</td></tr>';
+  $('#learning').innerHTML = [[n(m.play.minutes), 'minutes played'], [n(m.play.answers), 'questions answered'], [m.play.accuracy != null ? m.play.accuracy + '%' : '—', 'right answers'], [n(m.play.mastered), 'skills mastered']].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#hardest').innerHTML = m.hardest_objectives.map(r => `<tr><td>${esc(r.code)}</td><td class="num">${r.pct_correct}%</td><td class="num muted">${n(r.answers)}</td></tr>`).join('') || '<tr><td class="muted">Not enough answers yet.</td></tr>';
+  $('#schools').innerHTML = m.top_schools.map(s => `<tr><td>${esc(s.name)}</td><td>${esc(s.town)}</td><td class="num">${n(s.children)}</td><td class="num">${n(s.active_week)}</td><td>${day(s.pilot_until)}</td></tr>`).join('') || '<tr><td class="muted">No schools yet.</td></tr>';
+  $('#sources').innerHTML = m.sources.map(s => `<tr><td>${esc(s.source)}</td><td class="num">${n(s.n)}</td></tr>`).join('');
+
+  const rem = await get('/v1/admin/reminders');
+  const text = r => r.kind === 'trial_ending' ? `Hi ${r.name.split(' ')[0]}, your child's free week of Xed ends soon. Keep the adventure going: https://mindsplaystudiogh.com/account.html` : r.kind === 'expiring' ? `Hi ${r.name.split(' ')[0]}, your child's Xed access ends on ${day(r.due_for)}. Renew with Mobile Money in a minute: https://mindsplaystudiogh.com/account.html` : `Hi ${r.name.split(' ')[0]}, your child's Xed access has ended. Renew here: https://mindsplaystudiogh.com/account.html`;
+  const wa = p => (p || '').replace(/^0/, '233').replace(/\D/g, '');
+  $('#reminders').innerHTML = rem.reminders.map(r => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--edge);padding-bottom:8px"><span>${esc(r.name)} <span class="muted small">· ${esc(r.kind.replace('_', ' '))} · ${day(r.due_for)}</span></span><span class="row">${r.phone ? `<a class="btn small ghost" target="_blank" rel="noopener" href="https://wa.me/${wa(r.phone)}?text=${encodeURIComponent(text(r))}">WhatsApp</a>` : `<a class="btn small ghost" href="mailto:${esc(r.email)}?subject=Xed&body=${encodeURIComponent(text(r))}">Email</a>`}<button class="btn small" data-done="${r.id}" type="button">Sent</button></span></div>`).join('') || '<p class="muted">Nothing to send.</p>';
+
+  const sh = await get('/v1/admin/school-shares');
+  $('#shares').innerHTML = sh.schools.map(s => `<tr><td>${esc(s.name)}, ${esc(s.town)}</td><td class="num">${cedis(s.amount)}</td><td class="num">${cedis(s.share)}</td></tr>`).join('') || '<tr><td class="muted">No partner payments in the last month.</td></tr>';
+  $('#csv').innerHTML = ['parents', 'children', 'schools', 'payments', 'funnel'].map(k => `<button class="btn ghost small" data-csv="${k}" type="button">${k}</button>`).join('');
+}
+
+$('#reminders').addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (b) busy(b, null, async () => { await api('/v1/admin/reminders/done', { method: 'POST', admin: token, body: { id: +b.dataset.done } }); load(); }); });
+$('#csv').addEventListener('click', async e => {
+  const b = e.target.closest('[data-csv]'); if (!b) return;
+  const res = await fetch(API + `/v1/admin/export/${b.dataset.csv}.csv`, { headers: { authorization: 'Bearer ' + token } });
+  const url = URL.createObjectURL(await res.blob());
+  Object.assign(document.createElement('a'), { href: url, download: `mindsplay-${b.dataset.csv}.csv` }).click();
+  URL.revokeObjectURL(url);
+});
+$('#schoolform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#se'), async () => {
+    await api('/v1/admin/schools', { method: 'POST', admin: token, body: { id: f.get('id') || undefined, name: f.get('name'), town: f.get('town'), region: f.get('region'), partner: !!f.get('partner'), pilot_until: f.get('pilot_until') ? new Date(f.get('pilot_until') + 'T23:59:59Z').toISOString() : null } });
+    toast('School saved.'); e.target.reset(); load();
+  });
+});
+if (token) load().catch(() => { sessionStorage.removeItem('xed.admin'); token = null; });
+</script>
+</body>
+</html>

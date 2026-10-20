@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Download Xed · MindsPlay Studios</title>
+<meta name="description" content="Download Xed: A Maths Adventure for Windows or Mac.">
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main class="wrap stack">
+  <div class="stack" style="gap:8px">
+    <span class="tag">Windows · Mac</span>
+    <h1>Download Xed</h1>
+    <p class="lead">Free to download. To play, your child signs in with the class code and picture PIN you get when you <a href="signup.html?from=download">sign them up</a> (the first week is free). After signing in once, Xed plays without internet.</p>
+  </div>
+  <div class="grid2">
+    <div class="card gold">
+      <h2>Windows</h2>
+      <p class="muted">Windows 10 or 11, 64-bit. About 200 MB.</p>
+      <a class="btn" id="win" href="#">Download for Windows</a>
+      <ol class="small muted" style="margin:0;padding-left:20px">
+        <li>Open the downloaded <b>XedQuest-Windows.zip</b> and choose <b>Extract all</b>.</li>
+        <li>Open the folder and double-click <b>XedQuest</b>.</li>
+        <li>If Windows says “Windows protected your PC”, click <b>More info</b>, then <b>Run anyway</b>.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Mac</h2>
+      <p class="muted">macOS 12 or newer, Apple silicon or Intel. About 220 MB.</p>
+      <a class="btn" id="mac" href="#">Download for Mac</a>
+      <ol class="small muted" style="margin:0;padding-left:20px">
+        <li>Open <b>XedQuest-Mac.zip</b> and drag <b>XedQuest</b> into Applications.</li>
+        <li>The first time, right-click (or Control-click) XedQuest and choose <b>Open</b>, then <b>Open</b> again.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Then sign in</h3>
+    <p class="muted">On the title screen, press <b>Sign in with class code</b>, type the class code (like XED-K7P4), tap your child’s name, then their 4 secret pictures. Brothers and sisters can each sign in on the same computer.</p>
+    <div class="row"><a class="btn ghost small" href="account.html">See your class codes</a><a class="btn ghost small" href="play.html">Or try the demo in your browser</a></div>
+  </div>
+  <p class="small muted">Android tablets are coming soon. Questions? <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a></p>
+</main>
+<script src="app.js"></script>
+<script>
+topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="signup.html?from=download">Sign up</a><a href="account.html">Log in</a>');
+$('#win').href = API + '/download/XedQuest-Windows.zip';
+$('#mac').href = API + '/download/XedQuest-Mac.zip';
+if (/Mac/.test(navigator.platform) && !/iPhone|iPad/.test(navigator.userAgent)) $('#mac').closest('.card').parentNode.prepend($('#mac').closest('.card'));
+</script>
+</body>
+</html>
