@@ -15,9 +15,18 @@
 
   <!-- Step 1: the parent -->
   <section id="s1" class="stack">
-    <span class="tag">First week free</span>
-    <h1>Start your child’s maths adventure</h1>
-    <p class="lead">Create your parent account, then add your child with their school and class. They get a class code and a picture PIN to sign in to Xed.</p>
+    <span class="tag" id="s1tag">First week free</span>
+    <h1 id="s1title">Start your child’s maths adventure</h1>
+    <p class="lead" id="s1lead">Create your parent account, then add your child with their school and class. They get a class code and a picture PIN to sign in to Xed.</p>
+    <div class="card gold" id="slipcard" hidden></div>
+    <details class="card" id="slipentry">
+      <summary style="cursor:pointer;font-weight:600">Got a slip from your child’s school? Enter the parent code</summary>
+      <form id="slipform" class="row" style="align-items:end" novalidate>
+        <label style="flex:1;min-width:180px">Parent code <span class="hint">8 letters and numbers, like K7P4-M2QX.</span><input name="code" autocomplete="off" autocapitalize="characters" maxlength="12"></label>
+        <button class="btn small" type="submit">Find my child</button>
+      </form>
+      <p class="err" id="se" role="alert"></p>
+    </details>
     <form id="parent" class="card" novalidate>
       <label>Your name <input name="name" autocomplete="name" required></label>
       <label>Email <input name="email" type="email" autocomplete="email" required></label>
@@ -69,7 +78,7 @@
       <div class="stack" style="gap:6px"><span class="px small muted">Class code</span><span class="code" id="code"></span></div>
       <div class="stack" style="gap:6px"><span class="px small muted">Their name</span><b id="kidname" style="font:800 24px var(--display)"></b></div>
       <div class="stack" style="gap:6px"><span class="px small muted">Picture PIN</span><span id="kidpin"></span></div>
-      <p class="small muted">Write these down for your child: we keep the pictures secret, so they can’t be shown again (you can choose new ones in your account). Classmates use the same class code with their own name and pictures.</p>
+      <p class="small muted" id="pinnote">Write these down for your child: we keep the pictures secret, so they can’t be shown again (you can choose new ones in your account). Classmates use the same class code with their own name and pictures.</p>
     </div>
     <div class="grid2">
       <a class="card" href="download.html" style="text-decoration:none;color:inherit"><h3>Download Xed</h3><p class="muted">For Windows and Mac. Plays offline once signed in.</p></a>
@@ -82,24 +91,56 @@
 <script>
 topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the demo</a><a href="account.html">Log in</a>');
 const from = new URLSearchParams(location.search).get('from') || document.referrer.replace(/^https?:\/\/([^/]+).*/, '$1') || 'direct';
-let school = null, pin = [];
+let school = null, pin = [], claim = null;
 
 function step(n) {
   [1, 2, 3].forEach(i => { $('#s' + i).hidden = i !== n; $(`[data-step="${i}"]`).classList.toggle('on', i === n); });
   scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-if (auth.token) step(2); else track('signup_view', from);
+// A slip from school: ?claim=CODE (the QR code) or the parent code typed in. The child is linked after sign-up.
+async function findSlip(code) {
+  const r = await api('/v1/claim/' + encodeURIComponent(code));
+  if (r.claimed) throw new Error(`${r.child.first_name} is already linked to a parent account. If that’s you, log in to see them. If not, WhatsApp us on +233 24 893 2204.`);
+  claim = { code, ...r.child };
+  $('#slipentry').hidden = true;
+  $('#slipcard').hidden = false;
+  $('#slipcard').innerHTML = `<p class="px small muted">From the school slip</p><h3>${esc(claim.first_name)}</h3><p class="muted">${esc(claim.class_label)} · ${esc(claim.school)}, ${esc(claim.town)}</p>`;
+  $('#s1tag').textContent = 'Link your child';
+  $('#s1title').textContent = `Link ${claim.first_name} to your account`;
+  $('#s1lead').textContent = `${claim.first_name}’s school has already set them up in Xed. Create your parent account to see their progress and keep them playing.`;
+  $('[data-step="2"]').hidden = true; // the school already added the child
+  $('[data-step="3"]').textContent = '2 · Play';
+  $('#parent a[href="account.html"]').href = 'account.html?claim=' + encodeURIComponent(code);
+  if (auth.token) await linkSlip();
+}
+async function linkSlip() {
+  const r = await api('/v1/children/claim', { method: 'POST', body: { code: claim.code } });
+  $('#code').textContent = r.child.class_code;
+  $('#kidname').textContent = r.child.first_name;
+  $('#kidpin').innerHTML = r.pin ? pinHtml(r.pin) : '<span class="muted">The pictures you chose in your account.</span>';
+  $('#pinnote').textContent = r.pin ? 'These are the pictures on the school slip. You can choose new ones in your account at any time.' : 'Classmates use the same class code with their own name and pictures.';
+  $('#donetitle').textContent = `${r.child.first_name} is linked to your account!`;
+  step(3);
+}
+$('#slipform').addEventListener('submit', e => {
+  e.preventDefault();
+  busy(e.submitter, $('#se'), () => findSlip(new FormData(e.target).get('code')));
+});
+
+const slipParam = new URLSearchParams(location.search).get('claim');
+if (auth.token && !slipParam) step(2); else track('signup_view', slipParam ? 'slip' : from);
+if (slipParam) findSlip(slipParam).catch(err => { $('#slipentry').open = true; $('#se').textContent = err.message; });
 
 $('#parent').addEventListener('submit', e => {
   e.preventDefault();
   const f = new FormData(e.target);
   busy(e.submitter, $('#e1'), async () => {
     if (!f.get('consent')) throw new Error('Please tick the box to agree.');
-    const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: from } });
+    const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: claim ? 'school slip' : from } });
     auth.token = r.token;
-    track('signup_done', from);
-    step(2);
+    track('signup_done', claim ? 'slip' : from);
+    if (claim) await linkSlip(); else step(2);
   });
 });
 

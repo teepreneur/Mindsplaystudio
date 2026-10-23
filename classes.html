@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>School classes · MindsPlay admin</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+textarea { font:400 16px/1.5 var(--body); color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:12px; padding:12px 14px; width:100%; min-height:180px; resize:vertical }
+textarea:focus { border-color:var(--gold); outline:none }
+.pins { display:flex; gap:4px } .pins img { width:30px; height:30px; background:#FFF7E6; border-radius:7px; padding:3px }
+td .btn.small { font-size:13px; padding:7px 10px 6px }
+.linkcode { font:600 14px ui-monospace,Menlo,Consolas,monospace; letter-spacing:.06em }
+#print { display:none }
+
+/* Printing: only the slips or the class report, black on white. */
+@media print {
+  @page { size:A4; margin:10mm }
+  html, body { background:#fff !important; color:#000 }
+  body > *:not(#print) { display:none !important }
+  #print { display:block }
+  .slips { display:grid; grid-template-columns:1fr 1fr; gap:0 }
+  .slip { border:1px dashed #888; padding:4mm 5mm; height:91mm; break-inside:avoid; display:grid; grid-template-columns:1fr 30mm; gap:2mm 4mm; font:400 9pt/1.3 var(--body); color:#000; overflow:hidden }
+  .slip h4 { margin:0; font:800 17pt/1 var(--display) }
+  .slip .brand { font:400 7pt var(--pixel); letter-spacing:.06em; color:#333; grid-column:1 / -1; display:flex; justify-content:space-between }
+  .slip .ccode { font:700 14pt ui-monospace,Menlo,Consolas,monospace; letter-spacing:.08em; border:1.5px solid #000; border-radius:2mm; padding:1mm 2mm; display:inline-block }
+  .slip .spins { display:flex; gap:1.5mm; margin-top:1mm } .slip .spins figure { margin:0; text-align:center; font-size:6.5pt }
+  .slip .spins img { width:11mm; height:11mm; border:1px solid #bbb; border-radius:2mm; padding:.6mm }
+  .slip .qr { grid-row:2 / span 2; grid-column:2; display:grid; gap:1mm; justify-items:center; align-content:start; text-align:center; font-size:7pt }
+  .slip .qr img, .slip .qr canvas { width:28mm !important; height:28mm !important }
+  .slip .parents { grid-column:1 / -1; border-top:1px solid #ccc; padding-top:1.5mm; font-size:8pt }
+  .slip b.code2 { font:700 10pt ui-monospace,Menlo,Consolas,monospace; letter-spacing:.06em; white-space:nowrap }
+  .report h2 { font:800 18pt var(--display); margin:0 0 2mm } .report p { font-size:9pt; margin:0 0 4mm }
+  .report table { font-size:9pt; color:#000 } .report th, .report td { border-bottom:1px solid #bbb; color:#000; padding:1.5mm 2mm }
+}
+</style>
+</head>
+<body>
+<main class="wrap stack">
+  <section id="gate" class="narrow stack">
+    <h1>School classes</h1>
+    <form id="gateform" class="card"><label>Admin token <input name="t" type="password" autocomplete="off" required></label><p class="err" id="ge"></p><button class="btn" type="submit">Open</button></form>
+  </section>
+
+  <section id="board" class="stack" hidden>
+    <div class="row" style="justify-content:space-between"><h1>School classes</h1><a class="btn ghost small" href="admin.html">Back to numbers</a></div>
+    <p class="lead">Register a school’s class, print a take-home slip for every pupil, and see who has linked a parent. Pupils can play straight away with the PIN on their slip. When a parent scans the slip, the child moves into the parent’s account, where they see progress and pay.</p>
+
+    <div class="grid2">
+      <form class="card" id="addform" novalidate>
+        <h3>Add pupils to a class</h3>
+        <label>School <span class="hint">Add the school on the numbers page first.</span><select name="school_id" id="schoolsel" required></select></label>
+        <div class="grid2">
+          <label>Class <select name="grade" required><option value="">Choose…</option>
+            <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
+            <option value="7">JHS 1</option><option value="8">JHS 2</option><option value="9">JHS 3</option></select></label>
+          <label>Arm <span class="hint">A, B, Gold… or empty.</span><input name="arm" maxlength="12" autocomplete="off"></label>
+        </div>
+        <label>Pupils <span class="hint">One per line: first name, then a comma and the parent’s phone if the school has it. Add an initial for two of the same name, e.g. “Kofi A.”</span>
+          <textarea name="pupils" placeholder="Ama, 024 111 2222&#10;Kwame&#10;Kofi A., 020 555 0101&#10;Kofi B."></textarea></label>
+        <p class="err" id="ae" role="alert"></p>
+        <p class="small muted" id="aprog" role="status"></p>
+        <button class="btn small" type="submit" style="justify-self:start">Add pupils</button>
+      </form>
+
+      <div class="card">
+        <h3>How parents pay</h3>
+        <ul class="small muted" style="margin:0;padding-left:20px;display:grid;gap:8px">
+          <li><b style="color:var(--text)">Free week, then each family pays.</b> Every new pupil has 7 days free. The slip invites the parent to link the child. After that the parent pays like any other family, and partner schools earn their 5%.</li>
+          <li><b style="color:var(--text)">School pilot.</b> Set “Pilot until” for the school on the numbers page. Every pupil there plays free until then, and parents who linked get a WhatsApp reminder 3 days before it ends.</li>
+          <li><b style="color:var(--text)">The school pays for the class.</b> Open the class and set “Paid by school until”. Parents of that class see nothing to pay until that date.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Classes</h3>
+      <div class="scroll"><table><thead><tr><th>School</th><th>Class</th><th>Class code</th><th class="num">Pupils</th><th class="num">Parents linked</th><th class="num">Played this week</th><th>Covered until</th><th></th></tr></thead><tbody id="classes"></tbody></table></div>
+    </div>
+
+    <section class="card gold" id="detail" hidden>
+      <div class="row" style="justify-content:space-between">
+        <div class="stack" style="gap:4px"><h2 id="dtitle"></h2><span class="muted" id="dsub"></span></div>
+        <div class="row"><button class="btn small" id="printslips" type="button">Print slips</button><button class="btn ghost small" id="printreport" type="button">Print class report</button></div>
+      </div>
+      <form id="paidform" class="row" style="align-items:end" novalidate>
+        <label style="flex:1;min-width:200px">Paid by school until <span class="hint">Leave empty if parents pay.</span><input type="date" name="paid_until"></label>
+        <button class="btn ghost small" type="submit">Save</button>
+      </form>
+      <p class="small muted">Slips can be printed again at any time, until a parent chooses new pictures for their child. Invite parents whose phone the school gave: WhatsApp opens with the message ready, then the pupil is marked as invited.</p>
+      <div class="scroll"><table><thead><tr><th>Pupil</th><th>Pictures</th><th>Parent code</th><th>Parent</th><th>Access</th><th class="num">Minutes</th><th class="num">Right</th><th class="num">Skills</th><th></th></tr></thead><tbody id="pupils"></tbody></table></div>
+    </section>
+  </section>
+</main>
+
+<div id="print"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="app.js"></script>
+<script>
+topBar('<a href="admin.html">Numbers</a><a href="account.html">Parent view</a>');
+let token = sessionStorage.getItem('xed.admin'), schools = [], cur = null;
+const SITE = location.origin + location.pathname.replace(/[^/]*$/, '');
+const claimUrl = c => SITE + 'signup.html?claim=' + c;
+const fmtClaim = c => c ? c.slice(0, 4) + '-' + c.slice(4) : '';
+const get = p => api(p, { admin: token });
+const post = (p, body, method = 'POST') => api(p, { method, admin: token, body });
+const wa = p => (p || '').replace(/^\+/, '').replace(/^0/, '233').replace(/\D/g, '');
+const isoEnd = d => d ? new Date(d + 'T23:59:59Z').toISOString() : null;
+const accessText = a => ({ paid: 'Parent paid', school: 'Paid by school', pilot: 'School pilot', trial: 'Free week', expired: 'Ended' }[a.status] + (a.until ? ' · ' + day(a.until) : ''));
+
+$('#gateform').addEventListener('submit', e => {
+  e.preventDefault();
+  token = new FormData(e.target).get('t');
+  busy(e.submitter, $('#ge'), async () => { await load(); sessionStorage.setItem('xed.admin', token); });
+});
+
+async function load() {
+  schools = (await get('/v1/admin/schools')).schools;
+  $('#gate').hidden = true; $('#board').hidden = false;
+  const sel = $('#schoolsel').value;
+  $('#schoolsel').innerHTML = '<option value="">Choose…</option>' + schools.map(s => `<option value="${s.id}">${esc(s.name)} · ${esc(s.town)}${s.pilot_until && Date.parse(s.pilot_until) > Date.now() ? ' (pilot)' : ''}</option>`).join('');
+  $('#schoolsel').value = sel;
+  const { classes } = await get('/v1/admin/classes');
+  $('#classes').innerHTML = classes.map(c => {
+    const covered = later(c.paid_until, c.pilot_until);
+    return `<tr><td>${esc(c.school)} <span class="muted small">· ${esc(c.town)}</span></td><td>${esc(c.class_label)}</td><td class="linkcode">${esc(c.code)}</td>
+      <td class="num">${c.pupils}</td><td class="num">${c.linked || 0}</td><td class="num">${c.active_week || 0}</td>
+      <td>${covered && Date.parse(covered) > Date.now() ? (c.paid_until && covered === c.paid_until ? 'School paid · ' : 'Pilot · ') + day(covered) : '<span class="muted">Parents pay</span>'}</td>
+      <td><button class="btn ghost small" data-open="${c.code}" type="button">Open</button></td></tr>`;
+  }).join('') || '<tr><td colspan="8" class="muted">No classes yet.</td></tr>';
+  if (cur) await openClass(cur.class.code);
+}
+const later = (a, b) => (!a ? b : !b ? a : Date.parse(a) > Date.parse(b) ? a : b);
+
+// Pupils go to the server five at a time (every picture PIN takes a moment to secure).
+$('#addform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#ae'), async () => {
+    if (!f.get('school_id')) throw new Error('Choose the school.');
+    if (!f.get('grade')) throw new Error('Choose the class.');
+    const pupils = String(f.get('pupils') || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const [first_name, ...rest] = l.split(',');
+      return { first_name: first_name.trim(), parent_phone: rest.join(',').trim() };
+    });
+    if (!pupils.length) throw new Error('Type at least one pupil’s name.');
+    let code = null, added = 0; const skipped = [];
+    for (let i = 0; i < pupils.length; i += 5) {
+      $('#aprog').textContent = `Adding pupils ${i + 1}–${Math.min(i + 5, pupils.length)} of ${pupils.length}…`;
+      const r = await post('/v1/admin/classes', { school_id: f.get('school_id'), grade: +f.get('grade'), arm: f.get('arm'), pupils: pupils.slice(i, i + 5) });
+      code = r.class_code; added += r.added.length; skipped.push(...r.skipped);
+    }
+    $('#aprog').textContent = `Added ${added} pupil${added === 1 ? '' : 's'} to ${code}.` + (skipped.length ? ' Skipped: ' + skipped.map(s => `${s.name} (${s.why})`).join(', ') + '.' : '');
+    e.target.elements.pupils.value = '';
+    cur = { class: { code } };
+    await load();
+  });
+});
+
+$('#classes').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) busy(b, null, () => openClass(b.dataset.open)); });
+
+async function openClass(code) {
+  cur = await get('/v1/admin/classes/' + code);
+  const k = cur.class, p = cur.pupils;
+  $('#detail').hidden = false;
+  $('#dtitle').textContent = `${k.school} · ${k.class_label}`;
+  $('#dsub').textContent = `Class code ${k.code} · ${p.length} pupils · ${p.filter(x => x.linked).length} parents linked` + (k.pilot_until && Date.parse(k.pilot_until) > Date.now() ? ` · pilot until ${day(k.pilot_until)}` : '');
+  $('#paidform').elements.paid_until.value = k.paid_until ? k.paid_until.slice(0, 10) : '';
+  $('#pupils').innerHTML = p.map(x => `<tr data-id="${x.id}">
+      <td><b>${esc(x.first_name)}</b>${x.added_by === 'parent' ? '<br><span class="muted small">added by parent</span>' : ''}</td>
+      <td>${x.pin ? `<span class="pins">${x.pin.map(i => `<img src="${pic(i)}" alt="${PICTURES[i]}">`).join('')}</span>` : '<span class="muted small">parent’s own</span>'}</td>
+      <td class="linkcode">${x.claim_code ? fmtClaim(x.claim_code) : '—'}</td>
+      <td>${x.linked ? esc(x.parent_name) + (x.phone ? `<br><span class="muted small">${esc(x.phone)}</span>` : '') : x.phone ? `<span class="small">${esc(x.phone)}</span><br>${x.invited_at ? `<span class="muted small">invited ${day(x.invited_at)}</span>` : `<button class="btn ghost small" data-invite type="button">WhatsApp invite</button>`}` : '<span class="muted small">not linked</span>'}</td>
+      <td class="small">${accessText(x.access)}</td>
+      <td class="num">${x.minutes}</td><td class="num">${x.answers ? Math.round(100 * x.correct / x.answers) + '%' : '—'}</td><td class="num">${x.mastered}</td>
+      <td>${!x.linked && x.added_by === 'school' ? '<button class="btn danger small" data-remove type="button">Remove</button>' : ''}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">No pupils yet.</td></tr>';
+  $('#detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('#paidform').addEventListener('submit', e => {
+  e.preventDefault();
+  const k = cur.class, d = new FormData(e.target).get('paid_until');
+  busy(e.submitter, null, async () => {
+    await post('/v1/admin/classes', { school_id: k.school_id, grade: k.grade, arm: k.arm, paid_until: isoEnd(d) });
+    toast(d ? `Paid by the school until ${day(isoEnd(d))}.` : 'Parents of this class pay for themselves.');
+    await load();
+  });
+});
+
+function inviteText(x) {
+  const k = cur.class;
+  return `Hello! ${x.first_name}'s class (${k.class_label}, ${k.school}) is learning maths with Xed, an adventure game from MindsPlay Studios in Accra. `
+    + `Tap to link ${x.first_name} to your phone and see their progress: ${claimUrl(x.claim_code)} . Questions? Reply here.`;
+}
+$('#pupils').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const x = cur.pupils.find(p => p.id === b.closest('tr').dataset.id);
+  if (b.hasAttribute('data-invite')) {
+    window.open(`https://wa.me/${wa(x.phone)}?text=${encodeURIComponent(inviteText(x))}`, '_blank', 'noopener');
+    busy(b, null, async () => { await post(`/v1/admin/children/${x.id}/invited`, {}); await openClass(cur.class.code); });
+  } else if (b.hasAttribute('data-remove')) {
+    if (!confirm(`Take ${x.first_name} off this class? Their progress is deleted too.`)) return;
+    busy(b, null, async () => { await post('/v1/admin/children/' + x.id, undefined, 'DELETE'); await load(); });
+  }
+});
+
+// ---------- Printing ----------
+
+function coverLine(k) {
+  const t = Date.now();
+  if (k.paid_until && Date.parse(k.paid_until) > t) return `Paid for by your school until ${day(k.paid_until)}.`;
+  if (k.pilot_until && Date.parse(k.pilot_until) > t) return `Free while your school tries Xed, until ${day(k.pilot_until)}. After that, from GH₵49 a month (less for brothers and sisters).`;
+  return 'The first week is free. After that, from GH₵49 a month (less for brothers and sisters).';
+}
+
+$('#printslips').addEventListener('click', () => {
+  const k = cur.class, list = cur.pupils.filter(x => x.pin && x.claim_code);
+  if (!list.length) return alert('No slips to print: every pupil here was added by a parent or has new pictures.');
+  $('#print').innerHTML = `<div class="slips">${list.map(x => `
+    <div class="slip">
+      <div class="brand"><span>XED · A MATHS ADVENTURE</span><span>MINDSPLAY STUDIOS</span></div>
+      <div>
+        <h4>${esc(x.first_name)}</h4>
+        <div>${esc(k.school)} · ${esc(k.class_label)}</div>
+        <div style="margin-top:2mm">To play, choose <b>Sign in with class code</b>, type</div>
+        <span class="ccode">${esc(k.code)}</span>
+        <div style="margin-top:1mm">then tap <b>${esc(x.first_name)}</b> and these 4 pictures in order:</div>
+        <div class="spins">${x.pin.map(i => `<figure><img src="${pic(i)}" alt=""><figcaption>${PICTURES[i]}</figcaption></figure>`).join('')}</div>
+      </div>
+      <div class="qr"><div data-qr="${esc(claimUrl(x.claim_code))}"></div><span>Grown-ups: scan me</span></div>
+      <div class="parents"><b>For parents:</b> scan the code, or go to mindsplaystudiogh.com/signup.html and enter parent code <b class="code2">${fmtClaim(x.claim_code)}</b>, to see ${esc(x.first_name)}’s progress and keep them playing. ${coverLine(k)} Play in the browser or download for Windows or Mac.</div>
+    </div>`).join('')}</div>`;
+  $$('#print [data-qr]').forEach(el => new QRCode(el, { text: el.dataset.qr, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M }));
+  // Give the pictures a moment to load before the print dialog opens.
+  Promise.all($$('#print img').map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))).then(() => setTimeout(print, 300));
+});
+
+$('#printreport').addEventListener('click', () => {
+  const k = cur.class;
+  $('#print').innerHTML = `<div class="report"><h2>${esc(k.school)} · ${esc(k.class_label)}</h2>
+    <p>Xed progress report from MindsPlay Studios · ${day(new Date().toISOString())} · class code ${esc(k.code)}</p>
+    <table><thead><tr><th>Pupil</th><th>Last played</th><th class="num">Minutes</th><th class="num">Questions</th><th class="num">Right</th><th class="num">Skills mastered</th></tr></thead><tbody>
+    ${cur.pupils.map(x => `<tr><td>${esc(x.first_name)}</td><td>${x.last_seen ? day(x.last_seen) : 'not yet'}</td><td class="num">${x.minutes}</td><td class="num">${x.answers}</td><td class="num">${x.answers ? Math.round(100 * x.correct / x.answers) + '%' : '—'}</td><td class="num">${x.mastered}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  print();
+});
+
+if (token) load().catch(() => { sessionStorage.removeItem('xed.admin'); token = null; });
+</script>
+</body>
+</html>

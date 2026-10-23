@@ -36,6 +36,11 @@
       <summary style="cursor:pointer;font:800 20px var(--display)">+ Add a child</summary>
       <p class="muted small">Each extra child costs less. Add them here and they get their class code straight away.</p>
       <a class="btn small" href="signup.html" style="justify-self:start">Add a child</a>
+      <form id="slipform" class="row" style="align-items:end;border-top:1px solid var(--edge);padding-top:16px" novalidate>
+        <label style="flex:1;min-width:180px">Got a slip from school? <span class="hint">Enter the parent code, like K7P4-M2QX, to link your child.</span><input name="code" autocomplete="off" autocapitalize="characters" maxlength="12"></label>
+        <button class="btn small" type="submit">Link my child</button>
+      </form>
+      <p class="err" id="se" role="alert"></p>
     </details>
 
     <h2 id="pay">Keep playing</h2>
@@ -90,6 +95,12 @@ async function load() {
       history.replaceState(null, '', 'account.html');
     } catch (e) { /* shown below */ }
   }
+  const slip = new URLSearchParams(location.search).get('claim');
+  if (slip) {
+    try { const r = await api('/v1/children/claim', { method: 'POST', body: { code: slip } }); toast(`${r.child.first_name} is now linked to your account.`); }
+    catch (e) { if (e.status === 401) { $('#login').hidden = false; $('#dash').hidden = true; return; } alert(e.message); }
+    history.replaceState(null, '', 'account.html');
+  }
   try { me = await api('/v1/me'); }
   catch (e) { if (e.status === 401) { $('#login').hidden = false; $('#dash').hidden = true; return; } throw e; }
   $('#login').hidden = true; $('#dash').hidden = false;
@@ -99,12 +110,17 @@ async function load() {
 function render() {
   const p = me.parent, a = me.access;
   $('#hello').textContent = `Hello, ${p.name.split(' ')[0]}`;
-  const pill = { paid: ['good', 'Paid'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'] }[a.status];
-  $('#status').innerHTML = `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${a.active ? 'Xed is unlocked until ' + day(a.until) : 'Access ended on ' + day(a.until) + '. Renew to keep playing.'}</span>`;
+  const pill = { paid: ['good', 'Paid'], school: ['good', 'Paid by school'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'] }[a.status];
+  const bySchool = me.children.length > 0 && me.pay_for === 0;
+  $('#status').innerHTML = bySchool
+    ? `<span class="pill good">Paid by school</span><span class="muted">Your children’s school pays for Xed.</span>`
+    : `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${a.active ? 'Xed is unlocked until ' + day(a.until) : 'Access ended on ' + day(a.until) + '. Renew to keep playing.'}</span>`;
+  const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'School pilot'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
 
   $('#kids').innerHTML = me.children.length ? me.children.map(k => `
     <article class="card" data-id="${k.id}">
       <div class="row" style="justify-content:space-between"><h3>${esc(k.first_name)}</h3><span class="muted small">${esc(k.class_label)} · ${esc(k.school)}</span></div>
+      ${kidPill(k) ? `<div class="status">${kidPill(k)}</div>` : ''}
       <div class="stack" style="gap:4px"><span class="px small muted">Class code</span><span class="code">${esc(k.class_code)}</span></div>
       <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
         <div class="stat"><b>${k.progress.week_minutes}</b><span>minutes played this week</span></div>
@@ -113,19 +129,23 @@ function render() {
         <div class="stat"><b>${k.progress.total_mastered}</b><span>skills mastered in all</span></div>
       </div>
       <p class="small muted">Last played: ${k.last_seen ? day(k.last_seen) : 'not yet'}</p>
-      <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">Remove</button></div>
+      <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">${k.added_by === 'school' ? 'Unlink' : 'Remove'}</button></div>
       <div data-pinedit hidden class="stack"><div data-pad></div><p class="err" role="alert"></p><button class="btn small" data-act="savepin" type="button" style="justify-self:start">Save PIN</button></div>
     </article>`).join('') : `<div class="card"><p>No children yet. <a href="signup.html">Add your child</a> to get their class code.</p></div>`;
 
-  // Prices for this family's number of children.
-  const n = Math.max(1, me.children.length);
+  // Prices for the children the family pays for (not those whose school pays).
+  $('#pay').hidden = $('#paycard').hidden = bySchool;
+  const n = Math.max(1, me.pay_for);
   const monthly = me.prices.month.total;
   const names = { month: '1 month', term: '1 term · 3 months', year: '1 year' };
   $('#plans').innerHTML = ['month', 'term', 'year'].map(k => {
     const pr = me.prices[k], perMonth = pr.total / pr.months, save = Math.round(100 * (1 - perMonth / monthly));
     return `<button type="button" class="plan" data-plan="${k}" aria-pressed="${k === plan}"><span class="muted small">${names[k]}</span><b>${cedis(pr.total)}</b><span class="small muted">${cedis(Math.round(perMonth))} a month${n > 1 ? ` · ${n} children` : ''}</span>${save > 0 ? `<span class="save">Save ${save}%</span>` : ''}</button>`;
   }).join('');
-  $('#paynote').textContent = a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that.` : a.active ? 'Pay ahead: the new period starts when your current one ends.' : 'Choose a plan to unlock Xed again.';
+  const schoolKids = me.children.filter(k => k.access.status === 'school').map(k => k.first_name);
+  const pilot = me.children.find(k => k.access.status === 'pilot');
+  $('#paynote').textContent = (pilot && a.status === 'pilot' ? `${pilot.first_name}’s school pilot covers Xed until ${day(pilot.access.until)}, so there’s no need to pay before then. ` : a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that. ` : a.active ? 'Pay ahead: the new period starts when your current one ends. ' : 'Choose a plan to unlock Xed again. ')
+    + (schoolKids.length ? `${schoolKids.join(' and ')}’s school pays for them, so the price below is for your other ${me.pay_for > 1 ? me.pay_for + ' children' : 'child'}.` : '');
   $('#autorenew').hidden = !p.card_saved;
   $('#autorenewon').checked = p.autorenew;
   drawPay();
@@ -166,9 +186,17 @@ $('#kids').addEventListener('click', e => {
       toast(`${kid.first_name}'s new pictures are saved. Show them before they next play!`);
     });
   } else if (b.dataset.act === 'remove') {
-    if (!confirm(`Remove ${kid.first_name}? Their progress in Xed will be deleted for good.`)) return;
-    busy(b, null, async () => { await api('/v1/children/' + id, { method: 'DELETE' }); await load(); toast(`${kid.first_name} was removed.`); });
+    if (!confirm(kid.added_by === 'school' ? `Unlink ${kid.first_name} from your account? They stay on their school’s class list and keep their progress.` : `Remove ${kid.first_name}? Their progress in Xed will be deleted for good.`)) return;
+    busy(b, null, async () => { await api('/v1/children/' + id, { method: 'DELETE' }); await load(); toast(`${kid.first_name} was ${kid.added_by === 'school' ? 'unlinked' : 'removed'}.`); });
   }
+});
+
+$('#slipform').addEventListener('submit', e => {
+  e.preventDefault();
+  busy(e.submitter, $('#se'), async () => {
+    const r = await api('/v1/children/claim', { method: 'POST', body: { code: new FormData(e.target).get('code') } });
+    e.target.reset(); await load(); toast(`${r.child.first_name} is now linked to your account.`);
+  });
 });
 
 load().catch(e => alert(e.message));
