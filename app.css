@@ -96,7 +96,7 @@ input:focus, select:focus { border-color:var(--gold); outline:none }
 .code { font:400 clamp(30px,6vw,44px)/1 var(--pixel); color:var(--gold); letter-spacing:.06em; background:var(--deep); border:2px dashed var(--gold); border-radius:14px; padding:14px 18px; justify-self:start; user-select:all }
 
 /* Plans */
-.plans { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px }
+.plans { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px }
 @media (max-width:640px) { .plans { grid-template-columns:1fr } }
 .plan { text-align:left; font:inherit; color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:14px; padding:16px; cursor:pointer; display:grid; gap:4px }
 .plan[aria-pressed="true"] { border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,183,0,.25) }

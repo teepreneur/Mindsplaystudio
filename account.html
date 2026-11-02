@@ -69,7 +69,7 @@
 <script src="app.js"></script>
 <script>
 topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the demo</a>');
-let me = null, plan = 'term', channel = 'mobile_money';
+let me = null, plan = 'year', channel = 'mobile_money';
 
 $('#loginform').addEventListener('submit', e => {
   e.preventDefault();
@@ -137,8 +137,8 @@ function render() {
   $('#pay').hidden = $('#paycard').hidden = bySchool;
   const n = Math.max(1, me.pay_for);
   const monthly = me.prices.month.total;
-  const names = { month: '1 month', term: '1 term · 3 months', year: '1 year' };
-  $('#plans').innerHTML = ['month', 'term', 'year'].map(k => {
+  const names = { month: '1 month', year: '1 year' };
+  $('#plans').innerHTML = ['month', 'year'].map(k => {
     const pr = me.prices[k], perMonth = pr.total / pr.months, save = Math.round(100 * (1 - perMonth / monthly));
     return `<button type="button" class="plan" data-plan="${k}" aria-pressed="${k === plan}"><span class="muted small">${names[k]}</span><b>${cedis(pr.total)}</b><span class="small muted">${cedis(Math.round(perMonth))} a month${n > 1 ? ` · ${n} children` : ''}</span>${save > 0 ? `<span class="save">Save ${save}%</span>` : ''}</button>`;
   }).join('');
