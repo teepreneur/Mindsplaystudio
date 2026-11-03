@@ -60,7 +60,24 @@ p { margin:0 }
 
 /* Hero */
 .hero { position:relative; isolation:isolate; overflow:hidden; border-bottom:4px solid var(--gold) }
-.hero > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2 }
+.hero > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:70% 40%; z-index:-2 }
+.hero > img.kb { animation:kb 28s ease-in-out infinite alternate; transform-origin:75% 40% }
+@keyframes kb { to { transform:scale(1.09) translateX(-1.2%) } }
+.sparks { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none }
+.sparks i { position:absolute; bottom:-12px; border-radius:50%; background:#FFE9A3; box-shadow:0 0 10px 3px rgba(245,183,0,.75); animation:rise linear infinite }
+@keyframes rise { 0% { transform:translateY(0); opacity:0 } 12% { opacity:.95 } 85% { opacity:.7 } 100% { transform:translateY(-105vh) translateX(36px); opacity:0 } }
+.arttag { position:absolute; right:14px; bottom:12px; font:400 11px var(--pixel); color:#fff; background:rgba(14,13,36,.65); padding:5px 8px; border-radius:6px }
+@media (max-width:700px) { .hero::before { background:linear-gradient(90deg, rgba(14,13,36,.9), rgba(14,13,36,.68)), linear-gradient(0deg, rgba(14,13,36,.9), transparent 40%) } .hero > img { object-position:66% 30% } }
+.wfig { position:relative; min-width:0 }
+.wfig > .arttag { right:10px; bottom:auto; top:10px }
+.wfig > img { animation:wfade .5s ease }
+@keyframes wfade { from { opacity:0; transform:scale(1.03) } }
+.wreal { position:absolute; left:10px; bottom:10px; width:38%; margin:0; border:2px solid #fff; border-radius:10px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,.5); background:var(--deep) }
+.worldinfo .wreal img { display:block; border-radius:0 }
+.wreal figcaption { font:400 10px var(--pixel); text-align:center; padding:4px 2px; color:var(--gold) }
+.js-reveal { opacity:0; transform:translateY(26px); transition:opacity .6s ease, transform .6s ease }
+.js-reveal.in { opacity:1; transform:none }
+@media (prefers-reduced-motion: reduce) { .js-reveal { opacity:1; transform:none } }
 .hero::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(14,13,36,.96) 0%, rgba(14,13,36,.82) 42%, rgba(14,13,36,.15) 100%), linear-gradient(0deg, rgba(14,13,36,.9), transparent 40%) }
 .hero .wrap { padding-block:clamp(64px,10vw,120px) clamp(56px,8vw,96px); display:grid; gap:22px; max-width:1180px }
 .hero .tag { justify-self:start; font:400 12px var(--pixel); color:var(--night); background:var(--sky); padding:5px 10px; border-radius:6px }
@@ -248,7 +265,9 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
 </header>
 
 <section class="hero" id="top">
-  <img src="img/m01-title.jpg" alt="">
+  <img src="img/xed-key.jpg" alt="" class="kb">
+  <div class="sparks" id="sparks" aria-hidden="true"></div>
+  <span class="arttag">Illustration</span>
   <div class="wrap">
     <a class="endorse" href="./" style="color:#DADAF5"><svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#FFFFFF"/><path d="M46.84 41.96 A28 28 0 0 1 78.08 60.00 A28 28 0 0 1 46.84 78.04 A28 28 0 0 1 46.84 41.96Z" fill="#FF2E88"/><g fill="none" stroke="#0B0B10" stroke-width="5.5"><circle cx="68.25" cy="60.00" r="28"/><circle cx="51.75" cy="69.53" r="28"/><circle cx="51.75" cy="50.47" r="28"/></g></svg>A MindsPlay Studios game</a>
     <h1>Every quest <span>is real maths.</span></h1>
@@ -301,7 +320,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     </div>
     <div class="map" id="map" role="group" aria-label="Worlds"></div>
     <div class="worldinfo" aria-live="polite">
-      <img id="wimg" src="img/m06-counting.jpg" alt="">
+      <div class="wfig"><img id="wimg" src="img/xw-1.jpg" alt=""><span class="arttag">Illustration</span><figure class="wreal"><img id="wreal" src="img/xr-1.jpg" alt=""><figcaption>In the game</figcaption></figure></div>
       <div>
         <div class="meta" id="wmeta"></div>
         <h3 id="wname"></h3>
@@ -498,8 +517,8 @@ function tick() {
 
 /* ---------- Screenshots ---------- */
 const SHOTS = [
-  ["m03-quest", "Quest · Pip’s glow-berries"], ["m01-title", "Sprout Meadow"], ["m02-heroes", "12 heroes"],
-  ["m05-boss", "Boss fight · estimate it"], ["m04-camp", "Home Camp · crown and cape"], ["bridge", "Bo’s bridge · make 10"],
+  ["m03-quest", "Quest · Pip’s glow-berries"], ["xr-2", "World 2 · the river raft"], ["m02-heroes", "12 heroes"],
+  ["m05-boss", "Boss fight · estimate it"], ["xr-4", "World 4 · the summit climb"], ["xr-5", "World 5 · sailing the isles"],
 ];
 $("thumbs").innerHTML = SHOTS.map(([f, c], i) => `<button type="button" aria-pressed="${i === 0}" aria-label="${c}"><img src="img/${f}.jpg" alt="" loading="lazy"></button>`).join("");
 $("thumbs").addEventListener("click", e => {
@@ -510,19 +529,20 @@ $("thumbs").addEventListener("click", e => {
 
 /* ---------- World map ---------- */
 const WORLDS = [
-  { n:"Sprout Meadow", c:"Class 1", col:"#2E9E57", img:"m06-counting", d:"Green fields, friendly villagers and your first quests. Count, compare and build your first number bonds.", s:["Numbers to 20", "Halves", "Shapes", "O’clock"] },
-  { n:"Hundred Hills", c:"Class 2", col:"#4CB7E8", img:"m03-quest", d:"Rolling hills where numbers climb to 100. Your first taste of times tables and sharing.", s:["Numbers to 100", "First × and ÷", "Quarters", "Money"] },
-  { n:"Balance Highlands", c:"Class 3", col:"#F5B700", img:"bridge", d:"High ridges where everything must balance. Fractions and money get real.", s:["Fractions", "Money", "Times tables", "Measuring"] },
-  { n:"Frostpeak Tundra", c:"Class 4", col:"#9FD8F2", img:"m05-boss", d:"Ice and snow below zero. Go negative, think in thousands and read the map.", s:["Negative numbers", "Thousands", "Factors", "Percentages", "Coordinates"] },
-  { n:"Compass Isles", c:"Class 5", col:"#FF6F59", img:"m04-camp", d:"Islands across the sea. Navigate with decimals, primes and ratio.", s:["Decimals", "Primes", "Order of operations", "Ratio", "Angles"] },
-  { n:"Sky Citadel", c:"Class 6", col:"#8E8CF0", img:"m01-title", d:"The final world, floating above the clouds. Master algebra and take on the last boss.", s:["Algebra", "Brackets", "Cubes", "Four quadrants", "Probability"] },
+  { n:"Sprout Meadow", c:"Class 1", col:"#2E9E57", img:"xw-1", d:"Green fields, friendly villagers and your first quests. Count, compare and build your first number bonds.", s:["Numbers to 20", "Halves", "Shapes", "O’clock"] },
+  { n:"Hundred Hills", c:"Class 2", col:"#4CB7E8", img:"xw-2", d:"Rolling hills where numbers climb to 100. Your first taste of times tables and sharing.", s:["Numbers to 100", "First × and ÷", "Quarters", "Money"] },
+  { n:"Balance Highlands", c:"Class 3", col:"#F5B700", img:"xw-3", d:"High ridges where everything must balance. Fractions and money get real.", s:["Fractions", "Money", "Times tables", "Measuring"] },
+  { n:"Frostpeak Tundra", c:"Class 4", col:"#9FD8F2", img:"xw-4", d:"Ice and snow below zero. Go negative, think in thousands and read the map.", s:["Negative numbers", "Thousands", "Factors", "Percentages", "Coordinates"] },
+  { n:"Compass Isles", c:"Class 5", col:"#FF6F59", img:"xw-5", d:"Islands across the sea. Navigate with decimals, primes and ratio.", s:["Decimals", "Primes", "Order of operations", "Ratio", "Angles"] },
+  { n:"Sky Citadel", c:"Class 6", col:"#8E8CF0", img:"xw-6", d:"The final world, floating above the clouds. Master algebra and take on the last boss.", s:["Algebra", "Brackets", "Cubes", "Four quadrants", "Probability"] },
 ];
 $("map").innerHTML = WORLDS.map((w, i) => `<button class="node" type="button" aria-pressed="${i === 0}"><span class="orb" style="background:${w.col};color:#0E0D24">${i + 1}</span><span class="nm">${w.n}</span><span class="cl">${w.c}</span></button>`).join("");
 function showWorld(i, scout) {
   const w = WORLDS[i];
   [...$("map").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
   $("wmeta").textContent = `World ${i + 1} · ${w.c}`; $("wname").textContent = w.n; $("wdesc").textContent = w.d;
-  $("wimg").src = `img/${w.img}.jpg`; $("wimg").alt = `Xed screenshot for ${w.n}`;
+  const wi = $("wimg"); wi.src = `img/${w.img}.jpg`; wi.alt = `Illustration of ${w.n}`; wi.style.animation = "none"; void wi.offsetWidth; wi.style.animation = "";
+  $("wreal").src = `img/xr-${i + 1}.jpg`; $("wreal").alt = `Xed screenshot of ${w.n}`;
   $("wskills").innerHTML = w.s.map(s => `<span>${s}</span>`).join("");
   if (scout) { scouted.add(i); store.set("scouted", [...scouted]); renderHud(); if (scouted.size === 6) complete("worlds"); }
 }
@@ -627,6 +647,13 @@ $("copymsg").addEventListener("click", () => {
 
 renderHud();
 })();
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.getElementById("sparks").innerHTML = Array.from({ length:26 }, () => { const z = 2 + Math.random() * 4; return `<i style="left:${35 + Math.random() * 65}%;width:${z}px;height:${z}px;animation-duration:${9 + Math.random() * 12}s;animation-delay:${-Math.random() * 20}s"></i>`; }).join("");
+  if ("IntersectionObserver" in window) {
+    const seenCards = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); seenCards.unobserve(e.target); } }), { threshold:.12 });
+    document.querySelectorAll(".move, .worldinfo").forEach(c => { c.classList.add("js-reveal"); seenCards.observe(c); });
+  }
+}
 </script>
 </body>
 </html>
