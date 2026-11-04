@@ -144,7 +144,7 @@ function render() {
   }).join('');
   const schoolKids = me.children.filter(k => k.access.status === 'school').map(k => k.first_name);
   const pilot = me.children.find(k => k.access.status === 'pilot');
-  $('#paynote').textContent = (pilot && a.status === 'pilot' ? `${pilot.first_name}’s school pilot covers Xed until ${day(pilot.access.until)}, so there’s no need to pay before then. ` : a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that. ` : a.active ? 'Pay ahead: the new period starts when your current one ends. ' : 'Choose a plan to unlock Xed again. ')
+  $('#paynote').textContent = (pilot && a.status === 'pilot' ? `${pilot.first_name}’s school pilot covers Xed until ${day(pilot.access.until)}, so there’s no need to pay before then. ` : a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that. If you pay now, your paid time starts when the free week ends, so you don’t lose any free days. ` : a.active ? 'Pay ahead: the new period starts when your current one ends. ' : 'Choose a plan to unlock Xed again. ')
     + (schoolKids.length ? `${schoolKids.join(' and ')}’s school pays for them, so the price below is for your other ${me.pay_for > 1 ? me.pay_for + ' children' : 'child'}.` : '');
   $('#autorenew').hidden = !p.card_saved;
   $('#autorenewon').checked = p.autorenew;
