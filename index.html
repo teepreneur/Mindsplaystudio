@@ -139,8 +139,10 @@ h1, h2, h3 { margin:0; font-family:var(--display); text-wrap:balance }
 .gcard:hover { transform:translateY(-4px) }
 .gcard.feature { grid-column:span 6; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); grid-template-rows:none }
 .gcard.half { grid-column:span 3 }
-@media (max-width:900px) { .gcard, .gcard.half { grid-column:span 3 } .gcard.feature { grid-column:span 6; grid-template-columns:1fr } }
-@media (max-width:600px) { .lineup { grid-template-columns:1fr } .gcard, .gcard.half, .gcard.feature { grid-column:auto } }
+.gcard.wide { grid-column:span 6; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); grid-template-rows:none }
+.gcard.wide .gart { aspect-ratio:16/9 }
+@media (max-width:900px) { .gcard, .gcard.half { grid-column:span 3 } .gcard.feature, .gcard.wide { grid-column:span 6; grid-template-columns:1fr } }
+@media (max-width:600px) { .lineup { grid-template-columns:1fr } .gcard, .gcard.half, .gcard.feature, .gcard.wide { grid-column:auto } }
 .gart { position:relative; aspect-ratio:16/9; overflow:hidden; display:grid; place-items:center }
 .gcard.feature .gart { aspect-ratio:auto; min-height:300px }
 .gart img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover }
@@ -267,7 +269,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     </div>
     <div class="stage" aria-hidden="true">
       <div class="cut"></div>
-      <div class="art reel" id="reel"><img class="on" src="img/xed-key.jpg" alt="" style="object-position:78% 50%"><img src="img/art-graned.jpg" alt="" style="object-position:72% 60%"><img src="img/art-inkbound.jpg" alt="" style="object-position:100% 72%"><img src="img/art-sworld.jpg" alt="" style="object-position:66% 60%"><img src="img/art-brightside.jpg" alt="" style="object-position:62% 60%"></div>
+      <div class="art reel" id="reel"><img class="on" src="img/xed-key.jpg" alt="" style="object-position:78% 50%"><img src="img/art-graned.jpg" alt="" style="object-position:72% 60%"><img src="img/art-inkbound.jpg" alt="" style="object-position:100% 72%"><img src="img/art-sworld.jpg" alt="" style="object-position:66% 60%"><img src="img/art-brightside.jpg" alt="" style="object-position:62% 60%"><img src="img/art-lamplight.jpg" alt="" style="object-position:82% 60%"></div>
       <div class="float f1"><span>Now in pilot</span><b>Xed</b></div>
       <div class="float f2"><span>Ages 6–14 · Soon</span><b>GranED Prix</b></div>
       <div class="float f3"><span>Ages 13–17 · Soon</span><b>Brightside</b></div>
@@ -317,8 +319,8 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
   <div class="wrap">
     <div class="head">
       <span class="mono eyebrow">Game library</span>
-      <h2>One game out. Four on the way.</h2>
-      <p>Xed is our first game and is heading into school pilots in January 2027. Four more are in the works. Hype the one you want first.</p>
+      <h2>One game out. Five on the way.</h2>
+      <p>Xed is our first game and is heading into school pilots in January 2027. Five more are in the works. Hype the one you want first.</p>
     </div>
     <div class="lineup" id="lineup">
       <article class="gcard feature">
@@ -371,6 +373,16 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
           <div class="row"><button class="hype" type="button" data-game="brightside" aria-pressed="false">Hype it</button></div>
         </div>
       </article>
+      <article class="gcard half wide">
+        <div class="gart"><img src="img/g-lamplight.jpg" alt="Lamplight: two young explorers and a little glowing lamp look out over Noah's ark, a rainbow and a lake. Coming soon." loading="lazy"></div>
+        <div class="gbody">
+          <div class="meta"><span class="soon">Coming soon</span><span>Ages 6–12</span><span>Open-world adventure</span><span>Mac and Windows</span></div>
+          <h3>Lamplight</h3>
+          <p>Step into the world of the Bible. Meet its people, help them with the tasks from each story and earn a sticker and a memory verse at the end. Lumi, a little lamp, guides you, and every line is read aloud.</p>
+          <p class="skills">Six stories so far: Noah’s Ark, David and Goliath, Five Loaves and Two Fish, The Lost Sheep, Daniel and the Lions and Jesus Calms the Storm. A free preview for schools and churches is planned.</p>
+          <div class="row"><button class="hype" type="button" data-game="lamplight" aria-pressed="false">Hype it</button></div>
+        </div>
+      </article>
     </div>
     <p class="note">The art for these games is illustration, not in-game footage. Names, ages and details may change before release.</p>
   </div>
@@ -416,7 +428,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     </div>
     <div class="nums">
       <div><b>1</b><span>game out now, Xed</span></div>
-      <div><b>4</b><span>more in development</span></div>
+      <div><b>5</b><span>more in development</span></div>
       <div><b>288</b><span>maths skills inside Xed</span></div>
       <div><b>0</b><span>ads, ever</span></div>
     </div>
@@ -458,7 +470,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <label for="nm">First name<input id="nm" autocomplete="given-name" placeholder="Kwame" required></label>
       <label for="age">Age or school (optional)<input id="age" placeholder="e.g. 14, or the name of your school"></label>
       <label for="pick">The game I want first
-        <select id="pick"><option value="Xed">Xed</option><option value="GranED Prix">GranED Prix</option><option value="Inkbound">Inkbound</option><option value="Sworld">Sworld</option><option value="Brightside">Brightside</option></select>
+        <select id="pick"><option value="Xed">Xed</option><option value="GranED Prix">GranED Prix</option><option value="Inkbound">Inkbound</option><option value="Sworld">Sworld</option><option value="Brightside">Brightside</option><option value="Lamplight">Lamplight</option></select>
       </label>
       <button class="btn pink" type="submit" style="justify-content:center">Write my message</button>
       <div class="out" id="out" hidden>
@@ -545,12 +557,12 @@ function tick() {
 }
 
 /* Growth path */
-const GAMECOL = { "Xed":["#2E9E57","#fff"], "Inkbound":["#F5C24B","#231446"], "GranED Prix":["#FFD400","#0A1E5A"], "Sworld":["#46E0FF","#04161F"], "Brightside":["#FF7A1A","#2A1200"] };
+const GAMECOL = { "Xed":["#2E9E57","#fff"], "Inkbound":["#F5C24B","#231446"], "GranED Prix":["#FFD400","#0A1E5A"], "Sworld":["#46E0FF","#04161F"], "Brightside":["#FF7A1A","#2A1200"], "Lamplight":["#FFC93C","#2B2D5B"] };
 const STAGES = [
   { r:"6–8", n:"Explorer", c:"Class 1–3", d:"Big curiosity, short attention. Games read everything aloud and reward every try.",
-    s:{ Numbers:70, Words:75, Logic:35, Engineering:15, Science:20, Teamwork:30 }, life:["Patience", "Following steps", "Trying again"], g:["Xed", "Inkbound"] },
+    s:{ Numbers:70, Words:75, Logic:35, Engineering:15, Science:20, Teamwork:30 }, life:["Patience", "Following steps", "Trying again"], g:["Xed", "Inkbound", "Lamplight"] },
   { r:"9–12", n:"Builder", c:"Class 4–6", d:"Ready for bigger problems. Fractions, grammar and puzzles with more than one answer.",
-    s:{ Numbers:90, Words:55, Logic:65, Engineering:35, Science:40, Teamwork:45 }, life:["Problem solving", "Persistence", "Planning ahead"], g:["Xed", "GranED Prix"] },
+    s:{ Numbers:90, Words:55, Logic:65, Engineering:35, Science:40, Teamwork:45 }, life:["Problem solving", "Persistence", "Planning ahead"], g:["Xed", "GranED Prix", "Lamplight"] },
   { r:"13–15", n:"Creator", c:"JHS 1–3", d:"Making things, not just solving them. Test real science, design fixes, work in a team.",
     s:{ Numbers:60, Words:45, Logic:90, Engineering:60, Science:85, Teamwork:80 }, life:["Creativity", "Debugging mistakes", "Communication"], g:["Sworld", "Brightside"] },
   { r:"16–17", n:"Leader", c:"SHS 1–3", d:"Decisions with consequences. Engineer real fixes, manage a budget, lead others.",
