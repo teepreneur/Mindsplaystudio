@@ -332,7 +332,7 @@ function render() {
       g.download_url ? `<a class="btn ghost small" href="${esc(g.download_url)}">Download</a>` : '',
       g.id === 'xed' && !row.access.active ? `<a class="btn ghost small" href="play.html">Try the demo</a>` : '',
     ].join('');
-    return `<div class="mygame">${gameIcon(g, 48)}<div><b>${esc(g.name)}</b><small>${state}${row.minutes ? ` · ${row.minutes} min played` : ''}</small></div><div class="acts">${acts}</div></div>`;
+    return `<div class="mygame">${gameIcon(g, 48)}<div><b>${g.page ? `<a href="${esc(g.page)}" style="text-decoration:none">${esc(g.name)}</a>` : esc(g.name)}</b><small>${state}${row.minutes ? ` · ${row.minutes} min played` : ''}</small></div><div class="acts">${acts}</div></div>`;
   }).join('') : '<p class="muted">No games yet. Add one!</p>';
   const others = games.filter(g => !lib.some(r => r.id === g.id));
   $('#addgame').hidden = !others.length;

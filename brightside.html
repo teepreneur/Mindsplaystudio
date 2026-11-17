@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brightside · MindsPlay Studios</title>
+<meta name="description" content="Brightside: an open-world game for ages 13 to 17. Three friends fix a bridge, a basketball court and a community garden the way engineers do. A MindsPlay Studios game.">
+<link rel="icon" href="img/icons/brightside.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Layout: a warm, sunny paper page with blueprint-blue panels for the design work, echoing the game's own blueprint table. Single light theme by choice. */
+:root {
+  --cream:#FFF7EC; --paper:#FFFFFF; --sand:#FBE9D2; --line:#EED9BF;
+  --ink:#2A1200; --dim:#6B4A33;
+  --orange:#FF7A1A; --orange-d:#C9560A; --yellow:#FFC400; --teal:#12B5A6; --purple:#8A4FE0;
+  --bp:#0F2557; --bp2:#173378; --bpline:#2C4C9A; --bptext:#E8EEFF; --bpdim:#AFC0EC;
+  --display:"Poppins","Trebuchet MS",system-ui,sans-serif;
+  --body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+* { box-sizing:border-box }
+[hidden] { display:none !important }
+html { background:var(--cream); scroll-padding-top:76px }
+body { background:var(--cream); color:var(--ink); font:400 17px/1.6 var(--body); margin:0; overflow-x:hidden }
+a { color:inherit }
+img { display:block; max-width:100% }
+.wrap { max-width:1180px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+h1, h2, h3 { font-family:var(--display); margin:0; text-wrap:balance; line-height:1.05 }
+h2 { font-size:clamp(32px,5vw,54px); font-weight:800; letter-spacing:-.01em }
+h3 { font-size:21px; font-weight:700 }
+p { margin:0 }
+:focus-visible { outline:3px solid var(--purple); outline-offset:3px; border-radius:6px }
+.word { font:900 1em/1 var(--display); letter-spacing:-.01em; -webkit-text-stroke:.09em #fff; paint-order:stroke fill; filter:drop-shadow(0 .05em 0 rgba(42,18,0,.35)) }
+.word .a { color:var(--orange) } .word .b { color:var(--yellow) } .word .c { color:var(--teal) } .word .d { color:var(--purple) }
+.tag { position:absolute; z-index:2; font:700 11px/1 var(--body); letter-spacing:.06em; text-transform:uppercase; padding:5px 8px; border-radius:6px; background:rgba(42,18,0,.72); color:#fff; pointer-events:none }
+.tag.real { background:var(--teal); color:var(--ink) }
+.tag.br { right:10px; bottom:10px } .tag.tl { left:10px; top:10px }
+
+/* Header */
+.top { position:sticky; top:0; z-index:20; background:rgba(255,247,236,.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding-top:env(safe-area-inset-top, 0px) }
+.top .wrap { display:flex; align-items:center; gap:18px; padding-block:10px }
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex:none }
+.logo img { width:38px; height:38px }
+.logo .word { font-size:24px }
+.top nav { display:flex; gap:20px; font-size:15px; font-weight:500; margin-left:8px }
+.top nav a { text-decoration:none; color:var(--dim) } .top nav a:hover { color:var(--ink) }
+.top .cta { margin-left:auto; font:700 14px/1 var(--display); background:var(--orange); color:var(--ink); text-decoration:none; padding:11px 16px; border-radius:999px; white-space:nowrap }
+.top .cta:hover { background:var(--yellow) }
+@media (max-width:900px) { .top nav { display:none } }
+@media (max-width:420px) { .top .cta { padding:9px 12px; font-size:13px } .logo .word { display:none } }
+
+/* Hero */
+.hero { position:relative; isolation:isolate; overflow:hidden; color:#fff; background:#3A1A05 }
+.hero > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:70% 50%; z-index:-2 }
+.hero::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(42,18,0,.92) 0%, rgba(42,18,0,.72) 40%, rgba(42,18,0,0) 72%), linear-gradient(0deg, rgba(42,18,0,.6), transparent 35%) }
+.hero .wrap { padding-block:clamp(56px,9vw,112px) clamp(64px,9vw,112px); display:grid; gap:20px }
+.hero h1 { font-size:clamp(64px,13vw,150px) }
+.hero .line { font:800 clamp(24px,3.4vw,40px)/1.1 var(--display); max-width:16ch }
+.hero p.lead { max-width:44ch; font-size:clamp(17px,2vw,20px); color:#FFE9D2 }
+.endorse { display:inline-flex; align-items:center; gap:8px; font:700 12px/1 var(--body); letter-spacing:.12em; text-transform:uppercase; text-decoration:none; justify-self:start }
+.endorse img { width:22px; height:22px }
+.status { justify-self:start; font:700 13px/1 var(--body); background:var(--yellow); color:var(--ink); padding:7px 12px; border-radius:999px }
+.status.live { background:var(--teal) }
+.ctas { display:flex; flex-wrap:wrap; gap:12px }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; font:700 17px/1.1 var(--display); padding:15px 24px; border-radius:14px; text-decoration:none; border:none; cursor:pointer; transition:transform .12s, box-shadow .12s; text-align:center }
+.btn.primary { background:var(--orange); color:var(--ink); box-shadow:0 5px 0 var(--orange-d) }
+.btn.light { background:#fff; color:var(--ink); box-shadow:0 5px 0 #D9C3A8 }
+.btn.ghost { background:transparent; color:var(--ink); box-shadow:inset 0 0 0 2px var(--ink) }
+.hero .btn.ghost { color:#fff; box-shadow:inset 0 0 0 2px #fff }
+.btn:hover { transform:translateY(-2px) } .btn:active { transform:translateY(3px) }
+.facts { display:flex; flex-wrap:wrap; gap:8px 26px; font-size:15px; color:#FFE9D2; margin-top:4px }
+.facts b { font:800 20px var(--display); color:#fff; margin-right:4px }
+@media (max-width:700px) { .hero::before { background:linear-gradient(0deg, rgba(42,18,0,.94) 30%, rgba(42,18,0,.55) 100%) } .hero > img { object-position:62% 50% } }
+
+/* Sections */
+section.band { padding-block:clamp(64px,9vw,108px) }
+.head { display:grid; gap:12px; margin-bottom:36px; max-width:760px }
+.kicker { font:700 13px/1 var(--body); letter-spacing:.14em; text-transform:uppercase; color:var(--orange-d); display:flex; align-items:center; gap:10px }
+.kicker::before { content:""; width:26px; height:4px; border-radius:2px; background:linear-gradient(90deg,var(--orange),var(--yellow),var(--teal),var(--purple)) }
+.head p { color:var(--dim); font-size:18px; max-width:58ch }
+.sand { background:var(--sand) }
+.dark { background:var(--bp); color:var(--bptext); background-image:linear-gradient(var(--bpline) 1px, transparent 1px), linear-gradient(90deg, var(--bpline) 1px, transparent 1px); background-size:40px 40px; background-position:-1px -1px }
+.dark .head p { color:var(--bpdim) } .dark .kicker { color:var(--yellow) }
+
+/* About */
+.about { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:28px; align-items:start }
+@media (max-width:900px) { .about { grid-template-columns:1fr } }
+.screen { position:relative; border-radius:18px; overflow:hidden; background:#000; aspect-ratio:16/9; box-shadow:0 18px 40px rgba(42,18,0,.18) }
+.screen img { width:100%; height:100%; object-fit:cover }
+.screen .cap { position:absolute; left:10px; bottom:10px; font:500 14px var(--body); background:rgba(255,255,255,.92); color:var(--ink); padding:5px 10px; border-radius:8px; max-width:calc(100% - 140px) }
+.thumbs { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-top:10px }
+.thumbs button { padding:0; border:3px solid transparent; border-radius:10px; overflow:hidden; cursor:pointer; background:none; aspect-ratio:16/10 }
+.thumbs button img { width:100%; height:100%; object-fit:cover; opacity:.65 }
+.thumbs button[aria-pressed="true"] { border-color:var(--orange) } .thumbs button[aria-pressed="true"] img, .thumbs button:hover img { opacity:1 }
+.card { background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:24px; display:grid; gap:16px }
+.card .title { display:flex; gap:14px; align-items:center }
+.card .title img { width:60px; height:60px }
+.card .title .word { font-size:34px }
+.card .title p { color:var(--dim); font-size:14px }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.stat { background:var(--cream); border-radius:12px; padding:12px 14px; display:grid; gap:2px }
+.stat b { font:800 28px/1 var(--display); color:var(--orange-d) }
+.stat span { font-size:14px; color:var(--dim); line-height:1.3 }
+.chips { display:flex; flex-wrap:wrap; gap:6px }
+.chip { font:500 13px/1 var(--body); padding:6px 10px; border-radius:999px; background:var(--sand); color:var(--ink) }
+.crew { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:28px }
+@media (max-width:760px) { .crew { grid-template-columns:1fr } }
+.friend { background:var(--paper); border-radius:16px; padding:18px 20px; border-top:6px solid var(--c); display:grid; gap:4px }
+.friend span { font:700 12px var(--body); letter-spacing:.1em; text-transform:uppercase; color:var(--dim) }
+.friend q { color:var(--dim); font-style:italic }
+
+/* Missions */
+.steps6 { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; padding:0; list-style:none; counter-reset:s }
+.steps6 li { counter-increment:s; font:600 14px/1 var(--display); background:var(--bp2); border:1px solid var(--bpline); border-radius:999px; padding:9px 14px 9px 10px; display:flex; align-items:center; gap:8px }
+.steps6 li::before { content:counter(s); width:22px; height:22px; border-radius:50%; background:var(--yellow); color:var(--ink); display:grid; place-items:center; font-size:12px }
+.tabs { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px }
+.tabs button { font:700 16px/1 var(--display); padding:12px 18px; border-radius:12px; border:2px solid var(--bpline); background:var(--bp2); color:var(--bptext); cursor:pointer }
+.tabs button[aria-selected="true"] { background:var(--c); border-color:var(--c); color:var(--ink) }
+.flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:0; padding:0; list-style:none }
+@media (max-width:900px) { .flow { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media (max-width:520px) { .flow { grid-template-columns:1fr } }
+.flow li { display:grid; gap:8px; align-content:start }
+.flow figure { margin:0; position:relative; border-radius:12px; overflow:hidden; aspect-ratio:16/9; background:#000; border:2px solid var(--bpline) }
+.flow figure img { width:100%; height:100%; object-fit:cover }
+.flow b { font:700 15px var(--display); color:var(--yellow) }
+.flow li > span { font-size:15px; color:var(--bpdim); line-height:1.45 }
+.mbrief { margin-top:24px; display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:18px }
+@media (max-width:860px) { .mbrief { grid-template-columns:1fr } }
+.mbrief > div { background:rgba(8,20,52,.75); border:1px solid var(--bpline); border-radius:16px; padding:20px 22px; display:grid; gap:10px; align-content:start }
+.mbrief h3 { font-size:26px }
+.mbrief .meta { font:700 12px var(--body); letter-spacing:.1em; text-transform:uppercase; color:var(--c, var(--yellow)) }
+.mbrief p { color:var(--bpdim) } .mbrief p b { color:var(--bptext) }
+.career { background:#FFF7EC !important; color:var(--ink); border:none !important }
+.career .meta { color:var(--orange-d) } .career p { color:var(--dim) } .career p b { color:var(--ink) }
+.finale { margin-top:18px; color:var(--bpdim) } .finale b { color:var(--bptext) }
+
+/* Different */
+.moves { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:900px) { .moves { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media (max-width:580px) { .moves { grid-template-columns:1fr } }
+.move { background:var(--paper); border-radius:18px; overflow:hidden; display:grid; grid-template-rows:auto 1fr; border:1px solid var(--line) }
+.move figure { margin:0; position:relative; aspect-ratio:16/9; background:#000 }
+.move figure img { width:100%; height:100%; object-fit:cover }
+.move div { padding:18px 20px 22px; display:grid; gap:6px; align-content:start }
+.move .k { font:700 12px var(--body); letter-spacing:.1em; text-transform:uppercase; color:var(--purple) }
+.move p { color:var(--dim); font-size:16px }
+
+/* Mini-game */
+.lab { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:32px; align-items:start }
+@media (max-width:920px) { .lab { grid-template-columns:1fr } }
+.rules { display:grid; gap:12px; align-content:start }
+.rules ol { margin:16px 0 0; padding-left:22px; display:grid; gap:6px; color:var(--bpdim) }
+.rig { background:var(--bp2); border:2px solid var(--yellow); border-radius:20px; padding:20px; display:grid; gap:16px; min-width:0 }
+.ctrl { display:grid; gap:12px }
+.row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px }
+.row > span { font-size:15px; color:var(--bpdim) } .row > span b { color:var(--bptext) }
+.seg, .step { display:flex; gap:6px; align-items:center }
+.seg button, .step button { font:700 15px/1 var(--display); border-radius:10px; border:2px solid var(--bpline); background:var(--bp); color:var(--bptext); cursor:pointer; padding:10px 12px; min-width:44px; min-height:44px }
+.seg button[aria-pressed="true"] { background:var(--teal); border-color:var(--teal); color:var(--ink) }
+.step output { font:800 22px var(--display); min-width:2ch; text-align:center }
+.note { background:rgba(8,20,52,.7); border-radius:12px; padding:12px 14px; font-size:14px; line-height:1.55; color:var(--bpdim); display:grid; gap:2px }
+.note b { color:var(--bptext) } .note .ok { color:#7BE3A0 } .note .no { color:#FF8A80 }
+.cost { height:10px; border-radius:999px; background:var(--bp); overflow:hidden } .cost i { display:block; height:100%; background:var(--teal); transition:width .2s }
+.cost.over i { background:#FF5A4E }
+svg.chart { width:100%; height:auto; background:rgba(8,20,52,.7); border-radius:12px; display:block }
+.lamps { display:flex; gap:10px; justify-content:center }
+.lamps i { width:22px; height:22px; border-radius:50%; background:#3A4A78; transition:background .2s, box-shadow .2s }
+.lamps.on i { background:#FFF2B0; box-shadow:0 0 18px 6px rgba(255,196,0,.7) }
+.result { min-height:3em; font-size:16px; color:var(--bptext) } .result b { color:var(--yellow) }
+
+/* Studio + prices */
+.more { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:8px }
+@media (max-width:820px) { .more { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media (max-width:480px) { .more { grid-template-columns:1fr } }
+.more a { display:flex; gap:12px; align-items:center; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:12px 14px; text-decoration:none }
+.more a:hover { border-color:var(--orange) }
+.more img { width:40px; height:40px; border-radius:50%; flex:none }
+.more b { font:700 16px var(--display); display:block } .more span { font-size:13px; color:var(--dim) }
+.classes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
+@media (max-width:900px) { .classes { grid-template-columns:1fr } }
+.cls { background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:24px; display:grid; gap:14px; align-content:start }
+.cls .role { font:700 12px/1 var(--body); letter-spacing:.1em; text-transform:uppercase; padding:6px 10px; border-radius:6px; justify-self:start; color:var(--ink) }
+.cls ul { margin:0; padding:0; list-style:none; display:grid; gap:8px; color:var(--dim); font-size:16px }
+.cls li { display:grid; grid-template-columns:16px 1fr; gap:10px }
+.cls li::before { content:""; width:9px; height:9px; margin-top:8px; border-radius:2px; background:var(--orange); transform:rotate(45deg) }
+.price { font:800 40px/1 var(--display) } .price small { font:500 15px var(--body); color:var(--dim) }
+.cls .links { display:grid; gap:10px }
+.join { background:linear-gradient(120deg,var(--orange),var(--yellow)); border-radius:24px; padding:clamp(28px,5vw,56px); display:grid; gap:18px; justify-items:start }
+.join p { max-width:52ch; font-size:18px }
+
+footer { background:var(--ink); color:#E9D6C3 }
+footer .wrap { padding-block:40px; display:flex; flex-wrap:wrap; gap:24px; justify-content:space-between; align-items:flex-end; font-size:14px }
+footer .word { font-size:30px; -webkit-text-stroke:0; filter:none }
+footer a { text-decoration:none } footer a:hover { text-decoration:underline }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Brightside, back to top"><img src="img/icons/brightside.svg" alt=""><span class="word" aria-hidden="true"><span class="a">Bri</span><span class="b">ght</span><span class="c">si</span><span class="d">de</span></span></a>
+    <nav aria-label="Brightside"><a href="#about">The game</a><a href="#missions">Missions</a><a href="#different">Why it works</a><a href="#try">Try it</a><a href="#prices">Prices</a></nav>
+    <a class="cta" href="player.html#new">Make my player account</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="top">
+  <img src="img/art-brightside.jpg" alt="Painted scene: three teenage friends walk beside a river in a colourful town with a new truss bridge, solar panels and a garden">
+  <span class="tag br">Illustration</span>
+  <div class="wrap">
+    <a class="endorse" href="index.html"><img src="img/mark.svg" alt="">A MindsPlay Studios game</a>
+    <h1><span class="word"><span class="a">Bri</span><span class="b">ght</span><span class="c">si</span><span class="d">de</span></span></h1>
+    <p class="line">Fix your town like an engineer.</p>
+    <p class="lead">Three friends roam a sunny riverside town, spot real problems and fix them the way engineers do. Design a bridge, power the court lights, bring water to a garden, then watch the town change.</p>
+    <span class="status" id="status" role="status" hidden></span>
+    <div class="ctas">
+      <a class="btn primary" href="player.html#new">Make my player account</a>
+      <a class="btn ghost" href="account.html">Add it to your child's games</a>
+    </div>
+    <div class="facts"><span><b>13–17</b>ages</span><span><b>3</b>friends to play as</span><span><b>3</b>missions and a finale</span><span><b>0</b>quiz pop-ups</span></div>
+  </div>
+</section>
+
+<section class="band" id="about">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">About the game</span>
+      <h2>An open town full of problems worth fixing.</h2>
+      <p>Brightside is a sunny, colourful riverside town. Walk its streets, talk to neighbours and find out what's broken. Every fix is a hands-on design sandbox with real physics and maths under the hood, and when you get it right, the town visibly changes.</p>
+    </div>
+    <div class="about">
+      <div>
+        <div class="screen"><img id="shot" src="img/brightside/aerial.jpg" alt="Brightside from above: rows of colourful houses, a creek, a basketball court and the town plaza"><span class="tag real tl">Real gameplay</span><span class="cap" id="shotcap">The whole town from above</span></div>
+        <div class="thumbs" id="thumbs" role="group" aria-label="Screenshots"></div>
+      </div>
+      <aside class="card">
+        <div class="title"><img src="img/icons/brightside.svg" alt=""><div><span class="word"><span class="a">Bri</span><span class="b">ght</span><span class="c">si</span><span class="d">de</span></span><p>Open world · Engineering · Careers</p></div></div>
+        <div class="stats">
+          <div class="stat"><b>3</b><span>friends, switch any time</span></div>
+          <div class="stat"><b>3</b><span>engineering missions</span></div>
+          <div class="stat"><b>6</b><span>design steps in every fix</span></div>
+          <div class="stat"><b>20</b><span>hidden Idea Sparks to find</span></div>
+        </div>
+        <div class="chips"><span class="chip">Ages 13–17</span><span class="chip">JHS and SHS</span><span class="chip">Keyboard, mouse or gamepad</span><span class="chip">Original music</span><span class="chip">No ads</span></div>
+        <a class="btn primary" href="player.html#new">Make my player account</a>
+        <a class="btn ghost" href="account.html">Add it to your child's games</a>
+      </aside>
+    </div>
+    <div class="crew">
+      <div class="friend" style="--c:var(--orange)"><span>Structures</span><h3>Kofi</h3><p>Big ideas, bigger jokes.</p><q>If it stands, I built it.</q></div>
+      <div class="friend" style="--c:var(--teal)"><span>Electrical and energy</span><h3>Mei</h3><p>Gadget fan who always has a multimeter.</p><q>Every watt-hour accounted for.</q></div>
+      <div class="friend" style="--c:var(--purple)"><span>Water and mechanical</span><h3>Ravi</h3><p>Calm, notices everything, loves nature and bikes.</p><q>Let's look around first.</q></div>
+    </div>
+  </div>
+</section>
+
+<section class="band dark" id="missions">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">Missions · how a fix works</span>
+      <h2>Broken. Blueprint. Tested. Fixed.</h2>
+      <p>Each mission follows the engineering design process. A neighbour asks for help, you find three field clues, design at the blueprint table within a budget, test it and improve it until it works. Then it gets built in the world.</p>
+    </div>
+    <ol class="steps6" aria-label="The six design steps"><li>Ask</li><li>Imagine</li><li>Plan and create</li><li>Test</li><li>Improve</li><li>Share</li></ol>
+    <div class="tabs" role="tablist" aria-label="Missions" id="tabs"></div>
+    <div role="tabpanel" id="mpanel" aria-live="polite">
+      <ol class="flow" id="flow"></ol>
+      <div class="mbrief">
+        <div id="mtext"></div>
+        <div class="career" id="mcareer"></div>
+      </div>
+    </div>
+    <p class="finale"><b>Finale:</b> with the bridge, the court and the garden fixed, the whole town throws a block party in the plaza.</p>
+  </div>
+</section>
+
+<section class="band" id="different">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">What makes it different</span>
+      <h2>No worksheets. Real engineering.</h2>
+      <p>Brightside asks teens to do what engineers do: look at a real problem, measure it, design, test and try again.</p>
+    </div>
+    <div class="moves">
+      <article class="move"><figure><img src="img/brightside/bridge-clues.jpg" alt="Kofi reads out the field clues by the broken footbridge" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">Field clues</span><h3>Measure before you design.</h3><p>Twelve metres to cross, thirty students and a bread cart. You collect the facts on site before you touch the blueprint.</p></div></article>
+      <article class="move"><figure><img src="img/brightside/bridge-3.jpg" alt="The bridge blueprint after a test, with every beam coloured by its force" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">Real physics</span><h3>A failed test is data.</h3><p>A truss solver works out the force in every beam. Overloaded parts glow red and the game tells you why they failed.</p></div></article>
+      <article class="move"><figure><img src="img/brightside/hub-crew.jpg" alt="Kofi, Mei and Ravi at The Hub makerspace" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">The crew</span><h3>Three friends, three specialities.</h3><p>Switch between Kofi, Mei and Ravi at any time. The other two follow you, cheer and chip in with ideas.</p></div></article>
+      <article class="move"><figure><img src="img/brightside/plaza.jpg" alt="The town plaza full of neighbours after the fixes" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">Community Vibe</span><h3>The town changes.</h3><p>Every fix raises the Community Vibe meter. More neighbours come out, and the plaza gets livelier.</p></div></article>
+      <article class="move"><figure><img src="img/brightside/career-card.jpg" alt="A career card: Renewable Energy Engineer, what they do and how to get there" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">Career cards</span><h3>Meet the real job.</h3><p>Each mission ends with a career card: what the engineer does, a real project somewhere in the world, and the subjects that lead there.</p></div></article>
+      <article class="move"><figure><img src="img/brightside/main-street.jpg" alt="Mei walks down Main Street under coloured bunting" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><div><span class="k">Open world</span><h3>Explore at your own pace.</h3><p>Roam the streets, chat to neighbours and hunt for 20 hidden Idea Sparks, each one a short engineering fact.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="band dark" id="try">
+  <div class="wrap lab">
+    <div class="rules">
+      <span class="kicker">Mini-game</span>
+      <h2>Lights Out</h2>
+      <p style="color:var(--bpdim);font-size:18px;margin-top:12px">The court lights are dead and the evening league is cancelled. Power four floodlights with the sun, from 6 pm to 10 pm, for three days. Day 2 is cloudy. The budget is $1,100.</p>
+      <ol>
+        <li>Pick the lamps, the number of solar panels and the batteries.</li>
+        <li>Check the notebook: energy in has to beat energy out.</li>
+        <li>Press Test and watch the battery over three days.</li>
+        <li>If the lights cut out, change your design and test again. Spend $900 or less for three stars.</li>
+      </ol>
+      <p style="color:var(--bpdim);margin-top:14px;font-size:15px">This is a small version of the Lights Out mission. In the game you also wire the panels in series or parallel and watch the voltage.</p>
+    </div>
+    <div class="rig" id="rig">
+      <div class="ctrl">
+        <div class="row"><span>Floodlights <b>× 4</b></span><div class="seg" role="group" aria-label="Lamp type"><button type="button" data-lamp="0" aria-pressed="true">LED 50 W</button><button type="button" data-lamp="1" aria-pressed="false">Halogen 150 W</button></div></div>
+        <div class="row"><span>Solar panels <b>100 W · $110</b></span><div class="step"><button type="button" data-k="panels" data-d="-1" aria-label="One fewer panel">−</button><output id="panels" aria-live="polite">1</output><button type="button" data-k="panels" data-d="1" aria-label="One more panel">+</button></div></div>
+        <div class="row"><span>Batteries <b>12 V 100 Ah · $140</b></span><div class="step"><button type="button" data-k="bats" data-d="-1" aria-label="One fewer battery">−</button><output id="bats" aria-live="polite">1</output><button type="button" data-k="bats" data-d="1" aria-label="One more battery">+</button></div></div>
+      </div>
+      <div class="note" id="note"></div>
+      <div class="row"><span>Cost <b id="cost">$0</b> of $1,100</span></div>
+      <div class="cost" id="costbar"><i></i></div>
+      <svg class="chart" id="chart" viewBox="0 0 360 120" role="img" aria-label="Battery charge over three days"></svg>
+      <div class="lamps" id="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <p class="result" id="result" aria-live="polite">Design, then press Test. A failed test isn't failure: it's data.</p>
+      <button class="btn primary" type="button" id="test">Test it</button>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="studio">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">From the studio</span>
+      <h2>One of six MindsPlay games.</h2>
+      <p>MindsPlay Studios makes learning games in Accra for ages 6 to 17. Brightside sits at the top of that path: by now you're not just solving problems, you're designing the fix.</p>
+    </div>
+    <div class="more">
+      <a href="xed.html"><img src="img/icons/xed.svg" alt=""><span><b>Xed</b><span>Maths adventure · 6–12</span></span></a>
+      <a href="lamplight.html"><img src="img/icons/lamplight.png" alt=""><span><b>Lamplight</b><span>Bible story world · 6–12</span></span></a>
+      <a href="graned.html"><img src="img/icons/graned.svg" alt=""><span><b>GranED Prix</b><span>Kart racer · 6–14</span></span></a>
+      <a href="inkbound.html"><img src="img/icons/inkbound.svg" alt=""><span><b>Inkbound</b><span>Storybook adventure · 7–11</span></span></a>
+      <a href="sworld.html"><img src="img/icons/sworld.svg" alt=""><span><b>Sworld</b><span>Action roguelike · 11–16</span></span></a>
+      <a href="index.html#games"><span><b>All games</b><span>See the whole line-up</span></span></a>
+    </div>
+  </div>
+</section>
+
+<section class="band sand" id="prices">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">Player, parent or school</span>
+      <h2>Pick your way in.</h2>
+    </div>
+    <div class="classes">
+      <article class="cls"><span class="role" style="background:var(--teal)">Player</span><h3>Your own account</h3><ul><li>Make your player account in a minute</li><li>Ask a parent to add Brightside to your games</li><li>Your progress, Sparks and career cards stay with you</li></ul><div class="links"><a class="btn primary" href="player.html#new">Make my player account</a><a class="btn ghost" href="player.html#signin">Already a player? Sign in</a></div></article>
+      <article class="cls"><span class="role" style="background:var(--yellow)">Parent</span><h3>Home access</h3><div class="price">GHS 49 <small>/ month</small></div><ul><li>First week free</li><li>Or GHS 490 a year, less for each extra child</li><li>Pay by Mobile Money or card</li><li>No ads, no loot boxes, no chat with strangers</li></ul><a class="btn primary" href="account.html">Add it to your child's games</a></article>
+      <article class="cls"><span class="role" style="background:var(--purple);color:#fff">School</span><h3>Licences and pilots</h3><ul><li>School licences for JHS and SHS</li><li>Pilots for science, technology and careers classes</li><li>Class reports for every student</li></ul><div class="links"><a class="btn primary" href="mailto:hello@mindsplaystudiogh.com?subject=Brightside%20for%20our%20school">Talk to us</a><a class="btn ghost" href="https://wa.me/233248932204" target="_blank" rel="noopener">WhatsApp +233 24 893 2204</a></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="join">
+  <div class="wrap">
+    <div class="join">
+      <h2>Ready to fix your town?</h2>
+      <p>Make your player account, or add Brightside to your child's games from your family account.</p>
+      <div class="ctas"><a class="btn light" href="player.html#new">Make my player account</a><a class="btn ghost" href="account.html">Add it to your child's games</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div style="display:grid;gap:8px">
+      <span class="word"><span class="a">Bri</span><span class="b">ght</span><span class="c">si</span><span class="d">de</span></span>
+      <a class="endorse" href="index.html"><img src="img/mark.svg" alt="">A MindsPlay Studios game</a>
+      <span>© 2026 MindsPlay Studios, Accra</span>
+    </div>
+    <div style="display:grid;gap:6px;justify-items:end;text-align:right">
+      <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a>
+      <a href="https://wa.me/233248932204" target="_blank" rel="noopener">WhatsApp +233 24 893 2204</a>
+      <a href="terms.html">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Status chip */
+const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : "https://api.mindsplaystudiogh.com";
+fetch(API + "/v1/games").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
+  const g = (d.games || d || []).find(x => x.id === "brightside"); if (!g) return;
+  const s = $("status");
+  if (g.status === "live") { s.textContent = "Out now"; s.classList.add("live"); s.hidden = false; }
+  else if (g.status === "coming_soon") { s.textContent = "Coming soon · add it to your list today"; s.hidden = false; }
+}).catch(() => {});
+
+/* Screenshots */
+const SHOTS = [
+  ["aerial", "The whole town from above", "Brightside from above: rows of colourful houses, a creek, a basketball court and the town plaza"],
+  ["title", "The title screen", "Brightside title screen over the town, with Play and Quit buttons"],
+  ["main-street", "Main Street, playing as Mei", "Mei walks down Main Street under coloured bunting"],
+  ["plaza", "The plaza after the fixes", "Neighbours fill the town plaza around a fountain and a painted wall"],
+  ["finale-card", "Brightside is shining", "End card: a bridge, a lit-up court and a thriving garden, designed by three friends"],
+];
+$("thumbs").innerHTML = SHOTS.map(([f, c], i) => `<button type="button" aria-pressed="${i === 0}" aria-label="${c}"><img src="img/brightside/${f}.jpg" alt="" loading="lazy"></button>`).join("");
+$("thumbs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return; const i = [...$("thumbs").children].indexOf(b);
+  [...$("thumbs").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+  $("shot").src = `img/brightside/${SHOTS[i][0]}.jpg`; $("shot").alt = SHOTS[i][2]; $("shotcap").textContent = SHOTS[i][1];
+});
+
+/* Missions */
+const M = [
+  { id:"bridge", n:"Bridge Out", c:"var(--orange)", f:"Structural engineering · led by Kofi", who:"Ms. Grace, a teacher",
+    p:"Last night's storm took out the creek footbridge to Brightside High. Students now walk 25 minutes round by the main road.",
+    d:"Build a truss from timber and steel across a 12 m gap. Tension, compression, buckling and cost all count, and the school has raised 2,600 coins.",
+    s:["The footbridge is down and the path is closed.", "Join beams into triangles at the blueprint table.", "Run the test. Every beam shows its force.", "The new bridge stands over the creek."],
+    j:"Structural Engineer", jd:"Designs bridges, stadiums, towers and homes so they stand up to people, wind, floods and earthquakes.", jp:"Maths and Physics, then a civil or structural engineering degree or apprenticeship." },
+  { id:"court", n:"Lights Out", c:"var(--teal)", f:"Electrical and energy engineering · led by Mei", who:"Coach Dre",
+    p:"The basketball court lights are dead and a grid hookup costs a fortune. No lights means no evening league.",
+    d:"Design a solar and battery system for four floodlights. Energy in has to beat energy out for three days, cloudy day included, on a $1,100 budget.",
+    s:["The court is dark and the evening league is cancelled.", "Choose lamps, panels, wiring and batteries.", "Simulate three days, including a cloudy one.", "Solar lights are up and the league is back."],
+    j:"Renewable Energy Engineer", jd:"Designs solar farms, wind turbines, batteries and smart grids that power homes, schools and electric cars.", jp:"Maths and Physics, then an electrical or electronic engineering degree or apprenticeship." },
+  { id:"garden", n:"Thirsty Garden", c:"var(--purple)", f:"Water and agricultural engineering · led by Ravi", who:"Auntie Esi",
+    p:"The community garden is wilting, the tap water costs too much, and carrying buckets uphill every day is too hard.",
+    d:"Catch rain from a roof, size the tank and raise it so gravity gives the drip lines enough pressure. Model a whole month on an $800 budget.",
+    s:["Ten garden beds are drying out.", "Pick the roof, the tank, its height and the pipe.", "Run a 30-day rain and pressure check.", "Every bed gets water, with no pump."],
+    j:"Water and Agricultural Engineer", jd:"Designs irrigation, clean-water and flood-control systems that feed communities and keep cities safe.", jp:"Maths, Physics and Biology or Geography, then civil, environmental or agricultural engineering." },
+];
+const STEP = ["1 · Broken", "2 · Blueprint", "3 · Tested", "4 · Fixed"];
+$("tabs").innerHTML = M.map((m, i) => `<button type="button" role="tab" id="t-${m.id}" aria-controls="mpanel" aria-selected="${i === 0}" tabindex="${i ? -1 : 0}" style="--c:${m.c}">${m.n}</button>`).join("");
+function showMission(i) {
+  const m = M[i];
+  [...$("tabs").children].forEach((b, j) => { b.setAttribute("aria-selected", String(j === i)); b.tabIndex = j === i ? 0 : -1; });
+  $("mpanel").setAttribute("aria-labelledby", "t-" + m.id);
+  $("flow").innerHTML = m.s.map((t, k) => `<li><figure><img src="img/brightside/${m.id}-${k + 1}.jpg" alt="${m.n}, step ${k + 1}: ${t}" loading="lazy"><span class="tag real tl">Real gameplay</span></figure><b>${STEP[k]}</b><span>${t}</span></li>`).join("");
+  $("mtext").style.setProperty("--c", m.c);
+  $("mtext").innerHTML = `<span class="meta">${m.f}</span><h3>${m.n}</h3><p><b>Who asks:</b> ${m.who}. ${m.p}</p><p><b>What you design:</b> ${m.d}</p>`;
+  $("mcareer").innerHTML = `<span class="meta">Career card</span><h3>${m.j}</h3><p>${m.jd}</p><p><b>How to get there:</b> ${m.jp}</p>`;
+}
+$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showMission([...$("tabs").children].indexOf(b)); });
+$("tabs").addEventListener("keydown", e => {
+  const i = [...$("tabs").children].indexOf(document.activeElement); if (i < 0) return;
+  const n = e.key === "ArrowRight" ? (i + 1) % 3 : e.key === "ArrowLeft" ? (i + 2) % 3 : -1;
+  if (n >= 0) { e.preventDefault(); showMission(n); $("tabs").children[n].focus(); }
+});
+showMission(0);
+
+/* Mini-game: Lights Out */
+const LAMP_W = [50, 150], LAMP_COST = [60, 20], PANEL = 110, BAT = 140, BUDGET = 1100, USABLE = 600, CLOUD = [1, .35, 1];
+const g = { lamp:0, panels:1, bats:1 }; let running = false;
+const need = () => 4 * LAMP_W[g.lamp] * 4, cap = () => g.bats * USABLE, sun = c => g.panels * 100 * 5 * .85 * c;
+const cost = () => 4 * LAMP_COST[g.lamp] + g.panels * PANEL + g.bats * BAT;
+function simulate() {
+  let q = cap() * .7, fail = null; const pts = [];
+  for (let h = 0; h < 72; h++) {
+    const d = Math.floor(h / 24), t = h % 24;
+    if (t >= 9 && t < 14) q = Math.min(cap(), q + sun(CLOUD[d]) / 5);
+    if (t >= 18 && t < 22 && !fail) { const use = 4 * LAMP_W[g.lamp]; if (q < use) fail = { d, t }; else q -= use; }
+    pts.push(q);
+  }
+  return { pts, fail };
+}
+function render() {
+  const c = cost(), ok = (a, b) => a >= b ? `<span class="ok">${a} Wh ✓</span>` : `<span class="no">${a} Wh</span>`;
+  $("panels").textContent = g.panels; $("bats").textContent = g.bats;
+  document.querySelectorAll("[data-lamp]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.lamp === g.lamp)));
+  $("cost").textContent = "$" + c.toLocaleString("en-GB");
+  $("costbar").classList.toggle("over", c > BUDGET); $("costbar").firstElementChild.style.width = Math.min(100, c / BUDGET * 100) + "%";
+  $("note").innerHTML = `<span>Needed each night: 4 × ${LAMP_W[g.lamp]} W × 4 h = <b>${need()} Wh</b></span>`
+    + `<span>Battery you can use: ${g.bats} × 600 Wh = ${ok(cap(), need())}</span>`
+    + `<span>Solar on a sunny day: ${g.panels} × 100 W × 5 h × 85% = ${ok(Math.round(sun(1)), need())}</span>`
+    + `<span>Solar on the cloudy day: <b>${Math.round(sun(.35))} Wh</b></span>`;
+}
+function draw(pts, upto) {
+  const top = Math.max(cap(), 1), x = i => 6 + i * 348 / 71, y = v => 110 - v / top * 96;
+  let s = [0, 1, 2].map(d => `<rect x="${x(d * 24 + 18)}" y="8" width="${4 * 348 / 71}" height="104" fill="#000" opacity=".3"/><text x="${x(d * 24 + 4)}" y="20" fill="#AFC0EC" font-size="10" font-family="DM Sans,sans-serif">Day ${d + 1}${d === 1 ? " · cloudy" : ""}</text>`).join("");
+  if (pts) s += `<polyline fill="none" stroke="#FFC400" stroke-width="2.5" stroke-linejoin="round" points="${pts.slice(0, upto).map((v, i) => x(i).toFixed(1) + "," + y(v).toFixed(1)).join(" ")}"/>`;
+  $("chart").innerHTML = s;
+}
+function test() {
+  if (running) return;
+  const c = cost(), r = $("result");
+  if (c > BUDGET) { r.innerHTML = `<b>Over budget.</b> Your design costs $${c.toLocaleString("en-GB")}, but the council only has $1,100. ${g.lamp ? "Cheap halogen lamps need far more panels and batteries. Check the notebook." : "Can you manage with fewer panels or batteries?"}`; return; }
+  const { pts, fail } = simulate(); running = true; $("test").disabled = true; let i = reduce ? 72 : 0;
+  const step = () => {
+    i = Math.min(72, i + 2); draw(pts, i);
+    const t = (i - 1) % 24, d = Math.floor((i - 1) / 24);
+    $("lamps").classList.toggle("on", t >= 18 && t < 22 && !(fail && (d > fail.d || (d === fail.d && t >= fail.t))));
+    if (i < 72) return setTimeout(step, 40);
+    running = false; $("test").disabled = false; $("lamps").classList.remove("on");
+    if (fail) r.innerHTML = `<b>Lights out at ${fail.t - 12} pm on day ${fail.d + 1}${fail.d === 1 ? ", the cloudy day" : ""}.</b> The battery ran dry. Store more energy or use less, then test again.`;
+    else { const st = c <= 900 ? "★★★" : c <= 1000 ? "★★" : "★"; r.innerHTML = `<b>${st} All 12 hours of games lit, even after the cloudy day.</b> Cost $${c.toLocaleString("en-GB")} of $1,100.${c > 900 ? " Can you do it for $900 or less?" : " Lean and reliable: that's engineering."}`; }
+  };
+  step();
+}
+$("rig").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || running) return;
+  if (b.dataset.lamp) g.lamp = +b.dataset.lamp;
+  if (b.dataset.k) g[b.dataset.k] = Math.max(1, Math.min(b.dataset.k === "panels" ? 8 : 6, g[b.dataset.k] + +b.dataset.d));
+  if (b.id === "test") return test();
+  render(); draw();
+});
+render(); draw();
+})();
+</script>
+</body>
+</html>

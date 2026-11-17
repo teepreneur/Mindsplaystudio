@@ -242,6 +242,10 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
 .endorse { display:inline-flex; align-items:center; gap:8px; font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); text-decoration:none }
 .endorse svg { width:20px; height:20px }
 @media (max-width:520px) { .back span { display:none } }
+.moregames { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:20px }
+.moregames a { display:grid; gap:2px; text-decoration:none; color:var(--text); font:800 18px/1.2 var(--display); background:var(--deep, rgba(255,255,255,.06)); border:2px solid var(--edge, rgba(255,255,255,.15)); border-radius:14px; padding:12px 14px }
+.moregames a:hover { border-color:var(--gold) }
+.moregames small { font:400 13px var(--body); color:var(--dim) }
 </style>
 </head>
 <body>
@@ -384,9 +388,10 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     <div class="level-head">
       <span class="lvtag">Level 5 · More from the studio</span>
       <h2>Xed is game one.</h2>
-      <p>MindsPlay Studios is building more games for kids and teens: money, coding, reading and science. See what’s coming.</p>
+      <p>MindsPlay Studios is building more games for kids and teens: Bible stories, racing with maths, reading and writing, science and engineering.</p>
     </div>
-    <a class="btn primary" href="./#games">See MindsPlay’s upcoming games</a>
+    <div class="moregames"><a href="lamplight.html">Lamplight <small>Bible adventure · 6–12</small></a><a href="graned.html">GranED Prix <small>Kart racer · 6–14</small></a><a href="inkbound.html">Inkbound <small>Storybook adventure · 7–11</small></a><a href="sworld.html">Sworld <small>Action roguelike · 11–16</small></a><a href="brightside.html">Brightside <small>Open world · 13–17</small></a></div>
+    <a class="btn primary" href="./#games">See all MindsPlay games</a>
   </div>
 </section>
 

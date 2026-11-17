@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GranED Prix · MindsPlay Studios</title>
+<meta name="description" content="GranED Prix: a kart racer where knowledge is speed. Steer into the right answer at each Answer Gate for a Spark Boost. Maths from adding to equations, ages 6 to 14. A MindsPlay Studios game.">
+<link rel="icon" href="img/icons/graned.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* GranED Prix: race-day look. Night-navy track, yellow badge, red title shadow, kerb stripes between sections. Single dark theme by choice. */
+:root {
+  --ink:#06123A; --navy:#0A1E5A; --panel:#11286E; --edge:#28479F;
+  --yellow:#FFD400; --red:#D8352A; --blue:#3E8BFF; --lanepink:#F27DB5; --green:#2FCB74;
+  --text:#FFFFFF; --dim:#BCC8EE;
+  --title:"Racing Sans One","Arial Black",system-ui,sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  color-scheme:dark;
+}
+* { box-sizing:border-box }
+[hidden] { display:none !important }
+html { background:var(--ink) }
+body { background:var(--ink); color:var(--text); font:400 17px/1.6 var(--body); margin:0; overflow-x:hidden }
+a { color:inherit }
+img { display:block; max-width:100% }
+p { margin:0 }
+h1, h2, h3 { margin:0; line-height:1.05; text-wrap:balance }
+h2 { font:400 clamp(36px,6vw,64px)/1 var(--title); text-shadow:3px 3px 0 var(--red) }
+h3 { font:800 22px/1.15 var(--body) }
+.wrap { max-width:1180px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)) }
+.lbl { font:700 13px/1 var(--cond); letter-spacing:.12em; text-transform:uppercase }
+:focus-visible { outline:3px solid var(--yellow); outline-offset:3px; border-radius:6px }
+.kerb { height:12px; background:repeating-linear-gradient(90deg,var(--red) 0 36px,#fff 36px 72px) }
+.check { height:14px; background:conic-gradient(#fff 25%,#0B0B10 0 50%,#fff 0 75%,#0B0B10 0) 0 0/14px 14px }
+
+/* Header */
+.top { position:sticky; top:0; z-index:20; background:rgba(6,18,58,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:3px solid var(--yellow) }
+.top .wrap { display:flex; align-items:center; gap:18px; padding-block:10px }
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex:none }
+.logo img { width:38px; height:38px }
+.logo b { font:400 24px/1 var(--title); text-shadow:2px 2px 0 var(--red) }
+.top nav { display:flex; gap:18px; font-weight:600; font-size:15px }
+.top nav a { text-decoration:none; color:var(--dim) } .top nav a:hover { color:var(--text) }
+.top .mini { margin-left:auto }
+@media (max-width:900px) { .top nav { display:none } }
+@media (max-width:440px) { .top .mini { font-size:14px; padding:10px 12px 9px } .logo b { font-size:20px } }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; font:800 18px/1 var(--body); padding:15px 24px 14px; border-radius:12px; text-decoration:none; border:none; cursor:pointer; transition:transform .12s, box-shadow .12s }
+.btn.go { background:var(--yellow); color:var(--navy); box-shadow:0 5px 0 #B39400 }
+.btn.ghost { background:rgba(255,255,255,.08); color:var(--text); box-shadow:inset 0 0 0 2px var(--edge), 0 5px 0 #030A24 }
+.btn:hover { transform:translateY(-2px) } .btn:active { transform:translateY(3px); box-shadow:0 2px 0 #030A24 }
+.btn.mini { font-size:15px; padding:11px 16px 10px }
+
+/* Labels on images */
+.tag { position:absolute; font:700 12px/1 var(--cond); letter-spacing:.1em; text-transform:uppercase; padding:6px 9px; border-radius:6px; z-index:2 }
+.tag.ill { right:12px; bottom:12px; background:rgba(6,18,58,.72); color:#fff }
+.tag.real { left:12px; top:12px; background:var(--yellow); color:var(--navy) }
+
+/* Hero */
+.hero { position:relative; isolation:isolate; overflow:hidden }
+.hero > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:72% 55%; z-index:-2 }
+.hero::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(6,18,58,.95) 0%, rgba(6,18,58,.78) 40%, rgba(6,18,58,.05) 75%), linear-gradient(0deg, rgba(6,18,58,.85), transparent 35%) }
+@media (max-width:760px) { .hero::before { background:linear-gradient(0deg, rgba(6,18,58,.97) 30%, rgba(6,18,58,.55) 70%, rgba(6,18,58,.15)) } .hero > img { object-position:70% 30% } .hero .wrap { padding-top:220px !important } }
+.hero .wrap { padding-block:clamp(72px,10vw,128px) clamp(64px,8vw,104px); display:grid; gap:20px }
+.endorse { display:inline-flex; align-items:center; gap:8px; font:700 13px/1 var(--cond); letter-spacing:.12em; text-transform:uppercase; color:var(--dim); text-decoration:none; justify-self:start }
+.endorse img { width:22px; height:22px }
+.hero h1 { font:400 clamp(56px,11vw,128px)/.9 var(--title); color:#fff; text-shadow:4px 4px 0 var(--red); letter-spacing:.01em }
+.hero .slogan { font:800 clamp(22px,3vw,30px)/1.1 var(--body); color:var(--yellow) }
+.hero p.lede { max-width:46ch; font-size:clamp(17px,2vw,20px); color:#E2E8FA }
+.status { justify-self:start; font:700 14px/1 var(--cond); letter-spacing:.1em; text-transform:uppercase; background:var(--yellow); color:var(--navy); padding:7px 11px; border-radius:999px }
+.status.live { background:var(--green); color:#04220F }
+.ctas { display:flex; flex-wrap:wrap; gap:12px }
+.ticker { display:flex; flex-wrap:wrap; gap:8px 26px; font:600 15px var(--cond); letter-spacing:.06em; text-transform:uppercase; color:var(--dim) }
+.ticker b { color:var(--yellow); font-size:19px }
+
+/* Sections */
+.lap { padding-block:clamp(60px,9vw,108px) }
+.lap.alt { background:var(--navy) }
+.head { display:grid; gap:14px; margin-bottom:36px; max-width:780px }
+.head .lbl { color:var(--yellow); display:flex; align-items:center; gap:10px }
+.head .lbl::before { content:""; width:26px; height:12px; background:conic-gradient(#fff 25%,#0B0B10 0 50%,#fff 0 75%,#0B0B10 0) 0 0/6px 6px }
+.head p { color:var(--dim); font-size:18px; max-width:60ch }
+
+/* About */
+.about { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:26px; align-items:start }
+@media (max-width:900px) { .about { grid-template-columns:1fr } }
+.screen { position:relative; border:4px solid var(--edge); border-radius:16px; overflow:hidden; aspect-ratio:16/9; background:#000 }
+.screen img { width:100%; height:100%; object-fit:cover }
+.screen .cap { position:absolute; left:12px; bottom:12px; font:600 14px var(--body); background:rgba(6,18,58,.85); padding:6px 10px; border-radius:6px }
+.thumbs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:10px }
+.thumbs button { padding:0; border:3px solid transparent; border-radius:10px; overflow:hidden; cursor:pointer; background:none; aspect-ratio:16/10 }
+.thumbs img { width:100%; height:100%; object-fit:cover; opacity:.6 }
+.thumbs [aria-pressed="true"] { border-color:var(--yellow) } .thumbs [aria-pressed="true"] img, .thumbs button:hover img { opacity:1 }
+.card { background:var(--panel); border:2px solid var(--edge); border-radius:16px; padding:22px; display:grid; gap:16px }
+.card .title { display:flex; gap:14px; align-items:center }
+.card .title img { width:60px; height:60px }
+.card .title h3 { font:400 32px/1 var(--title); text-shadow:2px 2px 0 var(--red) }
+.card .title p { color:var(--dim); font-size:14px }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.stat { background:var(--ink); border-radius:12px; padding:12px 14px; display:grid; gap:2px }
+.stat b { font:400 32px/1 var(--title); color:var(--yellow) }
+.stat span { font-size:14px; color:var(--dim); line-height:1.3 }
+.chips { display:flex; flex-wrap:wrap; gap:6px }
+.chips span { font:600 14px/1 var(--cond); letter-spacing:.06em; text-transform:uppercase; padding:6px 10px; border-radius:6px; background:var(--ink); color:var(--dim) }
+
+/* Grades */
+.grades { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:10px }
+@media (max-width:820px) { .grades { grid-template-columns:repeat(4,minmax(0,1fr)) } }
+.gnode { display:grid; justify-items:center; gap:8px; background:none; border:none; color:var(--text); font:inherit; cursor:pointer; padding:6px 0 }
+.gnode .num { width:64px; height:64px; border-radius:50%; display:grid; place-items:center; font:400 30px/1 var(--title); background:var(--panel); border:4px solid var(--edge); transition:transform .15s }
+.gnode:hover .num { transform:translateY(-3px) }
+.gnode[aria-pressed="true"] .num { background:var(--yellow); color:var(--navy); border-color:#fff }
+.gnode small { font:600 14px/1.1 var(--cond); letter-spacing:.05em; text-transform:uppercase; color:var(--dim); text-align:center }
+.ginfo { margin-top:26px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; background:var(--panel); border:2px solid var(--edge); border-radius:16px; padding:24px; align-items:center }
+@media (max-width:820px) { .ginfo { grid-template-columns:1fr } }
+.ginfo .meta { color:var(--yellow) }
+.ginfo h3 { font-size:30px; margin:8px 0 10px }
+.ginfo p { color:var(--dim) }
+.qboard { background:var(--ink); border-radius:12px; padding:18px; display:grid; gap:12px; text-align:center }
+.qboard .q { font:800 clamp(30px,5vw,44px)/1 var(--body) }
+.lanes3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px }
+.lanes3 span { font:800 22px/1 var(--body); padding:12px 0; border-radius:8px; color:var(--navy) }
+.l0 { background:var(--blue) } .l1 { background:var(--yellow) } .l2 { background:var(--lanepink) }
+.cup { margin-top:26px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:center }
+@media (max-width:820px) { .cup { grid-template-columns:1fr } }
+.cup figure { margin:0; position:relative; border-radius:14px; overflow:hidden; border:3px solid var(--edge) }
+
+/* Racers */
+.grid7 { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr)); gap:16px }
+.racer { background:var(--panel); border:2px solid var(--edge); border-radius:16px; overflow:hidden; display:grid; grid-template-rows:auto 1fr }
+.racer img { width:100%; aspect-ratio:4/3; object-fit:cover; background:#DCE1EC }
+.racer div { padding:14px 16px 18px; display:grid; gap:6px; align-content:start }
+.racer .who { color:var(--dim); font-size:15px }
+.racer .perk { font-size:15px } .racer .perk b { color:var(--yellow) }
+.racer .rival { font:600 12px/1 var(--cond); letter-spacing:.08em; text-transform:uppercase; color:var(--dim) }
+.realnote { display:inline-block; margin-top:14px; font:700 12px/1 var(--cond); letter-spacing:.1em; text-transform:uppercase; background:var(--yellow); color:var(--navy); padding:6px 9px; border-radius:6px }
+
+/* Different */
+.diff { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px }
+@media (max-width:900px) { .diff { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+@media (max-width:560px) { .diff { grid-template-columns:1fr } }
+.diff article { background:var(--panel); border:2px solid var(--edge); border-radius:16px; overflow:hidden; display:grid; align-content:start }
+.diff figure { margin:0; position:relative } .diff figure img { width:100%; aspect-ratio:16/9; object-fit:cover }
+.diff .txt { padding:18px 20px 22px; display:grid; gap:8px }
+.diff .k { color:var(--yellow) }
+.diff p { color:var(--dim); font-size:16px }
+
+/* Mini-game */
+.dash { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:32px; align-items:start }
+@media (max-width:900px) { .dash { grid-template-columns:1fr } }
+.rules ol { margin:14px 0 0; padding-left:22px; display:grid; gap:6px; color:var(--dim) }
+.rules .stat { margin-top:18px; max-width:220px }
+.arcade { background:var(--panel); border:4px solid var(--yellow); border-radius:20px; padding:16px; display:grid; gap:12px; min-width:0 }
+.hudrow { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font:700 16px var(--cond); letter-spacing:.06em; text-transform:uppercase }
+.hudrow b { color:var(--yellow) }
+.qbar { background:var(--ink); border-radius:10px; padding:10px; text-align:center }
+.qbar small { display:block; font:700 13px var(--cond); letter-spacing:.08em; text-transform:uppercase; color:var(--yellow) }
+.qbar b { font:800 clamp(28px,6vw,40px)/1.1 var(--body) }
+.road { position:relative; height:330px; border-radius:12px; overflow:hidden; background:#3A3F4E; border-left:10px solid; border-right:10px solid; border-image:repeating-linear-gradient(180deg,var(--red) 0 22px,#fff 22px 44px) 10; touch-action:manipulation }
+.road .stripes { position:absolute; inset:0; background:linear-gradient(90deg,transparent calc(33.33% - 2px),rgba(255,255,255,.7) calc(33.33% - 2px) calc(33.33% + 2px),transparent calc(33.33% + 2px) calc(66.66% - 2px),rgba(255,255,255,.7) calc(66.66% - 2px) calc(66.66% + 2px),transparent calc(66.66% + 2px)); -webkit-mask:repeating-linear-gradient(180deg,#000 0 26px,transparent 26px 46px); mask:repeating-linear-gradient(180deg,#000 0 26px,transparent 26px 46px) }
+.lanebtn { position:absolute; top:0; bottom:0; width:33.34%; background:none; border:none; cursor:pointer; z-index:3; border-radius:0 }
+.gate { position:absolute; left:0; right:0; top:0; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:0 6px; z-index:2; pointer-events:none }
+.gate span { font:800 24px/1 var(--body); text-align:center; padding:10px 0; border-radius:8px; color:var(--navy); box-shadow:0 4px 0 rgba(0,0,0,.35) }
+.kart { position:absolute; bottom:18px; width:56px; height:72px; transform:translateX(-50%); transition:left .12s ease-out; z-index:2; pointer-events:none }
+.kart.boost::after { content:""; position:absolute; left:14px; right:14px; top:100%; height:26px; background:linear-gradient(180deg,#9FD9FF,rgba(62,139,255,0)); border-radius:0 0 50% 50% }
+.flash { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity .35s }
+.flash.good { background:rgba(47,203,116,.35); opacity:1 } .flash.bad { background:rgba(216,53,42,.35); opacity:1 }
+.arcade .msg { text-align:center; color:var(--dim); min-height:1.6em }
+.ctl { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center }
+select { font:600 16px var(--body); background:var(--ink); color:var(--text); border:2px solid var(--edge); border-radius:10px; padding:11px 12px }
+.dyk { background:var(--ink); border-radius:10px; padding:12px 14px; font-size:15px } .dyk b { color:var(--yellow) }
+
+/* Studio and more */
+.more { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-top:8px }
+@media (max-width:900px) { .more { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+.more a { display:grid; gap:8px; justify-items:center; text-align:center; padding:16px 10px; background:var(--panel); border:2px solid var(--edge); border-radius:14px; text-decoration:none; font-weight:700 }
+.more a:hover { border-color:var(--yellow) }
+.more img { width:52px; height:52px; border-radius:12px }
+.more small { color:var(--dim); font-weight:500; font-size:14px; line-height:1.3 }
+
+/* Prices */
+.who3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px }
+@media (max-width:900px) { .who3 { grid-template-columns:1fr } }
+.who3 article { background:var(--panel); border:2px solid var(--edge); border-radius:16px; padding:24px; display:grid; gap:14px; align-content:start }
+.role { justify-self:start; padding:6px 10px; border-radius:6px; color:var(--navy) }
+.who3 ul { margin:0; padding:0; list-style:none; display:grid; gap:8px; color:var(--dim); font-size:16px }
+.who3 li { display:grid; grid-template-columns:16px 1fr; gap:10px }
+.who3 li::before { content:""; width:10px; height:10px; margin-top:8px; background:var(--yellow); transform:rotate(45deg) }
+.price { font:400 44px/1 var(--title); color:#fff } .price small { font:500 16px var(--body); color:var(--dim) }
+.signin { color:var(--dim); font-size:15px; text-align:center } .signin a { color:var(--yellow) }
+
+/* Join and footer */
+.join { text-align:center; display:grid; justify-items:center; gap:18px }
+.join p { color:var(--dim); max-width:56ch; font-size:18px }
+footer { background:#040C29 }
+footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justify-content:space-between; align-items:center; color:var(--dim); font-size:15px }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="GranED Prix, back to top"><img src="img/icons/graned.svg" alt="" width="38" height="38"><b>GranED Prix</b></a>
+    <nav aria-label="Main"><a href="#about">The game</a><a href="#grades">Grades</a><a href="#racers">Racers</a><a href="#dash">Mini-game</a><a href="#prices">Prices</a></nav>
+    <a class="btn go mini" href="player.html#new">Make my player account</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <img src="img/art-graned.jpg" alt="">
+  <span class="tag ill">Illustration</span>
+  <div class="wrap">
+    <a class="endorse" href="index.html"><img src="img/mark.svg" alt="" width="22" height="22" onerror="this.hidden=true">A MindsPlay Studios game</a>
+    <span class="status" id="status" hidden></span>
+    <h1>GranED Prix</h1>
+    <p class="slogan">Think fast. Drive faster.</p>
+    <p class="lede">A kart racer where knowledge is speed. Questions float over the track, and you answer by steering into the right lane. Get it right and you fly off on a Spark Boost.</p>
+    <div class="ctas">
+      <a class="btn go" href="player.html#new">Make my player account</a>
+      <a class="btn ghost" href="account.html">Add it to your child’s games</a>
+    </div>
+    <div class="ticker"><span><b>7</b> racers</span><span><b>8</b> grade levels</span><span><b>2</b> players, one screen</span><span>Ages <b>6–14</b></span></div>
+  </div>
+</section>
+<div class="kerb" aria-hidden="true"></div>
+
+<section class="lap" id="about">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 1 · About the game</span>
+      <h2>Knowledge is speed.</h2>
+      <p>Pick a racer and hit the Numbera Canyon Cup. Three times a lap you reach an Answer Gate with a maths question over it and three answer lanes underneath. Steer into the right one for a boost. Pick the wrong one and you slow down for a moment, then keep racing.</p>
+    </div>
+    <div class="about">
+      <div>
+        <div class="screen"><span class="tag real">Real gameplay</span><img id="shot" src="img/graned/race.jpg" alt="GranED Prix gameplay: karts race towards an Answer Gate asking 231 + 81"><span class="cap" id="shotcap">Answer Gate · 231 + 81</span></div>
+        <div class="thumbs" id="thumbs" role="group" aria-label="Screenshots"></div>
+      </div>
+      <aside class="card">
+        <div class="title"><img src="img/icons/graned.svg" alt="" width="60" height="60"><div><h3>GranED Prix</h3><p>Kart racer · Maths</p></div></div>
+        <div class="stats">
+          <div class="stat"><b>3</b><span>Answer Gates every lap</span></div>
+          <div class="stat"><b>8</b><span>grade levels, adding to equations</span></div>
+          <div class="stat"><b>7</b><span>racers, each with a learning perk</span></div>
+          <div class="stat"><b>2</b><span>tracks in the Numbera Canyon Cup</span></div>
+        </div>
+        <div class="chips"><span>Ages 6–14</span><span>1 or 2 players</span><span>Grand Prix</span><span>Time Trial</span><span>Keyboard or gamepad</span></div>
+        <a class="btn go" href="player.html#new">Make my player account</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="lap alt" id="grades">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 2 · The levels</span>
+      <h2>Eight grades. One race.</h2>
+      <p>Every racer gets questions at their own grade, from adding to 20 all the way up to equations, squares and roots. Inside each grade the game watches how you do: three right and the questions get harder, two wrong and they get easier. Tap a grade to see what it covers.</p>
+    </div>
+    <div class="grades" id="gmap" role="group" aria-label="Grades"></div>
+    <div class="ginfo" aria-live="polite">
+      <div><span class="lbl meta" id="gmeta"></span><h3 id="gname"></h3><p id="gdesc"></p></div>
+      <div class="qboard"><span class="lbl" style="color:var(--dim)">A gate at this grade</span><div class="q" id="gq"></div><div class="lanes3" id="glanes"></div></div>
+    </div>
+    <div class="cup">
+      <figure><span class="tag real">Real gameplay</span><img src="img/graned/grid.jpg" alt="Seven karts on the starting grid of Digit Dunes, with mesas and hot-air balloons behind" loading="lazy"></figure>
+      <div style="display:grid;gap:10px"><span class="lbl" style="color:var(--yellow)">The Numbera Canyon Cup</span><h3 style="font-size:28px">Digit Dunes and Mesa Multiplier</h3><p style="color:var(--dim)">Two races through a desert canyon full of sandstone mesas, giant number monuments, cactus and hot-air balloons. Score points in each race to win the cup, or take on Time Trial and beat your best lap.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lap" id="racers">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 3 · The grid</span>
+      <h2>Meet the racers.</h2>
+      <p>Every racer has their own speed, acceleration and handling, plus a learning perk that changes how they race.</p>
+    </div>
+    <div class="grid7" id="roster"></div>
+    <span class="realnote">Racers as they look in the game</span>
+  </div>
+</section>
+
+<section class="lap alt" id="different">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 4 · What makes it different</span>
+      <h2>The maths is the steering wheel.</h2>
+      <p>There’s no quiz screen and no pause to answer. You think while you drive.</p>
+    </div>
+    <div class="diff">
+      <article><figure><span class="tag real">Real gameplay</span><img src="img/graned/splitscreen.jpg" alt="Split-screen race: the top player gets 8 × 7, the bottom player gets (−7) − 8" loading="lazy"></figure><div class="txt"><span class="lbl k">Two players, two grades</span><h3>Race a friend at your own level.</h3><p>Two players share one screen, and each gets questions at their own grade. A 7-year-old and a 12-year-old can race fairly.</p></div></article>
+      <article><figure><span class="tag real">Real gameplay</span><img src="img/graned/menu.jpg" alt="Racer select screen showing Nova, her perk, her stats and Grade 3 Maths" loading="lazy"></figure><div class="txt"><span class="lbl k">Learns as you race</span><h3>Always the right challenge.</h3><p>Three right in a row and the questions step up. Two wrong and they ease off. Progress is saved for each player.</p></div></article>
+      <article><div class="txt"><span class="lbl k">Mistakes come back</span><h3>Missed it? You’ll see it again.</h3><p>A question you got wrong comes back a few gates later, asked a different way, so it sticks. Wrong answers are built from real, common mistakes.</p></div></article>
+      <article><div class="txt"><span class="lbl k">Did you know?</span><h3>A Brain Report after every race.</h3><p>The results screen shows the places, the cup points and a short “Did you know?” with the facts you missed, so you go back in knowing more.</p></div></article>
+      <article><div class="txt"><span class="lbl k">Idea Orbs</span><h3>Items with brains.</h3><p>Grab Idea Orbs for the Eureka Bulb, Prism Shield, Magnet of Attraction, Gravity Well or Eraser Cloud. Feeling brave? Go Double-or-Nothing: answer a harder question to super-size your item.</p></div></article>
+      <article><div class="txt"><span class="lbl k">Real kart racing</span><h3>Drift, spark, boost.</h3><p>Hold a drift to charge blue, orange and then purple sparks, and let go to boost. Last place gets Big Brain, which answers the next three gates for you.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="lap" id="dash">
+  <div class="wrap dash">
+    <div class="rules">
+      <div class="head" style="margin:0"><span class="lbl">Lap 5 · Mini-game</span><h2>Gate Dash</h2>
+      <p>A taste of GranED Prix in 45 seconds. Steer into the right answer at every gate and see how far you can drive.</p></div>
+      <ol>
+        <li>Read the question at the top.</li>
+        <li>Steer with the arrow keys, A and D, keys 1 to 3, or tap a lane.</li>
+        <li>Right lane: Spark Boost. Wrong lane: you slow down.</li>
+        <li>Three right in a row makes the questions harder. Two wrong makes them easier.</li>
+      </ol>
+      <div class="stat"><b id="best">0 m</b><span>your best distance</span></div>
+    </div>
+    <div class="arcade" id="arcade">
+      <div class="hudrow"><span>Distance <b id="dist">0 m</b></span><span>Speed <b id="spd">0</b> km/h</span><span>Time <b id="time">45</b></span></div>
+      <div class="qbar"><small id="gatein">Answer Gate ahead · steer into the right lane</small><b id="q" aria-live="polite">Ready?</b></div>
+      <div class="road" id="road">
+        <div class="stripes" id="stripes"></div>
+        <div class="flash" id="flash"></div>
+        <div class="gate" id="gate" hidden><span class="l0"></span><span class="l1"></span><span class="l2"></span></div>
+        <svg class="kart" id="kart" viewBox="0 0 56 72" aria-hidden="true" style="left:50%"><rect x="2" y="8" width="12" height="18" rx="4" fill="#0B0B10"/><rect x="42" y="8" width="12" height="18" rx="4" fill="#0B0B10"/><rect x="2" y="46" width="12" height="20" rx="4" fill="#0B0B10"/><rect x="42" y="46" width="12" height="20" rx="4" fill="#0B0B10"/><rect x="10" y="4" width="36" height="64" rx="14" fill="#FFD400" stroke="#0A1E5A" stroke-width="3"/><circle cx="28" cy="38" r="10" fill="#3E8BFF" stroke="#0A1E5A" stroke-width="3"/><rect x="16" y="58" width="24" height="6" rx="3" fill="#D8352A"/></svg>
+        <button class="lanebtn" type="button" style="left:0" aria-label="Steer to lane 1" data-l="0"></button><button class="lanebtn" type="button" style="left:33.33%" aria-label="Steer to lane 2" data-l="1"></button><button class="lanebtn" type="button" style="left:66.66%" aria-label="Steer to lane 3" data-l="2"></button>
+      </div>
+      <p class="msg" id="msg">Pick your level and press Start.</p>
+      <div class="dyk" id="dyk" hidden></div>
+      <div class="ctl"><label class="lbl" for="lvl" style="color:var(--dim)">Start at</label><select id="lvl"><option value="0">Ages 6–8</option><option value="2">Ages 9–11</option><option value="4">Ages 12–14</option></select><button class="btn go" id="go" type="button">Start</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="lap alt" id="studio">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 6 · More from MindsPlay</span>
+      <h2>One of six MindsPlay games.</h2>
+      <p>MindsPlay Studios in Accra makes games where a real skill sits at the heart of how you win. Xed came first. Here’s the rest of the line-up.</p>
+    </div>
+    <div class="more">
+      <a href="xed.html"><img src="img/icons/xed.svg" alt="" loading="lazy">Xed<small>Maths adventure, ages 6–12</small></a>
+      <a href="lamplight.html"><img src="img/icons/lamplight.png" alt="" loading="lazy">Lamplight<small>Bible story adventure, ages 6–12</small></a>
+      <a href="inkbound.html"><img src="img/icons/inkbound.svg" alt="" loading="lazy">Inkbound<small>Storybook adventure, ages 7–11</small></a>
+      <a href="sworld.html"><img src="img/icons/sworld.svg" alt="" loading="lazy">Sworld<small>Science action, ages 11–16</small></a>
+      <a href="brightside.html"><img src="img/icons/brightside.svg" alt="" loading="lazy">Brightside<small>Engineering open world, ages 13–17</small></a>
+    </div>
+    <p style="margin-top:22px"><a class="btn ghost" href="index.html#games">See all MindsPlay games</a></p>
+  </div>
+</section>
+
+<section class="lap" id="prices">
+  <div class="wrap">
+    <div class="head">
+      <span class="lbl">Lap 7 · Pick your seat</span>
+      <h2>Player, parent or school?</h2>
+    </div>
+    <div class="who3">
+      <article><span class="role lbl" style="background:var(--blue)">Player</span><h3>Get on the grid.</h3><ul><li>Make your own player account</li><li>Pick your racer and your grade</li><li>Race the Numbera Canyon Cup or beat your best time</li><li>Your progress is saved as you go</li></ul><a class="btn go" href="player.html#new">Make my player account</a><p class="signin">Already a player? <a href="player.html#signin">Sign in</a></p></article>
+      <article><span class="role lbl" style="background:var(--yellow)">Parent</span><h3>Home access</h3><div class="price">GHS 49 <small>/ month</small></div><ul><li>First week free</li><li>Or GHS 490 a year, with less for each extra child</li><li>Pay by Mobile Money or card</li><li>A Brain Report after every race shows what your child missed</li></ul><a class="btn go" href="account.html">Add it to your child’s games</a></article>
+      <article><span class="role lbl" style="background:#fff">School</span><h3>Licences and pilots</h3><ul><li>School licences for whole classes</li><li>Pilots for schools that want to try it first</li><li>Questions at each pupil’s own grade</li><li>Two pupils can race on one computer</li></ul><a class="btn go" href="mailto:hello@mindsplaystudiogh.com?subject=GranED%20Prix%20for%20our%20school">Talk to us by email</a><a class="btn ghost" href="https://wa.me/233248932204" target="_blank" rel="noopener">Talk to us on WhatsApp</a></article>
+    </div>
+  </div>
+</section>
+
+<div class="check" aria-hidden="true"></div>
+<section class="lap alt" id="join">
+  <div class="wrap join">
+    <span class="lbl" style="color:var(--yellow)">Final lap</span>
+    <h2>Start your engines.</h2>
+    <p>Make a player account in a minute, or add GranED Prix to your child’s games from your parent account.</p>
+    <div class="ctas" style="justify-content:center"><a class="btn go" href="player.html#new">Make my player account</a><a class="btn ghost" href="account.html">Add it to your child’s games</a></div>
+    <p style="font-size:16px">Questions? Email <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> or <a href="https://wa.me/233248932204" target="_blank" rel="noopener">WhatsApp +233 24 893 2204</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div style="display:grid;gap:8px">
+      <a class="logo" href="#top"><img src="img/icons/graned.svg" alt="" width="38" height="38" loading="lazy"><b>GranED Prix</b></a>
+      <a class="endorse" href="index.html"><img src="img/mark.svg" alt="" width="22" height="22" loading="lazy" onerror="this.hidden=true">A MindsPlay Studios game</a>
+    </div>
+    <span>Think fast. Drive faster. · © 2026 MindsPlay Studios, Accra</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const store = { get(k, d) { try { const v = localStorage.getItem("graned_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem("graned_" + k, JSON.stringify(v)); } catch {} } };
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+
+/* Status chip */
+const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : "https://api.mindsplaystudiogh.com";
+fetch(API + "/v1/games").then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+  const g = (d.games || d || []).find(x => x.id === "graned"); const s = $("status");
+  if (!g) return;
+  if (g.status === "live") { s.textContent = "Out now"; s.classList.add("live"); s.hidden = false; }
+  else if (g.status === "coming_soon") { s.textContent = "Coming soon · add it to your list today"; s.hidden = false; }
+}).catch(() => { $("status").hidden = true; });
+
+/* Screenshots */
+const SHOTS = [["race", "Answer Gate · 231 + 81", "karts race towards an Answer Gate asking 231 + 81"], ["splitscreen", "Two players · two grades", "split-screen race with a different question for each player"],
+  ["grid", "Digit Dunes · on the grid", "seven karts on the starting grid of Digit Dunes"], ["menu", "Pick your racer and grade", "racer select screen showing Nova and Grade 3 Maths"]];
+$("thumbs").innerHTML = SHOTS.map(([f, c], i) => `<button type="button" aria-pressed="${i === 0}" aria-label="Show screenshot: ${c}"><img src="img/graned/${f}.jpg" alt="" loading="lazy"></button>`).join("");
+$("thumbs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return; const i = [...$("thumbs").children].indexOf(b);
+  [...$("thumbs").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+  $("shot").src = `img/graned/${SHOTS[i][0]}.jpg`; $("shot").alt = "GranED Prix gameplay: " + SHOTS[i][2]; $("shotcap").textContent = SHOTS[i][1];
+});
+
+/* Grades */
+const GRADES = [
+  ["Adding and subtracting to 20", "Class 1", "First sums at full speed. Add and take away with small numbers.", "7 + 6", [13, 12, 14]],
+  ["Adding and subtracting to 100", "Class 2", "Bigger numbers, same fast thinking. Watch out for tens and ones.", "45 + 38", [83, 73, 82]],
+  ["Times tables, + and −", "Class 3", "Times tables join the race alongside adding and taking away.", "6 × 4", [24, 20, 28]],
+  ["Times tables and division", "Class 4", "Multiply and share. Every fact you know is a boost.", "56 ÷ 8", [7, 8, 6]],
+  ["Fractions, decimals, × and ÷", "Class 5", "Find a fraction of a number, work with decimals and keep your tables sharp.", "½ of 18", [9, 8, 36]],
+  ["Percents, negatives, order of operations", "Class 6", "Go below zero, find percentages and do the sums in the right order.", "3 + 4 × 2", [11, 14, 10]],
+  ["Equations, percents, negatives", "JHS 1", "Find the missing number and handle negatives at speed.", "x + 7 = 12, x = ?", [5, 19, 6]],
+  ["Equations, squares and roots", "JHS 2", "The top grade: equations, square numbers and square roots.", "√81", [9, 8, 18]],
+];
+$("gmap").innerHTML = GRADES.map((g, i) => `<button class="gnode" type="button" aria-pressed="${i === 0}" aria-label="Grade ${i + 1}: ${g[0]}"><span class="num">${i + 1}</span><small>${g[1]}</small></button>`).join("");
+function showGrade(i) {
+  const g = GRADES[i]; [...$("gmap").children].forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+  $("gmeta").textContent = `Grade ${i + 1} · about ${g[1]}`; $("gname").textContent = g[0]; $("gdesc").textContent = g[2];
+  $("gq").textContent = g[3]; const lanes = [...g[4]].sort((a, b) => (a * 7 + i) % 5 - (b * 7 + i) % 5);
+  $("glanes").innerHTML = lanes.map((v, k) => `<span class="l${k}">${v}</span>`).join("");
+}
+$("gmap").addEventListener("click", e => { const b = e.target.closest(".gnode"); if (b) showGrade([...$("gmap").children].indexOf(b)); });
+showGrade(0);
+
+/* Racers */
+const RACERS = [
+  ["nova", "Nova", "Mapped every star in the sky before breakfast.", "Star Burst", "Spark Boosts last 30% longer."],
+  ["digit", "Digit", "A cheerful robot with a calculator for a face.", "Early Reader", "Gate questions appear much sooner."],
+  ["quill", "Quill", "Has read every book in the library. Twice.", "Wise Choice", "+3 seconds to answer Double-or-Nothing."],
+  ["rexruckus", "Rex Ruckus", "Not great at reading yet. Getting better every race.", "Big Items", "Slower item rolls, but often super-sized."],
+  ["tumble", "Tumble", "Falls over a lot. Gets back up faster than anyone.", "Soft Landing", "Wrong lanes barely slow you down.", 1],
+  ["pixelbyte", "Pixel & Byte", "Twin coders sharing one very loud kart.", "Chain Boost", "Every answer streak makes boosts stronger.", 1],
+  ["maestracoral", "Maestra Coral", "Retired teacher. Secretly the fastest on the grid.", "Streak Shield", "3 right answers in a row grant a Prism Shield.", 1],
+];
+$("roster").innerHTML = RACERS.map(([f, n, b, p, t, rival]) => `<article class="racer"><img src="img/graned/r-${f}.jpg" alt="${esc(n)} in their kart" loading="lazy" width="256" height="192"><div>${rival ? '<span class="rival">Rival racer</span>' : ""}<h3>${esc(n)}</h3><p class="who">${esc(b)}</p><p class="perk"><b>${esc(p)}:</b> ${esc(t)}</p></div></article>`).join("");
+
+/* Gate Dash */
+const RACE = 45, GAP = 140, rnd = n => Math.floor(Math.random() * n);
+let on = false, lane = 1, lvl = 0, streak = 0, wrong = 0, speed = 0, dist = 0, nextGate = GAP, q = null, t0 = 0, last = 0, right = 0, gates = 0, missed = [], best = store.get("best", 0);
+$("best").textContent = best + " m";
+function make(l) {
+  let a = 2 + rnd(9), b = 2 + rnd(9), t, ans;
+  if (l === 0) { if (rnd(2)) { t = `${a + b} − ${b}`; ans = a; } else { t = `${a} + ${b}`; ans = a + b; } }
+  else if (l === 1) { a = 12 + rnd(60); b = 11 + rnd(27); if (rnd(2)) { t = `${a} + ${b}`; ans = a + b; } else { t = `${a + b} − ${a}`; ans = b; } }
+  else if (l === 2) { t = `${a} × ${b}`; ans = a * b; }
+  else if (l === 3) { t = `${a * b} ÷ ${a}`; ans = b; }
+  else if (l === 4) { a = -(1 + rnd(9)); b = 2 + rnd(9); t = `(${a}) − ${b}`; ans = a - b; }
+  else { a = [10, 20, 25, 50][rnd(4)]; b = (2 + rnd(9)) * 20; t = `${a}% of ${b}`; ans = a * b / 100; }
+  const pool = [ans + 1, ans - 1, ans + 10, ans - 10, ans + 2, -ans].filter(v => v !== ans && (l === 4 || v >= 0)).sort(() => Math.random() - .5);
+  const lanes = [ans, pool[0], pool[1]].sort(() => Math.random() - .5);
+  return { t, ans, lanes };
+}
+function newGate() { q = make(lvl); $("q").textContent = q.t + " = ?"; [...$("gate").children].forEach((s, i) => s.textContent = q.lanes[i]); $("gate").hidden = false; }
+function steer(l) { if (!on) return; lane = Math.max(0, Math.min(2, l)); $("kart").style.left = (lane * 33.33 + 16.67) + "%"; }
+function flash(c) { const f = $("flash"); f.className = "flash " + c; setTimeout(() => f.className = "flash", 300); }
+function judge() {
+  gates++;
+  if (q.lanes[lane] === q.ans) {
+    right++; wrong = 0; speed = Math.min(210, speed + 45); $("msg").textContent = "Spark Boost!"; flash("good");
+    if (++streak >= 3 && lvl < 5) { lvl++; streak = 0; $("msg").textContent = "Spark Boost! Questions step up."; }
+    $("kart").classList.add("boost"); setTimeout(() => $("kart").classList.remove("boost"), 1200);
+  } else {
+    streak = 0; speed = Math.max(55, speed - 40); missed.push(`${q.t} = ${q.ans}`); flash("bad");
+    $("msg").textContent = `Wrong lane. ${q.t} = ${q.ans}`;
+    if (++wrong >= 2 && lvl > 0) { lvl--; wrong = 0; }
+  }
+  nextGate += GAP; newGate();
+}
+function frame(now) {
+  if (!on) return;
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const left = RACE - (now - t0) / 1000;
+  speed += (100 - speed) * dt * .35; dist += speed / 3.6 * dt;
+  const toGate = nextGate - dist, h = $("road").clientHeight - 120;
+  $("gate").style.transform = `translateY(${Math.max(0, (1 - toGate / GAP) * h)}px)`;
+  $("gatein").textContent = `Answer Gate in ${Math.max(0, Math.round(toGate))} m · steer into the right lane`;
+  if (!reduce) $("stripes").style.backgroundPosition = `0 ${dist * 6}px`, $("stripes").style.maskPosition = $("stripes").style.webkitMaskPosition = `0 ${dist * 6}px`;
+  $("dist").textContent = Math.round(dist) + " m"; $("spd").textContent = Math.round(speed); $("time").textContent = Math.max(0, Math.ceil(left));
+  if (toGate <= 0) judge();
+  if (left <= 0) end(); else requestAnimationFrame(frame);
+}
+function start() {
+  if (on) return; on = true; lvl = +$("lvl").value; streak = wrong = right = gates = 0; missed = []; speed = 100; dist = 0; nextGate = GAP;
+  $("dyk").hidden = true; $("go").hidden = true; $("lvl").disabled = true; $("msg").textContent = "Go! Steer into the right answer.";
+  steer(1); newGate(); t0 = last = performance.now(); requestAnimationFrame(frame);
+}
+function end() {
+  on = false; $("gate").hidden = true; $("q").textContent = "Finish!"; $("gatein").textContent = "Chequered flag";
+  const d = Math.round(dist); if (d > best) { best = d; store.set("best", best); $("best").textContent = best + " m"; }
+  $("msg").textContent = `You drove ${d} m and got ${right} of ${gates} gates right.` + (d === best && d > 0 ? " New best!" : "");
+  if (missed.length) { $("dyk").innerHTML = "<b>Did you know?</b> " + missed.slice(-3).map(esc).join(" · "); $("dyk").hidden = false; }
+  $("go").textContent = "Race again"; $("go").hidden = false; $("lvl").disabled = false; $("go").focus();
+}
+$("go").addEventListener("click", start);
+$("road").addEventListener("click", e => { const b = e.target.closest(".lanebtn"); if (b) steer(+b.dataset.l); });
+document.addEventListener("keydown", e => {
+  if (!on || e.target.closest?.("input, select, textarea")) return;
+  const k = e.key.toLowerCase();
+  if (k === "arrowleft" || k === "a") steer(lane - 1); else if (k === "arrowright" || k === "d") steer(lane + 1);
+  else if (/^[1-3]$/.test(k)) steer(+k - 1); else return;
+  e.preventDefault();
+});
+})();
+</script>
+</body>
+</html>

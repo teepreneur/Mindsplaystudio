@@ -190,7 +190,7 @@ function gameRow(k, row) {
     : a.status === 'pilot' ? `School pilot until ${day(a.until)}`
     : a.status === 'retired' ? 'No longer available' : 'Ended. Renew to keep playing.';
   const play = a.status === 'coming_soon' ? '' : ` · ${row.week_minutes} min this week`;
-  return `<div class="gm">${gameIcon(g)}<span><b>${esc(g.name)}</b><small>${state}${play}</small></span><button class="x" type="button" data-act="ungame" data-g="${g.id}" aria-label="Remove ${esc(g.name)} from ${esc(k.first_name)}’s games" title="Remove">×</button></div>`;
+  return `<div class="gm">${gameIcon(g)}<span><b>${g.page ? `<a href="${esc(g.page)}" style="text-decoration:none">${esc(g.name)}</a>` : esc(g.name)}</b><small>${state}${play}</small></span><button class="x" type="button" data-act="ungame" data-g="${g.id}" aria-label="Remove ${esc(g.name)} from ${esc(k.first_name)}’s games" title="Remove">×</button></div>`;
 }
 
 function drawPay() {
