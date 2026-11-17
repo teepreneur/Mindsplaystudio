@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Players · MindsPlay</title>
+<meta name="description" content="Your MindsPlay player account: your games, your awards and competitions. New here? Make an account and ask a parent to say yes.">
+<link rel="icon" href="img/mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+.choice { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px }
+@media (max-width:640px) { .choice { grid-template-columns:1fr } }
+.choice button { text-align:left; display:grid; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; color:var(--text); font:inherit; cursor:pointer }
+.choice button:hover { border-color:var(--pulse) }
+.choice b { font:700 20px/1.2 var(--display) }
+.tabs { display:inline-flex; background:var(--deep); border:1.5px solid var(--line); border-radius:12px; padding:3px; gap:3px }
+.tabs button { font:600 15px var(--body); color:var(--dim); background:none; border:none; padding:9px 14px; border-radius:9px; cursor:pointer }
+.tabs button[aria-pressed="true"] { background:var(--paper); color:var(--night) }
+.names { display:flex; flex-wrap:wrap; gap:8px }
+.names button { font:600 16px var(--body); color:var(--text); background:var(--deep); border:1.5px solid var(--line); border-radius:999px; padding:9px 16px; cursor:pointer }
+.names button[aria-pressed="true"], .names button:hover { border-color:var(--pulse) }
+.gamepick { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
+@media (max-width:640px) { .gamepick { grid-template-columns:1fr } }
+.gamepick label { display:flex; align-items:center; gap:12px; background:var(--deep); border:1.5px solid var(--line); border-radius:14px; padding:10px 12px; cursor:pointer; font-weight:400 }
+.gamepick label:has(input:checked) { border-color:var(--pulse) }
+.gamepick input { width:20px; height:20px; flex:none; accent-color:var(--pulse) }
+.gamepick span { display:grid; line-height:1.3 } .gamepick b { font:700 15px var(--display) } .gamepick small { color:var(--dim); font-size:13px }
+.soontag { font:500 10px var(--pixel); letter-spacing:.1em; text-transform:uppercase; color:var(--pulse) }
+.ask { border-color:var(--pulse) }
+.askbtns { display:flex; flex-wrap:wrap; gap:10px }
+.mygames { display:grid; gap:12px }
+.mygame { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:center; background:var(--deep); border:1px solid var(--line); border-radius:14px; padding:12px 14px }
+.mygame b { font:700 17px/1.2 var(--display) }
+.mygame small { color:var(--dim); font-size:13px; display:block }
+.mygame .acts { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end }
+@media (max-width:560px) { .mygame { grid-template-columns:auto minmax(0,1fr) } .mygame .acts { grid-column:1 / -1; justify-content:flex-start } }
+.comp { border-left:3px solid var(--pulse); padding:4px 0 4px 14px; display:grid; gap:2px }
+</style>
+</head>
+<body class="studio">
+<main class="wrap stack">
+
+  <!-- Start: new or returning player -->
+  <section id="start" class="stack" hidden>
+    <span class="px muted">For players</span>
+    <h1>Your games, your way</h1>
+    <p class="lead">Make your own MindsPlay account, pick the games you want and ask a parent to say yes. Then sign in here to see your games, awards and competitions.</p>
+    <div class="choice">
+      <button type="button" data-go="signup"><b>I’m new</b><span class="muted">Make my account and ask my parent.</span></button>
+      <button type="button" data-go="login"><b>I have an account</b><span class="muted">Sign in with my secret pictures or my username.</span></button>
+    </div>
+    <p class="small muted">Are you a parent? <a href="account.html">Log in to your family account</a>.</p>
+  </section>
+
+  <!-- Log in -->
+  <section id="login" class="stack narrow" hidden>
+    <h1>Sign in</h1>
+    <div class="tabs" role="group" aria-label="How to sign in"><button type="button" data-tab="pics" aria-pressed="true">My pictures</button><button type="button" data-tab="user" aria-pressed="false">Username</button></div>
+    <div class="card" id="picslogin">
+      <form id="codeform" class="row" style="align-items:end" novalidate>
+        <label style="flex:1;min-width:160px">Class code <span class="hint">It looks like XED-K7P4.</span><input name="code" autocomplete="off" autocapitalize="characters" maxlength="9" required></label>
+        <button class="btn small" type="submit">Find my class</button>
+      </form>
+      <div id="pickname" class="stack" hidden><span style="font-weight:500">Tap your name</span><div class="names" id="names"></div></div>
+      <div id="pickpin" class="stack" hidden><span style="font-weight:500">Tap your 4 secret pictures</span><div id="loginpad" class="stack" style="gap:12px"></div><button class="btn" id="pinlogin" type="button" style="justify-self:start">Sign in</button></div>
+      <p class="err" id="le1" role="alert"></p>
+    </div>
+    <form id="userlogin" class="card" hidden novalidate>
+      <label>Username <input name="username" autocomplete="username" autocapitalize="none" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" id="le2" role="alert"></p>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="small muted">Forgot it? Ask your parent to give you new secret pictures from their account, then sign in with those.</p>
+    </form>
+    <p class="small muted">New here? <a href="#" data-go="signup">Make an account</a>.</p>
+  </section>
+
+  <!-- Sign up -->
+  <section id="signup" class="stack narrow" hidden>
+    <div class="steps" aria-label="Steps"><span data-step="1" class="on">1 · You</span><span data-step="2">2 · Sign-in</span><span data-step="3">3 · Games</span><span data-step="4">4 · Parent</span></div>
+    <form id="su" class="stack" novalidate>
+      <div class="card" data-s="1">
+        <h2>About you</h2>
+        <label>Your first name <span class="hint">Shown in your games and your class list. Add an initial if two of you share a name, e.g. “Kofi A.”</span><input name="first_name" autocomplete="given-name" required maxlength="30"></label>
+        <div class="stack" style="gap:8px">
+          <label for="schoolq">Your school</label>
+          <input id="schoolq" placeholder="Start typing your school’s name" autocomplete="off">
+          <div class="results" id="schools"></div>
+          <div id="newschool" class="grid2" hidden>
+            <label>Town <input id="town" placeholder="e.g. Tema"></label>
+            <label>Region <select id="region"><option value="">Choose…</option><option>Greater Accra</option><option>Ashanti</option><option>Central</option><option>Eastern</option><option>Western</option><option>Western North</option><option>Volta</option><option>Oti</option><option>Northern</option><option>Savannah</option><option>North East</option><option>Upper East</option><option>Upper West</option><option>Bono</option><option>Bono East</option><option>Ahafo</option></select></label>
+          </div>
+        </div>
+        <div class="grid2">
+          <label>Class <select name="grade" required><option value="">Choose…</option>
+            <option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="5">Class 5</option><option value="6">Class 6</option>
+            <option value="7">JHS 1</option><option value="8">JHS 2</option><option value="9">JHS 3</option></select></label>
+          <label>Class arm <span class="hint">e.g. A, B, Gold. Leave empty if there’s only one.</span><input name="arm" maxlength="12" autocomplete="off"></label>
+        </div>
+        <button class="btn" type="button" data-next="2" style="justify-self:start">Next</button>
+      </div>
+      <div class="card" data-s="2" hidden>
+        <h2>How you’ll sign in</h2>
+        <div class="stack" style="gap:8px">
+          <span style="font-weight:500">Your 4 secret pictures <span class="hint" style="display:block;font-weight:400;color:var(--dim);font-size:13px">Tap 4 pictures in order. You use them to sign in to your games and here. Don’t tell anyone except your parent.</span></span>
+          <div id="pin" class="stack" style="gap:12px"></div>
+        </div>
+        <details class="stack"><summary style="cursor:pointer;font-weight:600">Also sign in with a username and password (good on laptops)</summary>
+          <div class="grid2" style="margin-top:12px"><label>Username <span class="hint">3 to 20 letters or numbers.</span><input name="username" autocomplete="username" autocapitalize="none" maxlength="20"></label><label>Password <span class="hint">At least 6 characters.</span><input name="password" type="password" autocomplete="new-password"></label></div>
+        </details>
+        <div class="row"><button class="btn ghost small" type="button" data-next="1">Back</button><button class="btn" type="button" data-next="3">Next</button></div>
+      </div>
+      <div class="card" data-s="3" hidden>
+        <h2>Pick your games</h2>
+        <p class="muted small">Games marked “coming soon” go on your list now, and you can play them the day they’re ready.</p>
+        <div class="gamepick" id="gamepick"></div>
+        <div class="row"><button class="btn ghost small" type="button" data-next="2">Back</button><button class="btn" type="button" data-next="4">Next</button></div>
+      </div>
+      <div class="card" data-s="4" hidden>
+        <h2>Ask your parent</h2>
+        <p class="muted">Your parent or guardian says yes, makes their parent account and chooses how to pay after your free week. You can download the games and try the demos while you wait.</p>
+        <label>Their name <span class="hint">Optional, e.g. “Mum” or “Mr Mensah”.</span><input name="parent_name" maxlength="40" autocomplete="off"></label>
+        <div class="grid2"><label>Their phone (WhatsApp or SMS) <input name="parent_phone" type="tel" inputmode="tel" placeholder="024 123 4567" autocomplete="off"></label><label>Their email <input name="parent_email" type="email" placeholder="parent@example.com" autocomplete="off"></label></div>
+        <p class="small muted">Add a phone number, an email or both. We only use them to send your request and, once your parent agrees, about your account.</p>
+        <p class="err" id="sue" role="alert"></p>
+        <div class="row"><button class="btn ghost small" type="button" data-next="3">Back</button><button class="btn" type="submit">Make my account</button></div>
+      </div>
+    </form>
+    <p class="small muted">Already have an account? <a href="#" data-go="login">Sign in</a>.</p>
+  </section>
+
+  <!-- Player dashboard -->
+  <section id="dash" class="stack" hidden>
+    <div class="row" style="justify-content:space-between">
+      <div class="stack" style="gap:6px"><h1 id="hello">Hello</h1><div class="status" id="status"></div></div>
+      <button class="btn ghost small" id="logout" type="button">Sign out</button>
+    </div>
+
+    <div class="card ask" id="askcard" hidden>
+      <h2>Waiting for your parent</h2>
+      <p id="asktext" class="muted"></p>
+      <div class="askbtns" id="askbtns"></div>
+      <details><summary style="cursor:pointer" class="small">Change your parent’s phone or email</summary>
+        <form id="askform" class="grid2" style="margin-top:12px" novalidate><label>Phone <input name="parent_phone" type="tel" inputmode="tel"></label><label>Email <input name="parent_email" type="email"></label><p class="err" id="ae" role="alert"></p><button class="btn small" type="submit" style="justify-self:start">Save and ask again</button></form>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2>My games</h2><button class="btn ghost small" type="button" id="addgame">+ Add a game</button></div>
+      <div class="pick gamepick" id="addpick" hidden></div>
+      <div class="mygames" id="mygames"></div>
+      <p class="small muted" id="launchhelp" hidden></p>
+    </div>
+
+    <div class="grid2">
+      <div class="card"><h2>My plan</h2><p id="plan"></p><div class="stack" style="gap:4px"><span class="px small muted">Class code</span><span class="code" id="code"></span></div><p class="small muted" id="signinhelp"></p></div>
+      <div class="card"><h2>My awards</h2><div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))" id="awards"></div></div>
+    </div>
+
+    <div class="card"><h2>Competitions</h2><div class="stack" id="comps"></div></div>
+  </section>
+</main>
+<footer><div class="wrap">MindsPlay Studios · Accra · <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> · WhatsApp <a href="https://wa.me/233248932204">+233 24 893 2204</a> · <a href="terms.html">Terms &amp; privacy</a></div></footer>
+<script src="app.js"></script>
+<script>
+topBar('<a href="index.html#games" class="hide-sm">All games</a><a href="account.html">Parents</a>', 'Players');
+const player = {
+  get token() { return store.get('mp.player'); },
+  set token(v) { store.set('mp.player', v); },
+};
+const papi = (path, opts = {}) => api(path, { ...opts, token: player.token });
+let me = null, games = [];
+
+function show(id) { for (const s of ['start', 'login', 'signup', 'dash']) $('#' + s).hidden = s !== id; window.scrollTo(0, 0); }
+document.addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); show(a.dataset.go); if (a.dataset.go === 'signup') startSignup(); } });
+
+// ---------------------------------------------------------------- sign in
+$$('.tabs button').forEach(b => b.addEventListener('click', () => {
+  $$('.tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $('#picslogin').hidden = b.dataset.tab !== 'pics'; $('#userlogin').hidden = b.dataset.tab !== 'user';
+}));
+let cls = null, who = null, loginPin = [];
+$('#codeform').addEventListener('submit', e => {
+  e.preventDefault();
+  busy(e.submitter, $('#le1'), async () => {
+    const r = await api('/v1/game/class', { method: 'POST', body: { code: new FormData(e.target).get('code') } });
+    cls = r.class; who = null;
+    $('#names').innerHTML = r.pupils.map(p => `<button type="button" data-id="${p.id}" aria-pressed="false">${esc(p.first_name)}</button>`).join('') || '<p class="muted">No one in this class yet.</p>';
+    $('#pickname').hidden = false; $('#pickpin').hidden = true;
+  });
+});
+$('#names').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  who = b.dataset.id; $$('#names button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $('#pickpin').hidden = false; pinPicker($('#loginpad'), p => loginPin = p);
+});
+$('#pinlogin').addEventListener('click', e => busy(e.currentTarget, $('#le1'), async () => {
+  if (loginPin.length !== 4) throw new Error('Tap 4 pictures.');
+  const r = await api('/v1/game/login?from=web', { method: 'POST', body: { code: cls.code, child_id: who, pin: loginPin } });
+  player.token = r.token; await load();
+}));
+$('#userlogin').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#le2'), async () => {
+    const r = await api('/v1/players/login', { method: 'POST', body: { username: f.get('username'), password: f.get('password') } });
+    player.token = r.token; await load();
+  });
+});
+
+// ---------------------------------------------------------------- sign up
+let school = null, pin = [];
+function sstep(n) {
+  $$('#su [data-s]').forEach(c => c.hidden = c.dataset.s !== String(n));
+  $$('#signup .steps span').forEach(s => s.classList.toggle('on', s.dataset.step === String(n)));
+  window.scrollTo(0, 0);
+}
+async function startSignup() {
+  track('signup_view', 'player');
+  sstep(1);
+  pinPicker($('#pin'), p => pin = p);
+  if (!games.length) games = (await api('/v1/games')).games;
+  $('#gamepick').innerHTML = games.map(g => `<label>${gameIcon(g, 36)}<input type="checkbox" name="games" value="${g.id}" ${g.id === 'xed' ? 'checked' : ''}><span><b>${esc(g.name)}</b><small>${esc(g.tagline || '')}${g.ages_min ? ` · ages ${g.ages_min}–${g.ages_max}` : ''}</small>${g.status === 'coming_soon' ? '<span class="soontag">Coming soon</span>' : ''}</span></label>`).join('');
+}
+$('#su').addEventListener('click', e => {
+  const b = e.target.closest('[data-next]'); if (!b) return;
+  const n = +b.dataset.next, f = new FormData($('#su'));
+  const err = m => { $('#sue').textContent = ''; alert(m); };
+  if (n === 2 && !b.closest('[data-s="3"]')) {
+    if (String(f.get('first_name')).trim().length < 2) return err('Type your first name.');
+    if (!school && ($('#newschool').hidden || !$('#schoolq').value.trim() || !$('#town').value.trim())) return err('Choose your school from the list, or add it with its town.');
+    if (!f.get('grade')) return err('Choose your class.');
+  }
+  if (n === 3 && b.closest('[data-s="2"]')) {
+    if (pin.length !== 4) return err('Tap 4 secret pictures.');
+    if ((f.get('username') || f.get('password')) && (String(f.get('password')).length < 6 || !/^[a-z0-9_.]{3,20}$/i.test(String(f.get('username')).trim()))) return err('Check your username (3 to 20 letters or numbers) and password (at least 6 characters), or leave both empty.');
+  }
+  if (n === 4 && !f.getAll('games').length) return err('Pick at least one game.');
+  sstep(n);
+});
+let timer;
+$('#schoolq').addEventListener('input', e => {
+  school = null; clearTimeout(timer);
+  const q = e.target.value.trim();
+  timer = setTimeout(async () => {
+    if (q.length < 2) { $('#schools').innerHTML = ''; $('#newschool').hidden = true; return; }
+    const r = await api('/v1/schools?q=' + encodeURIComponent(q)).catch(() => ({ schools: [] }));
+    $('#schools').innerHTML = r.schools.map(s => `<button type="button" data-id="${s.id}" data-name="${esc(s.name)}">${esc(s.name)} <small>· ${esc(s.town)}</small></button>`).join('')
+      + `<button type="button" data-new>+ My school isn’t listed: add “${esc(q)}”</button>`;
+  }, 250);
+});
+$('#schools').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  $$('#schools button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  if (b.hasAttribute('data-new')) { school = null; $('#newschool').hidden = false; $('#town').focus(); }
+  else { school = { id: b.dataset.id, name: b.dataset.name }; $('#newschool').hidden = true; }
+});
+$('#su').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#sue'), async () => {
+    if (!f.get('parent_phone') && !f.get('parent_email')) throw new Error('Add your parent’s phone number or email.');
+    const r = await api('/v1/players/signup', { method: 'POST', body: {
+      first_name: f.get('first_name'), grade: +f.get('grade'), arm: f.get('arm'),
+      school_id: school?.id, new_school: school ? undefined : { name: $('#schoolq').value.trim(), town: $('#town').value, region: $('#region').value },
+      pin, username: f.get('username') || undefined, password: f.get('password') || undefined, games: f.getAll('games'),
+      parent_name: f.get('parent_name'), parent_phone: f.get('parent_phone'), parent_email: f.get('parent_email'),
+    } });
+    track('signup_done', 'player');
+    player.token = r.token;
+    await load();
+    toast(r.emailed ? 'Your account is made, and we emailed your parent.' : 'Your account is made. Now send your parent the link.');
+  });
+});
+
+// ---------------------------------------------------------------- dashboard
+$('#logout').addEventListener('click', () => { player.token = null; me = null; show('start'); });
+
+async function load() {
+  if (!player.token) return show('start');
+  try { me = await papi('/v1/players/me'); }
+  catch (e) { if (e.status === 401) { player.token = null; return show('start'); } throw e; }
+  games = me.games;
+  show('dash'); render();
+}
+
+const wa = p => (p || '').replace(/\D/g, '').replace(/^0/, '233');
+function render() {
+  const c = me.child, a = me.access;
+  $('#hello').textContent = `Hello, ${c.first_name}`;
+  const pill = { paid: ['good', 'Unlocked'], school: ['good', 'Paid by school'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'], awaiting_parent: ['warn', 'Waiting for parent'] }[a.status] || ['', a.status];
+  $('#status').innerHTML = `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${esc(c.class_label)} · ${esc(c.school)}</span>`;
+
+  // Waiting for a parent: send the request by WhatsApp, SMS, email or a copied link.
+  const ask = me.ask;
+  $('#askcard').hidden = !ask;
+  if (ask) {
+    $('#asktext').textContent = `Your parent needs to say yes before you can play. Send them this request${ask.phone || ask.email ? '' : ''}. When they accept, your free week starts and your games unlock.`;
+    const btns = [];
+    if (ask.phone) {
+      btns.push(`<a class="btn small" target="_blank" rel="noopener" href="https://wa.me/${wa(ask.phone)}?text=${encodeURIComponent(ask.text)}">Send on WhatsApp</a>`);
+      btns.push(`<a class="btn ghost small" href="sms:${esc(ask.phone)}?&body=${encodeURIComponent(ask.text)}">Send a text message</a>`);
+    }
+    if (ask.email) btns.push(`<a class="btn ${ask.phone ? 'ghost ' : ''}small" href="mailto:${esc(ask.email)}?subject=${encodeURIComponent(ask.subject)}&body=${encodeURIComponent(ask.text)}">Send an email</a>`);
+    btns.push(`<button class="btn ghost small" type="button" id="copylink">Copy the link</button>`);
+    $('#askbtns').innerHTML = btns.join('');
+    $('#copylink').addEventListener('click', async () => { try { await navigator.clipboard.writeText(ask.text); toast('Copied. Paste it in a message to your parent.'); } catch { prompt('Copy this and send it to your parent:', ask.text); } });
+    $('#askform').elements.parent_phone.value = ask.phone || ''; $('#askform').elements.parent_email.value = ask.email || '';
+  }
+
+  // Games: play the installed game, download it, or wait for it.
+  const lib = me.library;
+  $('#mygames').innerHTML = lib.length ? lib.map(row => {
+    const g = games.find(x => x.id === row.id), s = row.access.status;
+    const state = s === 'coming_soon' ? 'Coming soon. It unlocks here the day it’s ready.'
+      : s === 'awaiting_parent' ? 'Unlocks when your parent says yes'
+      : s === 'free' ? 'Free to play'
+      : s === 'trial' ? `Free week until ${day(row.access.until)}`
+      : s === 'paid' ? `Unlocked until ${day(row.access.until)}`
+      : s === 'school' ? `Paid by your school until ${day(row.access.until)}`
+      : s === 'pilot' ? `School pilot until ${day(row.access.until)}`
+      : s === 'expired' ? 'Ended. Ask your parent to renew.' : '';
+    const playable = row.access.active && g.launch_url;
+    const acts = s === 'coming_soon' ? '' : [
+      playable ? `<button class="btn small" type="button" data-play="${g.id}">Play</button>` : '',
+      g.download_url ? `<a class="btn ghost small" href="${esc(g.download_url)}">Download</a>` : '',
+      g.id === 'xed' && !row.access.active ? `<a class="btn ghost small" href="play.html">Try the demo</a>` : '',
+    ].join('');
+    return `<div class="mygame">${gameIcon(g, 48)}<div><b>${esc(g.name)}</b><small>${state}${row.minutes ? ` · ${row.minutes} min played` : ''}</small></div><div class="acts">${acts}</div></div>`;
+  }).join('') : '<p class="muted">No games yet. Add one!</p>';
+  const others = games.filter(g => !lib.some(r => r.id === g.id));
+  $('#addgame').hidden = !others.length;
+  $('#addpick').innerHTML = others.map(g => `<label>${gameIcon(g, 36)}<span><b>${esc(g.name)}</b><small>${esc(g.tagline || '')}</small>${g.status === 'coming_soon' ? '<span class="soontag">Coming soon</span>' : ''}</span><button class="btn small" type="button" data-add="${g.id}">Add</button></label>`).join('');
+
+  $('#plan').textContent = a.status === 'awaiting_parent' ? 'Your games unlock when your parent says yes. Your first week is free.'
+    : a.status === 'trial' ? `You’re on your free week until ${day(a.until)}. After that your parent chooses a plan.`
+    : a.status === 'paid' ? `Your parent’s plan keeps your games unlocked until ${day(a.until)}.`
+    : a.status === 'school' ? `Your school pays for your games until ${day(a.until)}.`
+    : a.status === 'pilot' ? `Your school’s pilot keeps your games free until ${day(a.until)}.`
+    : 'Your games are locked. Ask your parent to renew in their account.';
+  $('#code').textContent = c.class_code;
+  $('#signinhelp').textContent = `In your games, type this class code, tap your name and your 4 secret pictures.${c.username ? ` On this page you can also use your username, ${c.username}.` : ''}`;
+
+  const w = me.awards;
+  $('#awards').innerHTML = [[w.skills, 'skills mastered'], [w.bosses, 'bosses beaten'], [w.level || '—', 'highest level'], [w.minutes, 'minutes played']].map(([b, t]) => `<div class="stat"><b>${b}</b><span>${t}</span></div>`).join('');
+  $('#comps').innerHTML = me.competitions.length ? me.competitions.map(x => `<div class="comp"><b>${esc(x.title)}</b><span class="small muted">${x.game ? esc(x.game) + ' · ' : ''}${day(x.starts_at)} to ${day(x.ends_at)}${x.ages_min ? ` · ages ${x.ages_min}–${x.ages_max}` : ''}</span>${x.details ? `<p class="small">${esc(x.details)}</p>` : ''}</div>`).join('')
+    : '<p class="muted">No competitions right now. When MindsPlay runs one for your games, it shows up here.</p>';
+}
+
+$('#addgame').addEventListener('click', () => { $('#addpick').hidden = !$('#addpick').hidden; });
+$('#addpick').addEventListener('click', e => {
+  const b = e.target.closest('[data-add]'); if (!b) return;
+  busy(b, null, async () => { await papi('/v1/players/games', { method: 'POST', body: { game: b.dataset.add } }); $('#addpick').hidden = true; await load(); toast('Added to your games.'); });
+});
+$('#askform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  busy(e.submitter, $('#ae'), async () => {
+    const r = await papi('/v1/players/ask', { method: 'POST', body: { parent_phone: f.get('parent_phone'), parent_email: f.get('parent_email') } });
+    await load(); toast(r.emailed ? 'Saved, and we emailed your parent again.' : 'Saved. Send them the link again.');
+  });
+});
+
+// Play opens the installed game through its link (e.g. mindsplay-xed://open). If nothing opens, the game probably
+// isn't installed yet (or is an older version), so offer the download.
+$('#mygames').addEventListener('click', e => {
+  const b = e.target.closest('[data-play]'); if (!b) return;
+  const g = games.find(x => x.id === b.dataset.play);
+  let left = false;
+  const away = () => { left = true; };
+  window.addEventListener('blur', away, { once: true });
+  location.href = g.launch_url;
+  setTimeout(() => {
+    window.removeEventListener('blur', away);
+    if (left || document.hidden) return;
+    const h = $('#launchhelp');
+    h.hidden = false;
+    h.innerHTML = `${esc(g.name)} didn’t open? <a href="${esc(g.download_url || 'download.html')}">Download and install it</a> first, then press Play again. If your browser asks to open ${esc(g.name)}, choose Open.`;
+  }, 1800);
+});
+
+load().catch(e => alert(e.message));
+</script>
+</body>
+</html>

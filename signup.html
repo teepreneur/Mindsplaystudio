@@ -102,13 +102,16 @@ function step(n) {
 async function findSlip(code) {
   const r = await api('/v1/claim/' + encodeURIComponent(code));
   if (r.claimed) throw new Error(`${r.child.first_name} is already linked to a parent account. If that’s you, log in to see them. If not, WhatsApp us on +233 24 893 2204.`);
-  claim = { code, ...r.child };
+  claim = { code, ...r.child, from: r.from };
   $('#slipentry').hidden = true;
   $('#slipcard').hidden = false;
-  $('#slipcard').innerHTML = `<p class="px small muted">From the school slip</p><h3>${esc(claim.first_name)}</h3><p class="muted">${esc(claim.class_label)} · ${esc(claim.school)}, ${esc(claim.town)}</p>`;
-  $('#s1tag').textContent = 'Link your child';
-  $('#s1title').textContent = `Link ${claim.first_name} to your account`;
-  $('#s1lead').textContent = `${claim.first_name}’s school has already set them up in Xed. Create your parent account to see their progress and keep them playing.`;
+  const asked = r.from === 'child', list = (r.child.games || []).join(' and ');
+  $('#slipcard').innerHTML = `<p class="px small muted">${asked ? 'Asked by your child' : 'From the school slip'}</p><h3>${esc(claim.first_name)}</h3><p class="muted">${esc(claim.class_label)} · ${esc(claim.school)}, ${esc(claim.town)}</p>${asked && list ? `<p class="small">Wants to play: ${esc(list)}</p>` : ''}`;
+  $('#s1tag').textContent = asked ? 'Your child asked' : 'Link your child';
+  $('#s1title').textContent = asked ? `Say yes to ${claim.first_name}` : `Link ${claim.first_name} to your account`;
+  $('#s1lead').textContent = asked
+    ? `${claim.first_name} made a MindsPlay player account and asked you to say yes. Create your parent account (or log in) to accept. Their first week is free, you see what they learn, and you choose how to pay after that.`
+    : `${claim.first_name}’s school has already set them up in Xed. Create your parent account to see their progress and keep them playing.`;
   $('[data-step="2"]').hidden = true; // the school already added the child
   $('[data-step="3"]').textContent = '2 · Play';
   $('#parent a[href="account.html"]').href = 'account.html?claim=' + encodeURIComponent(code);
@@ -120,7 +123,7 @@ async function linkSlip() {
   $('#kidname').textContent = r.child.first_name;
   $('#kidpin').innerHTML = r.pin ? pinHtml(r.pin) : '<span class="muted">The pictures you chose in your account.</span>';
   $('#pinnote').textContent = r.pin ? 'These are the pictures on the school slip. You can choose new ones in your account at any time.' : 'Classmates use the same class code with their own name and pictures.';
-  $('#donetitle').textContent = `${r.child.first_name} is linked to your account!`;
+  $('#donetitle').textContent = claim.from === 'child' ? `You said yes! ${r.child.first_name} can play now.` : `${r.child.first_name} is linked to your account!`;
   step(3);
 }
 $('#slipform').addEventListener('submit', e => {

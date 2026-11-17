@@ -34,6 +34,7 @@
       <p class="err" id="le" role="alert"></p>
       <button class="btn" type="submit">Log in</button>
       <p class="small muted">New here? <a href="signup.html">Start a free week</a>. Forgot your password? Email <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a>.</p>
+      <p class="small muted">Are you a player? <a href="player.html">Sign in to your player account</a>.</p>
     </form>
   </section>
 
@@ -112,7 +113,7 @@ async function load() {
   }
   const slip = new URLSearchParams(location.search).get('claim');
   if (slip) {
-    try { const r = await api('/v1/children/claim', { method: 'POST', body: { code: slip } }); toast(`${r.child.first_name} is now linked to your account.`); }
+    try { const r = await api('/v1/children/claim', { method: 'POST', body: { code: slip } }); toast(`${r.child.first_name} is now linked to your account and can play.`); }
     catch (e) { if (e.status === 401) { $('#login').hidden = false; $('#dash').hidden = true; return; } alert(e.message); }
     history.replaceState(null, '', 'account.html');
   }

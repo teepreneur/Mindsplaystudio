@@ -47,6 +47,8 @@ h1, h2, h3 { margin:0; font-family:var(--display); text-wrap:balance }
 .bar i { display:block; height:100%; width:0; background:var(--pulse); transition:width .5s }
 .qbtn { font:500 13px var(--body); background:transparent; color:var(--text); border:1px solid var(--line); border-radius:999px; padding:6px 12px; cursor:pointer; white-space:nowrap }
 .qbtn b { color:var(--pulse) }
+.signin { flex:none; font:700 12px/1 var(--display); letter-spacing:.02em; text-decoration:none; background:var(--pulse); color:var(--night); border-radius:999px; padding:9px 14px; white-space:nowrap }
+.signin:hover { background:var(--paper) }
 .qlog { position:absolute; right:max(16px, env(safe-area-inset-right, 0px)); top:calc(100% + 8px); width:min(330px, calc(100vw - 32px)); background:var(--night2); border:1px solid var(--line); border-radius:16px; padding:18px; display:grid; gap:12px; box-shadow:0 24px 60px rgba(0,0,0,.6) }
 .qlog ul { list-style:none; margin:0; padding:0; display:grid; gap:9px; font-size:14px }
 .qlog li { display:grid; grid-template-columns:20px 1fr auto; gap:10px; color:var(--dim) }
@@ -55,7 +57,8 @@ h1, h2, h3 { margin:0; font-family:var(--display); text-wrap:balance }
 .qlog li.done .ck { background:var(--pulse); border-color:var(--pulse) }
 .qlog .xpv { font:500 11px var(--mono); color:var(--pulse) }
 @media (max-width:860px) { .hud nav { display:none } }
-@media (max-width:420px) { .logo small { display:none } .bar { width:48px } }
+@media (max-width:560px) { .hud .wrap { gap:10px } .bar, .lv { display:none } .qbtn { padding:6px 10px } .signin { padding:8px 12px } }
+@media (max-width:420px) { .logo small { display:none } .logo b { font-size:15px } }
 
 /* Hero */
 .hero { position:relative; overflow:hidden }
@@ -252,6 +255,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <span class="bar" title="Your XP on this site"><i id="xpbar"></i></span>
       <button class="qbtn" id="qbtn" type="button" aria-expanded="false" aria-controls="qlog">Quests <b id="qcount">0/6</b></button>
     </div>
+    <a class="signin" href="account.html" title="Parents and players: log in">Log in</a>
     <div class="qlog" id="qlog" hidden><span class="mono" style="color:var(--pulse)">Quest log</span><ul id="quests"></ul></div>
   </div>
 </header>
@@ -411,8 +415,8 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <h2>Player, parent, school or partner?</h2>
     </div>
     <div class="who">
-      <article class="hot"><span class="mono" style="color:var(--pulse)">Kids and teens</span><h3>Join the playtest crew</h3><ul><li>Play our games before anyone else</li><li>Vote on features and names</li><li>Get credited in the game</li><li>Parent permission needed under 18</li></ul><a href="#join">Sign up →</a></article>
-      <article><span class="mono" style="color:var(--dim)">Parents</span><h3>Games you can say yes to</h3><ul><li>Try Xed free in your browser</li><li>Free first week, then from GHS 49 a month</li><li>See every skill your child masters</li></ul><a href="signup.html?from=studio">Start a free week →</a></article>
+      <article class="hot"><span class="mono" style="color:var(--pulse)">Kids and teens</span><h3>Join the playtest crew</h3><ul><li>Play our games before anyone else</li><li>Vote on features and names</li><li>Get credited in the game</li><li>Parent permission needed under 18</li></ul><a href="player.html">Make my player account →</a><a href="player.html" style="color:var(--dim)">Already a player? Sign in →</a><a href="#join" style="color:var(--dim)">Join the playtest crew →</a></article>
+      <article><span class="mono" style="color:var(--dim)">Parents</span><h3>Games you can say yes to</h3><ul><li>Try Xed free in your browser</li><li>Free first week, then from GHS 49 a month</li><li>See every skill your child masters</li></ul><a href="signup.html?from=studio">Start a free week →</a><a href="account.html" style="color:var(--dim)">Already signed up? Log in to your family account →</a></article>
       <article><span class="mono" style="color:var(--dim)">Schools</span><h3>Pilot Xed free</h3><ul><li>Four places, January–March 2027</li><li>Training, support and class reports</li><li>Partner schools earn 5% of parent subscriptions</li></ul><a href="#join">Apply for the pilot →</a></article>
       <article><span class="mono" style="color:var(--dim)">Partners and investors</span><h3>Build with us</h3><ul><li>A studio, not a single app</li><li>A path of games from 6 to 17</li><li>Built in Ghana, ready for Africa</li></ul><a href="#join">Talk to us →</a></article>
     </div>
@@ -486,7 +490,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
   <div class="wrap">
     <a class="logo" href="#top"><svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#FFFFFF"/><path d="M46.84 41.96 A28 28 0 0 1 78.08 60.00 A28 28 0 0 1 46.84 78.04 A28 28 0 0 1 46.84 41.96Z" fill="#FF2E88"/><g fill="none" stroke="#0B0B10" stroke-width="5.5"><circle cx="68.25" cy="60.00" r="28"/><circle cx="51.75" cy="69.53" r="28"/><circle cx="51.75" cy="50.47" r="28"/></g></svg><span><b>MINDSPLAY</b><small>STUDIOS</small></span></a>
     <span>Win the game. Keep the skills. · Accra, Ghana · © 2026</span>
-    <span style="display:flex;gap:10px;align-items:center"><a href="xed.html">Xed</a><button class="spark" id="spark" type="button" aria-label="A hidden spark"></button></span>
+    <span style="display:flex;gap:10px;align-items:center"><a href="account.html">Parents</a><a href="player.html">Players</a><a href="xed.html">Xed</a><button class="spark" id="spark" type="button" aria-label="A hidden spark"></button></span>
   </div>
 </footer>
 
