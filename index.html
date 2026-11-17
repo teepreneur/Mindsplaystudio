@@ -49,6 +49,12 @@ h1, h2, h3 { margin:0; font-family:var(--display); text-wrap:balance }
 .qbtn b { color:var(--pulse) }
 .signin { flex:none; font:700 12px/1 var(--display); letter-spacing:.02em; text-decoration:none; background:var(--pulse); color:var(--night); border-radius:999px; padding:9px 14px; white-space:nowrap }
 .signin:hover { background:var(--paper) }
+button.signin { border:none; cursor:pointer }
+.loginmenu .lm { display:grid; gap:2px; text-decoration:none; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:14px; color:var(--dim) }
+.loginmenu .lm b { font:700 15px/1.2 var(--display); color:var(--text) }
+.loginmenu .lm:hover { border-color:var(--pulse) }
+.loginmenu .lm.player { border-color:var(--pulse); background:rgba(255,46,136,.08) }
+.loginmenu .lmnew { font-size:14px; color:var(--pulse); text-decoration:none }
 .qlog { position:absolute; right:max(16px, env(safe-area-inset-right, 0px)); top:calc(100% + 8px); width:min(330px, calc(100vw - 32px)); background:var(--night2); border:1px solid var(--line); border-radius:16px; padding:18px; display:grid; gap:12px; box-shadow:0 24px 60px rgba(0,0,0,.6) }
 .qlog ul { list-style:none; margin:0; padding:0; display:grid; gap:9px; font-size:14px }
 .qlog li { display:grid; grid-template-columns:20px 1fr auto; gap:10px; color:var(--dim) }
@@ -255,7 +261,13 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <span class="bar" title="Your XP on this site"><i id="xpbar"></i></span>
       <button class="qbtn" id="qbtn" type="button" aria-expanded="false" aria-controls="qlog">Quests <b id="qcount">0/6</b></button>
     </div>
-    <a class="signin" href="account.html" title="Parents and players: log in">Log in</a>
+    <button class="signin" id="signin" type="button" aria-expanded="false" aria-controls="loginmenu">Log in</button>
+    <div class="qlog loginmenu" id="loginmenu" hidden>
+      <span class="mono" style="color:var(--pulse)">Who’s logging in?</span>
+      <a class="lm player" href="player.html#signin"><b>I’m a player</b><span>Sign in with your secret pictures or username to open your games.</span></a>
+      <a class="lm" href="account.html"><b>I’m a parent</b><span>Your family account: children, games and payments.</span></a>
+      <a class="lmnew" href="player.html#new">New player? Make your account →</a>
+    </div>
     <div class="qlog" id="qlog" hidden><span class="mono" style="color:var(--pulse)">Quest log</span><ul id="quests"></ul></div>
   </div>
 </header>
@@ -537,7 +549,14 @@ function complete(id) {
   if (done.size === QUESTS.length) setTimeout(() => { toast("Every quest done. You’re crew.", "Achievement", "MAX"); burst(innerWidth / 2, innerHeight / 2, 90); }, 900);
 }
 $("qbtn").addEventListener("click", () => { const l = $("qlog"); l.hidden = !l.hidden; $("qbtn").setAttribute("aria-expanded", String(!l.hidden)); });
-document.addEventListener("click", e => { if (!e.target.closest(".hud")) { $("qlog").hidden = true; $("qbtn").setAttribute("aria-expanded", "false"); } });
+document.addEventListener("click", e => { if (!e.target.closest(".hud")) { $("qlog").hidden = true; $("qbtn").setAttribute("aria-expanded", "false"); $("loginmenu").hidden = true; $("signin").setAttribute("aria-expanded", "false"); } });
+/* Log in: players and parents each get their own way in. */
+$("signin").addEventListener("click", () => {
+  const m = $("loginmenu"); m.hidden = !m.hidden; $("signin").setAttribute("aria-expanded", String(!m.hidden));
+  if (!m.hidden) { $("qlog").hidden = true; $("qbtn").setAttribute("aria-expanded", "false"); }
+});
+$("qbtn").addEventListener("click", () => { $("loginmenu").hidden = true; $("signin").setAttribute("aria-expanded", "false"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("loginmenu").hidden) { $("loginmenu").hidden = true; $("signin").setAttribute("aria-expanded", "false"); $("signin").focus(); } });
 $("start").addEventListener("click", () => complete("start"));
 $("xedmore").addEventListener("click", () => complete("xed"));
 $("spark").addEventListener("click", e => { complete("spark"); const r = e.currentTarget.getBoundingClientRect(); burst(r.left + 8, r.top, 40); });

@@ -278,7 +278,12 @@ $('#su').addEventListener('submit', e => {
 $('#logout').addEventListener('click', () => { player.token = null; me = null; show('start'); });
 
 async function load() {
-  if (!player.token) return show('start');
+  // Links from the home page: player.html#signin opens the sign-in, #new the sign-up.
+  if (!player.token) {
+    if (location.hash === '#signin') return show('login');
+    if (location.hash === '#new') { show('signup'); return startSignup(); }
+    return show('start');
+  }
   try { me = await papi('/v1/players/me'); }
   catch (e) { if (e.status === 401) { player.token = null; return show('start'); } throw e; }
   games = me.games;
