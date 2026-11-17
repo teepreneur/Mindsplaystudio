@@ -1,4 +1,4 @@
-// Shared helpers for the Xed family pages: the API, the parent's login, the picture PIN, prices and the funnel.
+// Shared helpers for the Xed and MindsPlay family pages: the API, the parent's login, the picture PIN, prices, game icons and the funnel.
 const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') && !new URLSearchParams(location.search).has('live')
   ? 'http://localhost:8787' : 'https://api.mindsplaystudiogh.com';
 const PICTURES = ['lion', 'mango', 'star', 'drum', 'fish', 'ball', 'sun', 'boat', 'tree'];
@@ -98,8 +98,15 @@ function pinPicker(el, onChange) {
 const pinHtml = pin => `<span class="pinshow">${pin.map(i => `<img src="${pic(i)}" alt="${PICTURES[i]}">`).join('')}</span>`;
 
 const LOGO = `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="60" fill="#2E9E57"/><rect x="52" y="18" width="16" height="84" rx="8" fill="#F5B700" transform="rotate(45 60 60)"/><rect x="52" y="18" width="16" height="84" rx="8" fill="#F5B700" transform="rotate(-45 60 60)"/><rect x="80" y="14" width="18" height="18" rx="3" fill="#4CB7E8" transform="rotate(45 89 23)"/><circle cx="60" cy="60" r="7" fill="#2B2A7A"/></svg>`;
-function topBar(links = '') {
-  document.body.insertAdjacentHTML('afterbegin', `<header class="top"><div class="wrap">
-    <a class="logo" href="xed.html">${LOGO}<span>Xed<small>by MindsPlay</small></span></a>
-    <nav aria-label="Main">${links}</nav></div></header>`);
+/** The page header. `studio` shows the MindsPlay mark (pages about every game, like the family account) instead of Xed's; a string sets its subtitle. */
+function topBar(links = '', studio = false) {
+  const brand = studio
+    ? `<a class="logo studio" href="index.html"><img src="img/mark.svg" alt="" width="34" height="34"><span>MindsPlay<small>${typeof studio === 'string' ? studio : 'Family account'}</small></span></a>`
+    : `<a class="logo" href="xed.html">${LOGO}<span>Xed<small>by MindsPlay</small></span></a>`;
+  document.body.insertAdjacentHTML('afterbegin', `<header class="top"><div class="wrap">${brand}<nav aria-label="Main">${links}</nav></div></header>`);
 }
+
+/** A game's icon: its picture if it has one, otherwise its first letter on its own colour. */
+const gameIcon = (g, size = 40) => g.icon
+  ? `<img class="gicon" src="${esc(g.icon)}" alt="" width="${size}" height="${size}">`
+  : `<span class="gicon" style="width:${size}px;height:${size}px;background:${esc(g.color || '#3A38A0')};color:${esc(g.ink || '#fff')}" aria-hidden="true">${esc(g.name[0])}</span>`;

@@ -3,12 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Your account · Xed</title>
+<title>Your account · MindsPlay</title>
 <link rel="icon" href="img/mark.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="app.css">
+<style>
+#kids > .card { align-content:start }
+.games { display:grid; gap:10px; border-top:1px solid var(--edge); padding-top:14px }
+.gm { display:flex; align-items:center; gap:12px; min-width:0 }
+.gm > span { display:grid; min-width:0; line-height:1.3 }
+.gm b { font:700 16px/1.2 var(--display) }
+.gm small { color:var(--dim); font-size:13px }
+.gm .x { margin-left:auto; flex:none; background:none; border:none; color:var(--dim); font-size:22px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:8px }
+.gm .x:hover { color:var(--text); background:rgba(255,255,255,.06) }
+.pick { display:grid; gap:8px }
+.pick button { display:flex; align-items:center; gap:12px; text-align:left; background:rgba(255,255,255,.04); border:2px solid var(--edge); border-radius:14px; padding:10px 12px; color:var(--text); font:inherit; cursor:pointer }
+.pick button:hover { border-color:var(--sky) }
+.pick button span { display:grid; line-height:1.3 }
+.pick .soon { font:500 10px var(--pixel); letter-spacing:.1em; text-transform:uppercase; color:var(--pulse, var(--gold)) }
+</style>
 </head>
-<body>
+<body class="studio">
 <main class="wrap stack">
   <!-- Log in -->
   <section id="login" class="stack narrow" hidden>
@@ -33,8 +48,8 @@
     <h2>Your children</h2>
     <div class="grid2" id="kids"></div>
     <details class="card" id="addkid">
-      <summary style="cursor:pointer;font:800 20px var(--display)">+ Add a child</summary>
-      <p class="muted small">Each extra child costs less. Add them here and they get their class code straight away.</p>
+      <summary style="cursor:pointer;font:700 18px var(--display)">+ Add a child</summary>
+      <p class="muted small">Each extra child costs less for Xed. Add them here and they get their class code straight away.</p>
       <a class="btn small" href="signup.html" style="justify-self:start">Add a child</a>
       <form id="slipform" class="row" style="align-items:end;border-top:1px solid var(--edge);padding-top:16px" novalidate>
         <label style="flex:1;min-width:180px">Got a slip from school? <span class="hint">Enter the parent code, like K7P4-M2QX, to link your child.</span><input name="code" autocomplete="off" autocapitalize="characters" maxlength="12"></label>
@@ -43,7 +58,7 @@
       <p class="err" id="se" role="alert"></p>
     </details>
 
-    <h2 id="pay">Keep playing</h2>
+    <h2 id="pay">Xed plan</h2>
     <div class="card" id="paycard">
       <p class="muted" id="paynote"></p>
       <div class="plans" id="plans" role="group" aria-label="Plans"></div>
@@ -68,7 +83,7 @@
 <footer><div class="wrap">MindsPlay Studios · Accra · <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> · WhatsApp <a href="https://wa.me/233248932204">+233 24 893 2204</a> · <a href="terms.html">Terms &amp; privacy</a></div></footer>
 <script src="app.js"></script>
 <script>
-topBar('<a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the demo</a>');
+topBar('<a href="index.html#games" class="hide-sm">All games</a><a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the Xed demo</a>', true);
 let me = null, plan = 'year', channel = 'mobile_money';
 
 $('#loginform').addEventListener('submit', e => {
@@ -122,12 +137,19 @@ function render() {
       <div class="row" style="justify-content:space-between"><h3>${esc(k.first_name)}</h3><span class="muted small">${esc(k.class_label)} · ${esc(k.school)}</span></div>
       ${kidPill(k) ? `<div class="status">${kidPill(k)}</div>` : ''}
       <div class="stack" style="gap:4px"><span class="px small muted">Class code</span><span class="code">${esc(k.class_code)}</span></div>
+      <div class="games">
+        <span class="px small muted">Games</span>
+        ${k.games.map(g => gameRow(k, g)).join('') || '<p class="small muted">No games yet.</p>'}
+        ${me.games.some(g => !k.games.some(x => x.id === g.id)) ? `<button class="btn ghost small" data-act="addgame" type="button" style="justify-self:start">+ Add a game</button>
+        <div class="pick" data-pick hidden>${me.games.filter(g => !k.games.some(x => x.id === g.id)).map(g => `<button type="button" data-act="pickgame" data-g="${g.id}">${gameIcon(g, 36)}<span><b>${esc(g.name)}</b><small class="muted">${esc(g.tagline || '')}${ages(g)}</small>${g.status === 'coming_soon' ? '<span class="soon">Coming soon · we’ll tell you when it’s ready</span>' : ''}</span></button>`).join('')}</div>` : ''}
+      </div>
+      ${k.games.some(g => g.id === 'xed') ? `<span class="px small muted">Xed this week</span>
       <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
         <div class="stat"><b>${k.progress.week_minutes}</b><span>minutes played this week</span></div>
         <div class="stat"><b>${k.progress.week_answers ? Math.round(100 * k.progress.week_correct / k.progress.week_answers) + '%' : '—'}</b><span>right answers this week (${k.progress.week_answers} questions)</span></div>
         <div class="stat"><b>${k.progress.week_mastered}</b><span>skills mastered this week</span></div>
         <div class="stat"><b>${k.progress.total_mastered}</b><span>skills mastered in all</span></div>
-      </div>
+      </div>` : ''}
       <p class="small muted">Last played: ${k.last_seen ? day(k.last_seen) : 'not yet'}</p>
       <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">${k.added_by === 'school' ? 'Unlink' : 'Remove'}</button></div>
       <div data-pinedit hidden class="stack"><div data-pad></div><p class="err" role="alert"></p><button class="btn small" data-act="savepin" type="button" style="justify-self:start">Save PIN</button></div>
@@ -151,6 +173,23 @@ function render() {
   drawPay();
 
   $('#pays').innerHTML = me.payments.length ? me.payments.map(x => `<tr><td>${day(x.paid_at || x.created_at)}</td><td>${esc(x.plan)}${x.children > 1 ? ' × ' + x.children : ''}</td><td>${x.channel === 'card' ? 'Card' : 'Mobile Money'}</td><td class="num">${cedis(x.amount)}</td><td>${esc(x.status)}</td><td>${day(x.period_end)}</td></tr>`).join('') : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>';
+}
+
+const ages = g => g.ages_min ? ` · ages ${g.ages_min}–${g.ages_max}` : '';
+
+/** One game in a child's list: its icon, name, whether they can play it and this week's minutes. */
+function gameRow(k, row) {
+  const g = me.games.find(x => x.id === row.id);
+  const a = row.access;
+  const state = a.status === 'coming_soon' ? 'Coming soon. We’ll tell you when it’s ready.'
+    : a.status === 'free' ? 'Free to play'
+    : a.status === 'paid' ? `Paid until ${day(a.until)}`
+    : a.status === 'trial' ? `Free week until ${day(a.until)}`
+    : a.status === 'school' ? `Paid by school until ${day(a.until)}`
+    : a.status === 'pilot' ? `School pilot until ${day(a.until)}`
+    : a.status === 'retired' ? 'No longer available' : 'Ended. Renew to keep playing.';
+  const play = a.status === 'coming_soon' ? '' : ` · ${row.week_minutes} min this week`;
+  return `<div class="gm">${gameIcon(g)}<span><b>${esc(g.name)}</b><small>${state}${play}</small></span><button class="x" type="button" data-act="ungame" data-g="${g.id}" aria-label="Remove ${esc(g.name)} from ${esc(k.first_name)}’s games" title="Remove">×</button></div>`;
 }
 
 function drawPay() {
@@ -185,8 +224,22 @@ $('#kids').addEventListener('click', e => {
       $('[data-pinedit]', card).hidden = true;
       toast(`${kid.first_name}'s new pictures are saved. Show them before they next play!`);
     });
+  } else if (b.dataset.act === 'addgame') {
+    const pick = $('[data-pick]', card);
+    pick.hidden = !pick.hidden;
+  } else if (b.dataset.act === 'pickgame') {
+    const g = me.games.find(x => x.id === b.dataset.g);
+    busy(b, null, async () => {
+      await api(`/v1/children/${id}/games`, { method: 'POST', body: { game: g.id } });
+      await load();
+      toast(g.status === 'coming_soon' ? `${g.name} is on ${kid.first_name}’s list. We’ll tell you when it’s ready to play.` : `${g.name} added for ${kid.first_name}.`);
+    });
+  } else if (b.dataset.act === 'ungame') {
+    const g = me.games.find(x => x.id === b.dataset.g);
+    if (!confirm(`Take ${g.name} off ${kid.first_name}’s list? Their progress in it is kept, so you can add it back later.`)) return;
+    busy(b, null, async () => { await api(`/v1/children/${id}/games/${g.id}`, { method: 'DELETE' }); await load(); toast(`${g.name} removed from ${kid.first_name}’s list.`); });
   } else if (b.dataset.act === 'remove') {
-    if (!confirm(kid.added_by === 'school' ? `Unlink ${kid.first_name} from your account? They stay on their school’s class list and keep their progress.` : `Remove ${kid.first_name}? Their progress in Xed will be deleted for good.`)) return;
+    if (!confirm(kid.added_by === 'school' ? `Unlink ${kid.first_name} from your account? They stay on their school’s class list and keep their progress.` : `Remove ${kid.first_name}? Their progress in every game will be deleted for good.`)) return;
     busy(b, null, async () => { await api('/v1/children/' + id, { method: 'DELETE' }); await load(); toast(`${kid.first_name} was ${kid.added_by === 'school' ? 'unlinked' : 'removed'}.`); });
   }
 });

@@ -6,7 +6,7 @@
 <title>MindsPlay admin</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="img/mark.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="app.css">
 <style>
 .bars { display:flex; align-items:flex-end; gap:3px; height:120px }
@@ -16,9 +16,13 @@
 .funnel div { display:grid; grid-template-columns:180px 1fr 70px; gap:10px; align-items:center; font-size:14px }
 .funnel span.b { height:14px; background:var(--leaf); border-radius:4px }
 @media (max-width:560px) { .funnel div { grid-template-columns:110px 1fr 50px } }
+.gname { display:flex; align-items:center; gap:10px; white-space:nowrap }
+.st { white-space:nowrap; font:500 10px var(--pixel); letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:6px; background:rgba(255,255,255,.08) }
+.st.live, .st.beta { background:var(--paper, #fff); color:var(--night) } .st.coming_soon { background:var(--gold); color:var(--night) }
+#gameform[hidden] { display:none }
 </style>
 </head>
-<body>
+<body class="studio">
 <main class="wrap stack">
   <section id="gate" class="narrow stack">
     <h1>Admin</h1>
@@ -27,9 +31,22 @@
   <section id="board" class="stack" hidden>
     <div class="row" style="justify-content:space-between">
       <div class="row"><h1>MindsPlay numbers</h1><a class="btn ghost small" href="classes.html">School classes</a></div>
-      <div class="row"><select id="days" style="width:auto"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select><button class="btn ghost small" id="refresh" type="button">Refresh</button></div>
+      <div class="row"><select id="game" style="width:auto" aria-label="Game"><option value="">All games</option></select><select id="days" style="width:auto"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last year</option></select><button class="btn ghost small" id="refresh" type="button">Refresh</button></div>
     </div>
     <div class="stats" id="top"></div>
+    <div class="card"><h3>Games</h3>
+      <p class="small muted">Children who have each game, families waiting for coming-soon games, play in the chosen period and website “Hype it” taps. Choose a game at the top to see the whole board for it.</p>
+      <div class="scroll"><table><thead><tr><th>Game</th><th>Status</th><th>Price</th><th class="num">Children</th><th class="num">Families</th><th class="num">Played this week</th><th class="num">Minutes</th><th class="num">Avg session</th><th class="num">Right</th><th class="num">Revenue</th><th class="num">Hype</th><th></th></tr></thead><tbody id="games"></tbody></table></div>
+      <form id="gameform" class="stack" hidden style="border-top:1px solid var(--edge);padding-top:16px">
+        <h3 id="gftitle">Edit game</h3>
+        <p class="small muted">Setting a coming-soon game to live or beta tells every family that added it (by email when set up, otherwise in “Reminders to send”).</p>
+        <div class="grid3"><label>Name <input name="name" required></label><label>Status <select name="status"><option value="coming_soon">Coming soon</option><option value="beta">Beta</option><option value="live">Live</option><option value="retired">Retired</option></select></label><label>Price <select name="price"><option value="tbd">Not decided</option><option value="free">Free</option><option value="paid">Paid</option></select></label></div>
+        <div class="grid3"><label>Tagline <input name="tagline"></label><label>Ages from <input name="ages_min" type="number" min="3" max="99"></label><label>Ages to <input name="ages_max" type="number" min="3" max="99"></label></div>
+        <div class="grid2"><label>Platforms <input name="platforms" placeholder="Windows, Mac"></label><label>Order on lists <input name="sort" type="number"></label></div>
+        <p class="err" id="gfe"></p>
+        <div class="row"><button class="btn small" type="submit">Save game</button><button class="btn ghost small" type="button" id="gfcancel">Cancel</button></div>
+      </form>
+    </div>
     <div class="grid2">
       <div class="card"><h3>Players each day</h3><div class="bars" id="dailybars"></div><p class="small muted" id="dailynote"></p></div>
       <div class="card"><h3>Website funnel</h3><div class="funnel" id="funnel"></div></div>
@@ -59,7 +76,7 @@
 </main>
 <script src="app.js"></script>
 <script>
-topBar('<a href="classes.html">School classes</a><a href="account.html">Parent view</a>');
+topBar('<a href="classes.html">School classes</a><a href="account.html">Parent view</a>', 'Admin');
 let token = sessionStorage.getItem('xed.admin');
 const get = p => api(p, { admin: token });
 const n = v => (v ?? 0).toLocaleString('en-GH');
@@ -71,14 +88,24 @@ $('#gateform').addEventListener('submit', e => {
 });
 $('#refresh').addEventListener('click', () => load());
 $('#days').addEventListener('change', () => load());
+$('#game').addEventListener('change', () => load());
+let gameRows = [], editing = null;
+const STATUS = { live: 'Live', beta: 'Beta', coming_soon: 'Coming soon', retired: 'Retired' }, PRICE = { paid: 'Paid', free: 'Free', tbd: 'Not decided' };
 
 async function load() {
-  const m = await get('/v1/admin/metrics?days=' + $('#days').value);
+  const g = $('#game').value;
+  const [m, gs] = await Promise.all([get('/v1/admin/metrics?days=' + $('#days').value + (g ? '&game=' + g : '')), get('/v1/admin/games?days=' + $('#days').value)]);
   $('#gate').hidden = true; $('#board').hidden = false;
+  gameRows = gs.games;
+  if ($('#game').options.length === 1) $('#game').insertAdjacentHTML('beforeend', gameRows.map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join(''));
+  $('#games').innerHTML = gameRows.map(r => `<tr><td><span class="gname">${gameIcon(r, 28)}${esc(r.name)}</span></td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${PRICE[r.price] || r.price}</td>
+    <td class="num">${n(r.children)}${r.waiting ? ` <span class="muted small">(${n(r.waiting)} waiting)</span>` : ''}</td><td class="num">${n(r.families)}</td><td class="num">${n(r.players_week)}</td><td class="num">${n(r.minutes)}</td>
+    <td class="num">${r.sessions ? r.avg_session_min + ' min' : '—'}</td><td class="num">${r.accuracy != null ? r.accuracy + '%' : '—'}</td><td class="num">${cedis(r.revenue_pesewas)}</td><td class="num">${n(r.hype)}</td>
+    <td><button class="btn ghost small" type="button" data-edit="${r.id}">Edit</button></td></tr>`).join('');
   const P = m.parents, C = m.children;
   $('#top').innerHTML = [
     [n(P.paying), 'paying families'], [n(P.in_trial), 'in their free week'], [cedis(m.money.mrr_pesewas), 'monthly recurring revenue'], [P.trial_to_paid != null ? P.trial_to_paid + '%' : '—', 'free week → paid'],
-    [n(C.total), 'children signed up'], [n(C.wau), 'played this week'], [n(m.schools.active_schools), 'schools · ' + n(m.schools.classes) + ' classes'], [n(P.new), 'new families (' + m.window_days + ' days)'],
+    [n(C.total), g ? 'children with this game' : 'children signed up'], [n(C.wau), 'played this week'], [n(m.schools.active_schools), 'schools · ' + n(m.schools.classes) + ' classes'], [n(P.new), 'new families (' + m.window_days + ' days)'],
   ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
 
   const max = Math.max(1, ...m.daily.map(d => d.players));
@@ -97,15 +124,35 @@ async function load() {
   $('#sources').innerHTML = m.sources.map(s => `<tr><td>${esc(s.source)}</td><td class="num">${n(s.n)}</td></tr>`).join('');
 
   const rem = await get('/v1/admin/reminders');
-  const text = r => r.kind === 'school_ending' ? `Hi ${r.name.split(' ')[0]}, the free Xed time from your child's school ends on ${day(r.due_for)}. Keep their maths adventure going with Mobile Money: https://mindsplaystudiogh.com/account.html` : r.kind === 'trial_ending' ? `Hi ${r.name.split(' ')[0]}, your child's free week of Xed ends soon. Keep the adventure going: https://mindsplaystudiogh.com/account.html` : r.kind === 'expiring' ? `Hi ${r.name.split(' ')[0]}, your child's Xed access ends on ${day(r.due_for)}. Renew with Mobile Money in a minute: https://mindsplaystudiogh.com/account.html` : `Hi ${r.name.split(' ')[0]}, your child's Xed access has ended. Renew here: https://mindsplaystudiogh.com/account.html`;
+  const gameName = id => gameRows.find(x => x.id === id)?.name || id;
+  const text = r => r.kind === 'game_live' ? `Hi ${r.name.split(' ')[0]}, ${gameName(r.due_for)} is ready to play! You added it for your child while we were making it. See how to start: https://mindsplaystudiogh.com/account.html` : r.kind === 'school_ending' ? `Hi ${r.name.split(' ')[0]}, the free Xed time from your child's school ends on ${day(r.due_for)}. Keep their maths adventure going with Mobile Money: https://mindsplaystudiogh.com/account.html` : r.kind === 'trial_ending' ? `Hi ${r.name.split(' ')[0]}, your child's free week of Xed ends soon. Keep the adventure going: https://mindsplaystudiogh.com/account.html` : r.kind === 'expiring' ? `Hi ${r.name.split(' ')[0]}, your child's Xed access ends on ${day(r.due_for)}. Renew with Mobile Money in a minute: https://mindsplaystudiogh.com/account.html` : `Hi ${r.name.split(' ')[0]}, your child's Xed access has ended. Renew here: https://mindsplaystudiogh.com/account.html`;
   const wa = p => (p || '').replace(/^0/, '233').replace(/\D/g, '');
-  $('#reminders').innerHTML = rem.reminders.map(r => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--edge);padding-bottom:8px"><span>${esc(r.name)} <span class="muted small">· ${esc(r.kind.replace('_', ' '))} · ${day(r.due_for)}</span></span><span class="row">${r.phone ? `<a class="btn small ghost" target="_blank" rel="noopener" href="https://wa.me/${wa(r.phone)}?text=${encodeURIComponent(text(r))}">WhatsApp</a>` : `<a class="btn small ghost" href="mailto:${esc(r.email)}?subject=Xed&body=${encodeURIComponent(text(r))}">Email</a>`}<button class="btn small" data-done="${r.id}" type="button">Sent</button></span></div>`).join('') || '<p class="muted">Nothing to send.</p>';
+  $('#reminders').innerHTML = rem.reminders.map(r => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--edge);padding-bottom:8px"><span>${esc(r.name)} <span class="muted small">· ${esc(r.kind.replace('_', ' '))} · ${r.kind === 'game_live' ? esc(gameName(r.due_for)) : day(r.due_for)}</span></span><span class="row">${r.phone ? `<a class="btn small ghost" target="_blank" rel="noopener" href="https://wa.me/${wa(r.phone)}?text=${encodeURIComponent(text(r))}">WhatsApp</a>` : `<a class="btn small ghost" href="mailto:${esc(r.email)}?subject=Xed&body=${encodeURIComponent(text(r))}">Email</a>`}<button class="btn small" data-done="${r.id}" type="button">Sent</button></span></div>`).join('') || '<p class="muted">Nothing to send.</p>';
 
   const sh = await get('/v1/admin/school-shares');
   $('#shares').innerHTML = sh.schools.map(s => `<tr><td>${esc(s.name)}, ${esc(s.town)}</td><td class="num">${cedis(s.amount)}</td><td class="num">${cedis(s.share)}</td></tr>`).join('') || '<tr><td class="muted">No partner payments in the last month.</td></tr>';
-  $('#csv').innerHTML = ['parents', 'children', 'schools', 'payments', 'funnel'].map(k => `<button class="btn ghost small" data-csv="${k}" type="button">${k}</button>`).join('');
+  $('#csv').innerHTML = ['parents', 'children', 'schools', 'payments', 'funnel', 'games', 'child_games'].map(k => `<button class="btn ghost small" data-csv="${k}" type="button">${k}</button>`).join('');
 }
 
+$('#games').addEventListener('click', e => {
+  const b = e.target.closest('[data-edit]'); if (!b) return;
+  editing = gameRows.find(r => r.id === b.dataset.edit);
+  const f = $('#gameform');
+  for (const k of ['name', 'status', 'price', 'tagline', 'ages_min', 'ages_max', 'platforms', 'sort']) f.elements[k].value = editing[k] ?? '';
+  $('#gftitle').textContent = 'Edit ' + editing.name;
+  f.hidden = false; f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('#gfcancel').addEventListener('click', () => { $('#gameform').hidden = true; editing = null; });
+$('#gameform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target));
+  if (['live', 'beta'].includes(f.status) && !['live', 'beta'].includes(editing.status) && !confirm(`Make ${f.name} playable now? Families who added it will be told it’s ready.`)) return;
+  busy(e.submitter, $('#gfe'), async () => {
+    const r = await api('/v1/admin/games/' + editing.id, { method: 'PATCH', admin: token, body: f });
+    toast(r.launched ? `${f.name} is out. ${r.families_told} ${r.families_told === 1 ? 'family' : 'families'} to tell.` : 'Game saved.');
+    e.target.hidden = true; editing = null; load();
+  });
+});
 $('#reminders').addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (b) busy(b, null, async () => { await api('/v1/admin/reminders/done', { method: 'POST', admin: token, body: { id: +b.dataset.done } }); load(); }); });
 $('#csv').addEventListener('click', async e => {
   const b = e.target.closest('[data-csv]'); if (!b) return;

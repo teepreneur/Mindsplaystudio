@@ -590,9 +590,16 @@ document.querySelectorAll(".hype").forEach(b => {
   b.addEventListener("click", () => {
     hyped.has(b.dataset.game) ? hyped.delete(b.dataset.game) : hyped.add(b.dataset.game);
     store.set("hyped", [...hyped]); sync();
-    if (hyped.has(b.dataset.game)) { const r = b.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 16); complete("hype"); }
+    if (hyped.has(b.dataset.game)) { const r = b.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 16); complete("hype"); sendHype(b.dataset.game); }
   });
 });
+/* Counts each hype on MindsPlay's admin page (once per visitor per game; an anonymous id, no personal data). */
+function sendHype(game) {
+  let anon = null;
+  try { anon = localStorage.getItem("xed.anon") || Math.random().toString(36).slice(2, 12); localStorage.setItem("xed.anon", anon); } catch {}
+  const api = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8787" : "https://api.mindsplaystudiogh.com";
+  fetch(api + "/v1/funnel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ type: "hype", game, anon }), keepalive: true }).catch(() => {});
+}
 
 /* Join form */
 $("joinform").addEventListener("submit", e => {

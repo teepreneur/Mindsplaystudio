@@ -6,7 +6,8 @@
 <title>School classes · MindsPlay admin</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="img/mark.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Lexend:wght@400;600&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="app.css">
 <style>
 textarea { font:400 16px/1.5 var(--body); color:var(--text); background:var(--deep); border:2px solid var(--edge); border-radius:12px; padding:12px 14px; width:100%; min-height:180px; resize:vertical }
@@ -15,6 +16,8 @@ textarea:focus { border-color:var(--gold); outline:none }
 td .btn.small { font-size:13px; padding:7px 10px 6px }
 .linkcode { font:600 14px ui-monospace,Menlo,Consolas,monospace; letter-spacing:.06em }
 #print { display:none }
+/* The take-home slips and class report are for Xed, so they keep Xed's fonts on this studio page. */
+#print { --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Lexend","Segoe UI",system-ui,sans-serif; --pixel:"Silkscreen","Courier New",monospace }
 
 /* Printing: only the slips or the class report, black on white. */
 @media print {
@@ -38,7 +41,7 @@ td .btn.small { font-size:13px; padding:7px 10px 6px }
 }
 </style>
 </head>
-<body>
+<body class="studio">
 <main class="wrap stack">
   <section id="gate" class="narrow stack">
     <h1>School classes</h1>
@@ -101,7 +104,7 @@ td .btn.small { font-size:13px; padding:7px 10px 6px }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>
 <script>
-topBar('<a href="admin.html">Numbers</a><a href="account.html">Parent view</a>');
+topBar('<a href="admin.html">Numbers</a><a href="account.html">Parent view</a>', 'School classes');
 let token = sessionStorage.getItem('xed.admin'), schools = [], cur = null;
 const SITE = location.origin + location.pathname.replace(/[^/]*$/, '');
 const claimUrl = c => SITE + 'signup.html?claim=' + c;

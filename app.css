@@ -124,3 +124,63 @@ td.num, th.num { text-align:right; font-variant-numeric:tabular-nums }
 
 .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--leaf); color:#fff; padding:12px 18px; border-radius:12px; font-weight:600; z-index:50; max-width:calc(100vw - 32px) }
 footer { border-top:2px solid var(--edge); padding-block:24px; color:var(--dim); font-size:14px }
+
+/* MindsPlay header (family account) and game icons */
+.logo.studio { font-family:"Unbounded","Arial Black",system-ui,sans-serif; font-size:17px; letter-spacing:.02em }
+.logo.studio img { width:34px; height:34px; border-radius:9px }
+.gicon { flex:none; display:inline-grid; place-items:center; border-radius:50%; font:800 20px/1 var(--display); object-fit:cover }
+
+/* ======================================================================================================
+   MindsPlay studio theme: pages about the whole family of games (the family account, admin, school classes).
+   Studio brand only: Night, Paper and one Pulse pink; Unbounded, Figtree, JetBrains Mono. No Xed colours or Baloo.
+   Put class="studio" on <body>. Each game keeps its own colours only inside its own icon. */
+body.studio {
+  --night:#0B0B10; --deep:#101017; --panel:#15151D; --edge:#2A2A36; --line:#2A2A36;
+  --pulse:#FF2E88; --paper:#FFFFFF; --fog:#EDEDF2;
+  --gold:#FF2E88; --sky:#FF2E88; --leaf:#FFFFFF; --coral:#FF8A7A; --bad:#FF8A7A;
+  --text:#F4F4F8; --dim:#A3A3B5;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --pixel:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  font-size:17px;
+}
+html:has(body.studio) { background:#0B0B10 }
+.studio a { color:var(--text); text-decoration-color:var(--pulse); text-underline-offset:3px }
+.studio h1 { font-size:clamp(30px,5vw,48px); font-weight:800; letter-spacing:-.01em }
+.studio h2 { font-size:clamp(22px,3.2vw,30px); font-weight:700 }
+.studio h3 { font-size:18px; font-weight:700 }
+.studio .px, .studio .pill, .studio .tag, .studio .steps, .studio .plan .save { font-family:var(--pixel); font-weight:500; letter-spacing:.12em; font-size:11px }
+.studio .top { background:rgba(11,11,16,.9); border-bottom:1px solid var(--line) }
+.studio .logo span { font:800 17px/1 var(--display); letter-spacing:.03em }
+.studio .logo small { font:500 8px/1 var(--pixel); letter-spacing:.42em; margin-top:4px }
+.studio .top nav a { color:var(--dim) } .studio .top nav a:hover { color:var(--text) }
+.studio .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; align-content:start }
+.studio .card.gold { border-color:var(--pulse) }
+.studio .btn { font:700 14px/1 var(--display); letter-spacing:.02em; border-radius:12px; padding:15px 20px; background:var(--pulse); color:var(--night); box-shadow:none }
+.studio .btn:active { box-shadow:none }
+.studio .btn.small { font-size:12px; padding:11px 14px }
+.studio .btn.ghost { background:transparent; color:var(--text); box-shadow:inset 0 0 0 1.5px var(--line) }
+.studio .btn.ghost:hover { box-shadow:inset 0 0 0 1.5px var(--text) }
+.studio .btn.danger { background:transparent; color:var(--bad); box-shadow:inset 0 0 0 1.5px #5a2a33 }
+.studio input, .studio select, .studio textarea { background:var(--deep); border:1.5px solid var(--line); font-family:var(--body) }
+.studio input:focus, .studio select:focus, .studio textarea:focus { border-color:var(--pulse) }
+.studio .check input { accent-color:var(--pulse) }
+.studio .code { font:500 clamp(26px,5vw,38px)/1 var(--pixel); letter-spacing:.14em; color:var(--text); background:var(--deep); border:1.5px dashed var(--pulse) }
+.studio .pill { background:var(--deep); color:var(--text); border:1px solid var(--line) }
+.studio .pill.good { background:var(--paper); color:var(--night); border-color:var(--paper) }
+.studio .pill.warn { background:var(--pulse); color:var(--night); border-color:var(--pulse) }
+.studio .pill.bad { background:transparent; color:var(--bad); border-color:var(--bad) }
+.studio .stat { background:var(--deep); border:1px solid var(--line) }
+.studio .stat b { font:700 26px/1 var(--display); color:var(--text) }
+.studio .plan { background:var(--deep); border:1.5px solid var(--line) }
+.studio .plan[aria-pressed="true"] { border-color:var(--pulse); box-shadow:0 0 0 3px rgba(255,46,136,.22) }
+.studio .plan b { font:700 26px/1 var(--display); color:var(--text) }
+.studio .plan .save { color:var(--pulse) }
+.studio .seg { background:var(--deep); border:1.5px solid var(--line) }
+.studio .seg button[aria-pressed="true"] { background:var(--paper); color:var(--night) }
+.studio th, .studio td { border-bottom:1px solid var(--line) }
+.studio .toast { background:var(--paper); color:var(--night) }
+.studio .ok { color:var(--text) } .studio .ok::before { content:""; display:inline-block; width:10px; height:12px; margin-right:8px; background:var(--pulse); clip-path:polygon(0 0,100% 50%,0 100%) }
+.studio footer { border-top:1px solid var(--line) }
+.studio .pinslots span { background:rgba(255,255,255,.08) }
+.studio :focus-visible { outline-color:var(--pulse) }
