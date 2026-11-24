@@ -22,6 +22,7 @@
 .pick button span { display:grid; line-height:1.3 }
 .pick .soon { font:500 10px var(--pixel); letter-spacing:.1em; text-transform:uppercase; color:var(--pulse, var(--gold)) }
 </style>
+<meta name="robots" content="noindex">
 </head>
 <body class="studio">
 <main class="wrap stack">
@@ -83,6 +84,7 @@
 </main>
 <footer><div class="wrap">MindsPlay Studios · Accra · <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> · WhatsApp <a href="https://wa.me/233248932204">+233 24 893 2204</a> · <a href="terms.html">Terms &amp; privacy</a></div></footer>
 <script src="app.js"></script>
+<script src="xed-skills.js"></script>
 <script>
 topBar('<a href="index.html#games" class="hide-sm">All games</a><a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the Xed demo</a>', true);
 let me = null, plan = 'year', channel = 'mobile_money';
@@ -131,6 +133,53 @@ function render() {
   $('#status').innerHTML = bySchool
     ? `<span class="pill good">Paid by school</span><span class="muted">Your children’s school pays for Xed.</span>`
     : `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${a.active ? 'Xed is unlocked until ' + day(a.until) : 'Access ended on ' + day(a.until) + '. Renew to keep playing.'}</span>`;
+  // What the child is learning, in school terms: their class's maths skills by topic, what they've mastered,
+  // and where they need help. "Mastered" means 3 right answers in a row without hints.
+  const learning = k => {
+    const S = window.XED_SKILLS || {}, T = window.XED_TOPICS || {};
+    const rec = Object.fromEntries((k.progress.skills || []).filter(r => S[r.code]).map(r => [r.code, r]));
+    const answered = Object.values(rec).filter(r => r.answers > 0);
+    // The class whose skills they are working on: most answers in the last two weeks, else overall, else their class.
+    const tally = {};
+    for (const r of answered) tally[S[r.code].cls] = (tally[S[r.code].cls] || 0) + (r.recent || 0) * 100 + r.answers;
+    const cls = Number(Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0]) || Math.min(6, Math.max(1, k.grade || 1));
+    const codes = Object.keys(S).filter(c => S[c].cls === cls);
+    if (!codes.length) return '';
+    const status = c => rec[c]?.mastered_at ? 'm' : rec[c]?.answers ? 'p' : 'n';
+    const pct = r => Math.round(100 * r.correct / Math.max(1, r.answers));
+    const done = codes.filter(c => status(c) === 'm').length;
+    const recentWins = Object.values(rec).filter(r => r.mastered_at).sort((a, b) => b.mastered_at.localeCompare(a.mastered_at)).slice(0, 4);
+    const help = Object.values(rec).filter(r => !r.mastered_at && r.answers >= 3 && pct(r) < 60).sort((a, b) => pct(a) - pct(b)).slice(0, 4);
+    const topics = [...new Set(codes.map(c => S[c].topic))];
+    const bar = (n, of) => `<span class="lbar"><i style="width:${Math.round(100 * n / Math.max(1, of))}%"></i></span>`;
+    const chip = c => { const st = status(c);
+      return st === 'm' ? '<span class="lchip m">Mastered</span>' : st === 'p' ? `<span class="lchip p">Practising · ${pct(rec[c])}% right</span>` : '<span class="lchip n">Not started</span>'; };
+    return `<section class="learn">
+      <span class="px small muted">${esc(k.first_name)}’s learning</span>
+      <p><b>Working on Class ${cls} maths</b> <span class="muted small">(Cambridge Primary Mathematics, Stage ${cls})</span></p>
+      <div class="lrow"><span>${done} of ${codes.length} Class ${cls} skills mastered</span>${bar(done, codes.length)}</div>
+      ${answered.length ? '' : `<p class="small muted">Nothing yet: this fills in as ${esc(k.first_name)} answers questions in Xed.</p>`}
+      ${recentWins.length ? `<div><span class="small"><b>Recently mastered</b></span><ul class="lskills">${recentWins.map(r => `<li>${esc(S[r.code].name)}</li>`).join('')}</ul></div>` : ''}
+      ${help.length ? `<div><span class="small"><b>Needs more practice</b></span><ul class="lskills">${help.map(r => `<li>${esc(S[r.code].name)} <span class="muted">· right ${r.correct} of ${r.answers} times</span></li>`).join('')}</ul>
+        <p class="small muted">Xed gives extra lessons on these. Practising together at home helps too.</p></div>` : ''}
+      <div class="ltopics">${topics.map(t => { const tc = codes.filter(c => S[c].topic === t), m = tc.filter(c => status(c) === 'm').length;
+        return `<div class="lrow"><span>${esc(T[t] || t)}</span><span class="small muted">${m}/${tc.length}</span>${bar(m, tc.length)}</div>`; }).join('')}</div>
+      <details><summary class="small">See every Class ${cls} skill</summary>
+        ${topics.map(t => `<p class="small"><b>${esc(T[t] || t)}</b></p><ul class="lskills all">${codes.filter(c => S[c].topic === t).map(c => `<li>${esc(S[c].name)} ${chip(c)}</li>`).join('')}</ul>`).join('')}
+        <p class="small muted">Mastered means 3 right answers in a row without hints.</p>
+      </details>
+    </section>`;
+  };
+  // Step-by-step sign-in help with pictures of the game's screens, and a card to print.
+  const signinHelp = k => `<details class="signin"><summary class="small">How ${esc(k.first_name)} signs in to Xed</summary>
+      <ol class="sisteps">
+        <li><img src="img/signin/01_code.jpg" alt="The Type your class code screen" loading="lazy"><span>Open Xed and choose <b>Sign in with class code</b>. Type <b>${esc(k.class_code)}</b>, then press Next.</span></li>
+        <li><img src="img/signin/02_names.jpg" alt="The list of names" loading="lazy"><span>Tap <b>${esc(k.first_name)}</b>.</span></li>
+        <li><img src="img/signin/03_pictures.jpg" alt="The 9 pictures to choose from" loading="lazy"><span>Tap the <b>4 secret pictures</b> you chose, in the same order. The game reads every step aloud.</span></li>
+      </ol>
+      <p class="small muted">Forgotten the pictures? Press <b>New picture PIN</b> below to choose new ones.</p>
+      <button class="btn ghost small" data-act="printcard" type="button">Print a sign-in card</button>
+    </details>`;
   const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'School pilot'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
 
   $('#kids').innerHTML = me.children.length ? me.children.map(k => `
@@ -151,6 +200,7 @@ function render() {
         <div class="stat"><b>${k.progress.week_mastered}</b><span>skills mastered this week</span></div>
         <div class="stat"><b>${k.progress.total_mastered}</b><span>skills mastered in all</span></div>
       </div>` : ''}
+      ${k.games.some(g => g.id === 'xed') ? learning(k) + signinHelp(k) : ''}
       <p class="small muted">Last played: ${k.last_seen ? day(k.last_seen) : 'not yet'}</p>
       <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">${k.added_by === 'school' ? 'Unlink' : 'Remove'}</button></div>
       <div data-pinedit hidden class="stack"><div data-pad></div><p class="err" role="alert"></p><button class="btn small" data-act="savepin" type="button" style="justify-self:start">Save PIN</button></div>
@@ -214,7 +264,25 @@ $('#kids').addEventListener('click', e => {
   const b = e.target.closest('button[data-act]');
   if (!b) return;
   const card = b.closest('[data-id]'), id = card.dataset.id, kid = me.children.find(k => k.id === id);
-  if (b.dataset.act === 'pin') {
+  if (b.dataset.act === 'printcard') {
+    // A small card to keep by the computer. The pictures are shown only if they were just chosen on this page.
+    const pin = (pads[id] || []).length === 4 ? pads[id] : null, base = location.href.replace(/[^/]*$/, '');
+    const w = window.open('', '_blank');
+    if (!w) return alert('Please allow pop-ups to print the card.');
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Xed sign-in card</title><style>
+      body{font:16px/1.4 system-ui,sans-serif;margin:24px;color:#111} .card{border:2px dashed #999;border-radius:14px;padding:18px 22px;max-width:520px}
+      h1{font-size:22px;margin:0 0 10px} .code{font:800 34px/1.1 ui-monospace,monospace;letter-spacing:2px;margin:4px 0 12px}
+      ol{padding-left:20px;margin:8px 0} .pics{display:flex;gap:10px;margin-top:8px} .pics div{width:70px;height:70px;border:2px solid #333;border-radius:10px;display:grid;place-items:center}
+      .pics img{width:56px;height:56px} small{color:#555}</style>
+      <div class="card"><h1>${esc(kid.first_name)} signs in to Xed</h1>
+      <div>Class code</div><div class="code">${esc(kid.class_code)}</div>
+      <ol><li>Open Xed and choose <b>Sign in with class code</b>, type the code above and press Next.</li>
+      <li>Tap <b>${esc(kid.first_name)}</b>.</li><li>Tap the 4 secret pictures in this order:</li></ol>
+      <div class="pics">${[0, 1, 2, 3].map(i => `<div>${pin ? `<img src="${base}${pic(pin[i])}" alt="${PICTURES[pin[i]]}">` : ''}</div>`).join('')}</div>
+      ${pin ? '' : '<small>Draw or write the 4 pictures in the boxes, in order. Keep this card somewhere safe.</small>'}</div>`);
+    w.document.close();
+    setTimeout(() => w.print(), 600);
+  } else if (b.dataset.act === 'pin') {
     const box = $('[data-pinedit]', card);
     box.hidden = !box.hidden;
     if (!box.hidden) pinPicker($('[data-pad]', box), p => pads[id] = p);
