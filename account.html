@@ -85,6 +85,7 @@
 <footer><div class="wrap">MindsPlay Studios · Accra · <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> · WhatsApp <a href="https://wa.me/233248932204">+233 24 893 2204</a> · <a href="terms.html">Terms &amp; privacy</a></div></footer>
 <script src="app.js"></script>
 <script src="xed-skills.js"></script>
+<script src="game-skills.js"></script>
 <script>
 topBar('<a href="index.html#games" class="hide-sm">All games</a><a href="xed.html" class="hide-sm">About Xed</a><a href="play.html">Try the Xed demo</a>', true);
 let me = null, plan = 'year', channel = 'mobile_money';
@@ -201,6 +202,7 @@ function render() {
         <div class="stat"><b>${k.progress.total_mastered}</b><span>skills mastered in all</span></div>
       </div>` : ''}
       ${k.games.some(g => g.id === 'xed') ? learning(k) + signinHelp(k) : ''}
+      ${otherLearning(k)}
       <p class="small muted">Last played: ${k.last_seen ? day(k.last_seen) : 'not yet'}</p>
       <div class="row"><button class="btn ghost small" data-act="pin" type="button">New picture PIN</button><button class="btn danger small" data-act="remove" type="button">${k.added_by === 'school' ? 'Unlink' : 'Remove'}</button></div>
       <div data-pinedit hidden class="stack"><div data-pad></div><p class="err" role="alert"></p><button class="btn small" data-act="savepin" type="button" style="justify-self:start">Save PIN</button></div>
@@ -224,6 +226,26 @@ function render() {
   drawPay();
 
   $('#pays').innerHTML = me.payments.length ? me.payments.map(x => `<tr><td>${day(x.paid_at || x.created_at)}</td><td>${esc(x.plan)}${x.children > 1 ? ' × ' + x.children : ''}</td><td>${x.channel === 'card' ? 'Card' : 'Mobile Money'}</td><td class="num">${cedis(x.amount)}</td><td>${esc(x.status)}</td><td>${day(x.period_end)}</td></tr>`).join('') : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>';
+}
+
+/** What the child is learning in every game other than Xed: each idea they have practised, how often they got it right
+ *  and whether they have mastered it. Games report these as they are played (see game-skills.js for the wording). */
+function otherLearning(k) {
+  return k.games.filter(row => row.id !== 'xed' && row.access.status !== 'coming_soon').map(row => {
+    const g = me.games.find(x => x.id === row.id), book = (typeof GAME_SKILLS !== 'undefined' && GAME_SKILLS[row.id]) || { skills: {} };
+    const recs = ((k.progress.games || {})[row.id] || []).filter(r => r.answers || r.mastered_at);
+    if (!recs.length) return `<span class="px small muted">${esc(g.name)} · learning</span><p class="small muted">No play recorded yet. Once ${esc(k.first_name)} signs in to ${esc(g.name)} with their class code, what they practise shows here.</p>`;
+    const tot = recs.reduce((a, r) => ({ n: a.n + r.week_answers, c: a.c + r.week_correct }), { n: 0, c: 0 });
+    const done = recs.filter(r => r.mastered_at).length;
+    return `<span class="px small muted">${esc(g.name)} this week${book.subject ? ' · ' + esc(book.subject) : ''}</span>
+      <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="stat"><b>${row.week_minutes}</b><span>minutes played this week</span></div>
+        <div class="stat"><b>${tot.n ? Math.round(100 * tot.c / tot.n) + '%' : '—'}</b><span>right choices this week (${tot.n} tries)</span></div>
+        <div class="stat"><b>${recs.length}</b><span>ideas practised</span></div>
+        <div class="stat"><b>${done}</b><span>ideas mastered</span></div>
+      </div>
+      <ul class="lskills all">${recs.sort((a, b) => (b.last || '').localeCompare(a.last || '')).map(r => `<li>${esc(book.skills[r.code]?.name || r.code)} <span class="muted">· right ${r.correct} of ${r.answers}${r.mastered_at ? ' · mastered' : ''}</span></li>`).join('')}</ul>`;
+  }).join('');
 }
 
 const ages = g => g.ages_min ? ` · ages ${g.ages_min}–${g.ages_max}` : '';
