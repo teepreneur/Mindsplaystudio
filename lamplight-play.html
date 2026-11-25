@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play the free demo · Lamplight</title>
+<meta name="description" content="Play Lamplight in your browser. Explore six Bible stories with Lumi, a little lamp who reads every line aloud: from Noah’s Ark to Jesus Calms the Storm. Help the people of each story, then earn a memory verse and a sticker. The first two stories are free for everyone; sign in inside the game with your MindsPlay class code for all six.">
+<link rel="icon" href="img/icons/lamplight.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+.stage { position:relative; width:100%; aspect-ratio:16/9; max-height:calc(100vh - 140px); background:#000 url(img/art-lamplight.jpg) center/cover; border:4px solid var(--edge); border-radius:18px; overflow:hidden; margin-inline:auto }
+.stage canvas { width:100%; height:100%; display:block; background:transparent }
+.cover { position:absolute; inset:0; display:grid; place-content:center; justify-items:center; gap:16px; text-align:center; padding:24px; background:linear-gradient(0deg, rgba(4,22,31,.94), rgba(4,22,31,.6)) }
+.cover h1 { font-size:clamp(30px,5vw,54px) }
+.cover p { max-width:48ch; color:#DADAF5 }
+.meter { width:min(420px, 80vw); height:14px; background:var(--deep); border:2px solid var(--edge); border-radius:999px; overflow:hidden }
+.meter i { display:block; height:100%; width:0; background:linear-gradient(90deg,#46E0FF,#7CFFB2); transition:width .3s }
+.full { position:absolute; right:10px; bottom:10px; z-index:2 }
+.keys { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin:0; padding:0; list-style:none }
+.keys li { padding:10px 12px; border:2px solid var(--edge); border-radius:12px; font-size:14px }
+.keys b { display:block; font-size:15px }
+</style>
+<link rel="canonical" href="https://mindsplaystudiogh.com/lamplight-play.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MindsPlay Studios">
+<meta property="og:url" content="https://mindsplaystudiogh.com/lamplight-play.html">
+<meta property="og:title" content="Play the free demo · Lamplight">
+<meta property="og:description" content="Play Lamplight in your browser. Explore six Bible stories with Lumi, a little lamp who reads every line aloud: from Noah’s Ark to Jesus Calms the Storm. Help the people of each story, then earn a memory verse and a sticker. The first two stories are free for everyone; sign in inside the game with your MindsPlay class code for all six.">
+<meta property="og:image" content="https://mindsplaystudiogh.com/img/og-lamplight.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Play the free demo · Lamplight">
+<meta property="og:locale" content="en_GH">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Play the free demo · Lamplight">
+<meta name="twitter:description" content="Play Lamplight in your browser. Explore six Bible stories with Lumi, a little lamp who reads every line aloud: from Noah’s Ark to Jesus Calms the Storm. Help the people of each story, then earn a memory verse and a sticker. The first two stories are free for everyone; sign in inside the game with your MindsPlay class code for all six.">
+<meta name="twitter:image" content="https://mindsplaystudiogh.com/img/og-lamplight.jpg">
+</head>
+<body>
+<main class="wrap stack">
+  <div class="stack" style="gap:8px">
+    <span class="tag">Free demo · no download</span>
+    <h1>Play Lamplight in your browser</h1>
+    <p class="lead">Explore six Bible stories with Lumi, a little lamp who reads every line aloud: from Noah’s Ark to Jesus Calms the Storm. Help the people of each story, then earn a memory verse and a sticker. The first two stories are free for everyone; sign in inside the game with your MindsPlay class code for all six. Best on a laptop or desktop with a keyboard and mouse.</p>
+  </div>
+  <div class="stage" id="stage">
+    <canvas id="unity" tabindex="-1" aria-label="Lamplight game"></canvas>
+    <div class="cover" id="cover">
+      <h1>Step into the story.</h1>
+      <p id="covertext">Sound on! Lumi reads every line aloud. Walk up to people and press E to talk and help.</p>
+      <div class="meter" id="meter" hidden><i></i></div>
+      <button class="btn" id="start" type="button">▶ Play the free demo</button>
+      <p class="err" id="err" role="alert"></p>
+    </div>
+    <button class="btn ghost small full" id="fs" type="button" hidden>Full screen</button>
+  </div>
+  <ul class="keys">
+    <li><b>Move</b>WASD or arrow keys</li>
+    <li><b>Run / jump</b>Shift / Space</li>
+    <li><b>Talk, pick up, share</b>E or Enter</li>
+    <li><b>Look</b>Q and R, or right mouse button</li>
+    <li><b>Pause</b>P</li>
+  </ul>
+  <div class="grid2">
+    <a class="card" href="lamplight-download.html?from=play" style="text-decoration:none;color:inherit"><h3>Download Lamplight</h3><p class="muted">The same game for Windows and Mac. Runs smoother and plays without internet.</p></a>
+    <a class="card" href="lamplight.html" style="text-decoration:none;color:inherit"><h3>About Lamplight</h3><p class="muted">What it is, who it is for and what it teaches.</p></a>
+  </div>
+  <p class="small muted">This is an early demo and we are still building. Tell us what you think: <a href="mailto:hello@mindsplaystudiogh.com?subject=Lamplight">hello@mindsplaystudiogh.com</a></p>
+</main>
+<script src="app.js"></script>
+<script>
+topBar('<a href="lamplight.html" class="hide-sm">About Lamplight</a><a href="lamplight-download.html?from=play">Download</a><a href="index.html#games">All games</a>', 'Lamplight');
+const BUILD = API + '/play/lamplight/Build/';
+const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+if (mobile) $('#covertext').textContent = 'Lamplight is made for computers. On a phone the demo may be slow and needs a keyboard. For the best time, open this page on a laptop or desktop.';
+
+let instance;
+$('#start').addEventListener('click', () => {
+  $('#start').hidden = true;
+  $('#meter').hidden = false;
+  $('#covertext').textContent = 'Loading Lamplight… (about 87 MB the first time, then it’s saved)';
+  const s = document.createElement('script');
+  s.src = BUILD + 'lamplight.loader.js';
+  s.onerror = () => { $('#err').textContent = 'The demo couldn’t load. Check your connection and refresh the page.'; };
+  s.onload = () => createUnityInstance($('#unity'), {
+    dataUrl: BUILD + 'lamplight.data.br',
+    frameworkUrl: BUILD + 'lamplight.framework.js.br',
+    codeUrl: BUILD + 'lamplight.wasm.br',
+    companyName: 'MindsPlay Studios', productName: 'Lamplight', productVersion: '0.1',
+  }, p => { $('#meter i').style.width = Math.round(p * 100) + '%'; })
+    .then(u => { instance = u; $('#cover').hidden = true; $('#fs').hidden = false; $('#unity').focus(); })
+    .catch(e => { $('#err').textContent = 'The demo couldn’t start on this device: ' + e; });
+  document.body.append(s);
+});
+$('#fs').addEventListener('click', () => instance && instance.SetFullscreen(1));
+</script>
+</body>
+</html>

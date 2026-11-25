@@ -217,7 +217,8 @@ footer .flinks { display:flex; flex-wrap:wrap; gap:16px; font-weight:700 }
     <h1 id="h1">Step into <span>the story.</span></h1>
     <p class="lede">Lamplight is an open-world 3D Bible adventure for children aged 6 to 12. Walk into six Bible stories, meet the people in them and help with the very things each story describes. Lumi, a little clay lamp, lights the way and reads every line aloud.</p>
     <div class="ctas">
-      <a class="btn sun" href="lamplight-download.html">Download for Windows / Mac</a>
+      <a class="btn sun" href="lamplight-play.html">Play free in your browser</a>
+      <a class="btn plain" href="lamplight-download.html">Download for Windows / Mac</a>
       <a class="btn plain" href="player.html#new">Make my player account</a>
     </div>
     <div class="facts"><span><b>6</b> Bible stories</span><span><b>6–12</b> years</span><span><b>Mac</b> and <b>Windows</b></span><span><b>0</b> ads</span></div>
@@ -427,7 +428,7 @@ fetch(API + "/v1/games").then(r => r.ok ? r.json() : Promise.reject()).then(d =>
   const g = (Array.isArray(d) ? d : d.games || []).find(x => x.id === "lamplight"), s = $("status");
   if (!g) return;
   if (g.status === "live") s.textContent = "Out now";
-  else if (g.status === "beta") s.textContent = "Early version · download it now";
+  else if (g.status === "beta") s.textContent = "Early version · play it now";
   else if (g.status === "coming_soon") { s.textContent = "Coming soon · add it to your list today"; s.classList.add("soon"); }
   else return;
   s.hidden = false;
