@@ -204,3 +204,7 @@ html:has(body.studio) { background:#0B0B10 }
 .signin .sisteps li { display:grid; grid-template-columns:150px minmax(0,1fr); gap:12px; align-items:center; font-size:14px }
 .signin .sisteps img { width:100%; border-radius:8px; border:1px solid var(--line, #2A2A36) }
 @media (max-width:480px) { .signin .sisteps li { grid-template-columns:1fr } }
+
+/* The December pilot notice (see pilotBanner in app.js). */
+.pilotnote { display:grid; gap:4px; padding:14px 18px; border-radius:14px; border:2px solid #FF2E88; background:rgba(255,46,136,.12); font-size:15px; line-height:1.45 }
+.pilotnote b { font-size:17px }

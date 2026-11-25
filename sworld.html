@@ -202,7 +202,7 @@ footer .logo b { font-size:20px }
 <meta name="twitter:title" content="Sworld: science action game for teens | MindsPlay Studios">
 <meta name="twitter:description" content="Sworld is an action roguelike for ages 11 to 16 where science is the combat system. Neutralise acid slimes, dissolve metal shells and restore the lost laws of nature. A MindsPlay Studios game.">
 <meta name="twitter:image" content="https://mindsplaystudiogh.com/img/og-sworld.jpg">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "Sworld", "url": "https://mindsplaystudiogh.com/sworld.html", "image": "https://mindsplaystudiogh.com/img/og-sworld.jpg", "description": "Sworld is an action roguelike for ages 11 to 16 where science is the combat system. Neutralise acid slimes, dissolve metal shells and restore the lost laws of nature. A MindsPlay Studios game.", "genre": ["Educational", "Science"], "about": "Science", "inLanguage": "en", "typicalAgeRange": "11-16", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 11, "suggestedMaxAge": 16}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "Sworld", "url": "https://mindsplaystudiogh.com/sworld.html", "image": "https://mindsplaystudiogh.com/img/og-sworld.jpg", "description": "Sworld is an action roguelike for ages 11 to 16 where science is the combat system. Neutralise acid slimes, dissolve metal shells and restore the lost laws of nature. A MindsPlay Studios game.", "genre": ["Educational", "Science"], "about": "Science", "inLanguage": "en", "typicalAgeRange": "11-16", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 11, "suggestedMaxAge": 16}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development", "gamePlatform": ["Windows", "macOS", "Web browser"]}</script>
 </head>
 <body>
 
@@ -225,10 +225,10 @@ footer .logo b { font-size:20px }
     <h1>Science is <span>your weapon.</span></h1>
     <p class="lead">Sworld is an action roguelike where the science is the combat. Coat your blade in alkali to neutralise acid slimes, dissolve metal shells and fight room by room to restore the lost laws of nature.</p>
     <div class="ctas">
-      <a class="btn main" href="player.html#new">Make my player account</a>
-      <a class="btn ghost" href="account.html">Parents: add it to your child’s games</a>
+      <a class="btn main" href="sworld-play.html">Play free in your browser</a>
+      <a class="btn ghost" href="sworld-download.html">Download for Windows / Mac</a>
     </div>
-    <div class="facts mono"><span>Ages <b>11–16</b></span><span><b>3</b> realms</span><span><b>3</b> heroes</span><span>Chemistry, physics, biology</span><span><b>0</b> ads</span></div>
+    <div class="facts mono"><span>Ages <b>11–16</b></span><span><b>3</b> realms</span><span><b>3</b> heroes</span><span>Chemistry, physics, biology</span><span><b>0</b> ads</span><span>Free for students <b>14 Dec – 4 Jan</b></span></div>
   </div>
 </section>
 
@@ -345,8 +345,8 @@ footer .logo b { font-size:20px }
   <div class="wrap join">
     <img src="img/icons/sworld.svg" alt="" width="72" height="72" loading="lazy">
     <h2>Pick up the blade.</h2>
-    <p>Make your player account and add Sworld. Parents, add it from your family account in a minute.</p>
-    <div class="ctas"><a class="btn main" href="player.html#new">Make my player account</a><a class="btn ghost" href="account.html">Add it to your child’s games</a></div>
+    <p>The free demo is ready: play it in your browser or download it for Windows or Mac. Make a player account to keep Sworld on your list as it grows.</p>
+    <div class="ctas"><a class="btn main" href="sworld-play.html">Play the free demo</a><a class="btn ghost" href="sworld-download.html">Download for Windows / Mac</a><a class="btn ghost" href="player.html#new">Make my player account</a></div>
   </div>
 </section>
 </main>
@@ -370,7 +370,7 @@ const store = { get(k, d) { try { const v = localStorage.getItem("sworld_" + k);
 const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : "https://api.mindsplaystudiogh.com";
 fetch(API + "/v1/games").then(r => r.ok ? r.json() : Promise.reject()).then(d => {
   const g = (Array.isArray(d) ? d : d.games || []).find(x => x.id === "sworld"); if (!g) return;
-  const t = g.status === "live" ? "Out now" : g.status === "coming_soon" ? "Coming soon · add it to your list today" : "";
+  const t = g.status === "live" ? "Out now" : g.status === "beta" ? "Free demo · play it now" : g.status === "coming_soon" ? "Coming soon · add it to your list today" : "";
   if (t) { $("status").textContent = t; $("status").hidden = false; }
 }).catch(() => { $("status").hidden = true; });
 

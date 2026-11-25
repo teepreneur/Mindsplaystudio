@@ -339,7 +339,7 @@ function render() {
       : s === 'trial' ? `Free week until ${day(row.access.until)}`
       : s === 'paid' ? `Unlocked until ${day(row.access.until)}`
       : s === 'school' ? `Paid by your school until ${day(row.access.until)}`
-      : s === 'pilot' ? `School pilot until ${day(row.access.until)}`
+      : s === 'pilot' ? `Free pilot until ${day(row.access.until)}`
       : s === 'expired' ? 'Ended. Ask your parent to renew.' : '';
     const playable = row.access.active && g.launch_url;
     const acts = s === 'coming_soon' ? '' : [
@@ -357,7 +357,7 @@ function render() {
     : a.status === 'trial' ? `You’re on your free week until ${day(a.until)}. After that your parent chooses a plan.`
     : a.status === 'paid' ? `Your parent’s plan keeps your games unlocked until ${day(a.until)}.`
     : a.status === 'school' ? `Your school pays for your games until ${day(a.until)}.`
-    : a.status === 'pilot' ? `Your school’s pilot keeps your games free until ${day(a.until)}.`
+    : a.status === 'pilot' ? `The pilot keeps your games free until ${day(a.until)}.`
     : 'Your games are locked. Ask your parent to renew in their account.';
   $('#code').textContent = c.class_code;
   $('#signinhelp').textContent = `In your games, type this class code, tap your name and your 4 secret pictures.${c.username ? ` On this page you can also use your username, ${c.username}.` : ''}`;

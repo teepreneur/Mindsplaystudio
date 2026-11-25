@@ -110,3 +110,15 @@ function topBar(links = '', studio = false) {
 const gameIcon = (g, size = 40) => g.icon
   ? `<img class="gicon" src="${esc(g.icon)}" alt="" width="${size}" height="${size}">`
   : `<span class="gicon" style="width:${size}px;height:${size}px;background:${esc(g.color || '#3A38A0')};color:${esc(g.ink || '#fff')}" aria-hidden="true">${esc(g.name[0])}</span>`;
+
+/** The December pilot: every game is free for students from 14 December to 4 January. Until it ends, the family,
+ *  player, sign-up, demo and download pages say so at the top (the API opens the games on the same dates). */
+function pilotBanner() {
+  if (Date.now() > Date.parse('2027-01-05T00:00:00Z') || /admin|classes/.test(location.pathname)) return;
+  const m = document.querySelector('main');
+  if (!m || document.querySelector('.pilotnote')) return;
+  const started = Date.now() >= Date.parse('2026-12-14T00:00:00Z');
+  m.insertAdjacentHTML('afterbegin', `<div class="pilotnote" role="note"><b>${started ? 'Free play is on until 4 January' : 'Free play starts 14 December'}</b>
+    <span>Every MindsPlay game is free for students from 14 December to 4 January. Sign up now so your player is ready. After 4 January the first week is free, then plans start at GH₵49 a month.</span></div>`);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pilotBanner); else pilotBanner();

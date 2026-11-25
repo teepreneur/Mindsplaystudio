@@ -180,7 +180,7 @@ function render() {
       <p class="small muted">Forgotten the pictures? Press <b>New picture PIN</b> below to choose new ones.</p>
       <button class="btn ghost small" data-act="printcard" type="button">Print a sign-in card</button>
     </details>`;
-  const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'School pilot'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
+  const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'Free pilot'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
 
   $('#kids').innerHTML = me.children.length ? me.children.map(k => `
     <article class="card" data-id="${k.id}">
@@ -237,7 +237,7 @@ function gameRow(k, row) {
     : a.status === 'paid' ? `Paid until ${day(a.until)}`
     : a.status === 'trial' ? `Free week until ${day(a.until)}`
     : a.status === 'school' ? `Paid by school until ${day(a.until)}`
-    : a.status === 'pilot' ? `School pilot until ${day(a.until)}`
+    : a.status === 'pilot' ? `Free pilot until ${day(a.until)}`
     : a.status === 'retired' ? 'No longer available' : 'Ended. Renew to keep playing.';
   const play = a.status === 'coming_soon' ? '' : ` · ${row.week_minutes} min this week`;
   return `<div class="gm">${gameIcon(g)}<span><b>${g.page ? `<a href="${esc(g.page)}" style="text-decoration:none">${esc(g.name)}</a>` : esc(g.name)}</b><small>${state}${play}</small></span><button class="x" type="button" data-act="ungame" data-g="${g.id}" aria-label="Remove ${esc(g.name)} from ${esc(k.first_name)}’s games" title="Remove">×</button></div>`;

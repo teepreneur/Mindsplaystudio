@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Download Sworld · MindsPlay Studios</title>
+<meta name="description" content="Download the free Sworld demo for Windows or Mac: an action roguelike where science is the combat.">
+<link rel="icon" href="img/icons/sworld.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="app.css">
+<link rel="canonical" href="https://mindsplaystudiogh.com/sworld-download.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MindsPlay Studios">
+<meta property="og:url" content="https://mindsplaystudiogh.com/sworld-download.html">
+<meta property="og:title" content="Download Sworld · MindsPlay Studios">
+<meta property="og:description" content="Download the free Sworld demo for Windows or Mac: an action roguelike where science is the combat.">
+<meta property="og:image" content="https://mindsplaystudiogh.com/img/og-sworld.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Download Sworld · MindsPlay Studios">
+<meta property="og:locale" content="en_GH">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Download Sworld · MindsPlay Studios">
+<meta name="twitter:description" content="Download the free Sworld demo for Windows or Mac: an action roguelike where science is the combat.">
+<meta name="twitter:image" content="https://mindsplaystudiogh.com/img/og-sworld.jpg">
+</head>
+<body>
+<main class="wrap stack">
+  <div class="stack" style="gap:8px">
+    <span class="tag">Free demo · Windows · Mac</span>
+    <h1>Download Sworld</h1>
+    <p class="lead">An early demo of the Reactive Marsh: four rooms, three heroes, and chemistry as your weapon. Free to download and play, no account needed, and it plays without internet.</p>
+  </div>
+  <div class="grid2">
+    <div class="card gold">
+      <h2>Windows</h2>
+      <p class="muted">Windows 10 or 11, 64-bit. About 70 MB.</p>
+      <a class="btn" id="win" href="#">Download for Windows</a>
+      <ol class="small muted" style="margin:0;padding-left:20px">
+        <li>Open the downloaded <b>Sworld-Windows.zip</b> and choose <b>Extract all</b>.</li>
+        <li>Open the <b>Sworld</b> folder and double-click <b>Sworld</b>.</li>
+        <li>If Windows says “Windows protected your PC”, click <b>More info</b>, then <b>Run anyway</b>.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Mac</h2>
+      <p class="muted">macOS 12 or newer, Apple silicon or Intel. About 75 MB.</p>
+      <a class="btn" id="mac" href="#">Download for Mac</a>
+      <ol class="small muted" style="margin:0;padding-left:20px">
+        <li>Open <b>Sworld-Mac.zip</b> and drag <b>Sworld</b> into Applications.</li>
+        <li>Double-click Sworld. The first time, your Mac says it can’t check the app. Click <b>Done</b>.</li>
+        <li>Open <b>System Settings</b>, then <b>Privacy &amp; Security</b>. Scroll down and click <b>Open Anyway</b> next to Sworld, then confirm with your password.</li>
+        <li>On macOS 14 or older, you can instead right-click Sworld and choose <b>Open</b>, then <b>Open</b> again.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card">
+    <h3>How to play</h3>
+    <p class="muted">Move with <b>WASD</b>, attack with <b>left click</b> or <b>J</b>, dodge with <b>Space</b>, and switch your blade between acid and alkali with <b>Q</b>. A gamepad works too. Read each monster’s colour, coat your blade with the opposite, and bring it to green.</p>
+    <div class="row"><a class="btn ghost small" href="sworld-play.html">Or try the demo in your browser</a><a class="btn ghost small" href="sworld.html">About Sworld</a></div>
+  </div>
+  <p class="small muted">This is an early demo and we are still building. Questions or ideas? <a href="mailto:hello@mindsplaystudiogh.com?subject=Sworld%20demo">hello@mindsplaystudiogh.com</a></p>
+</main>
+<script src="app.js"></script>
+<script>
+topBar('<a href="sworld.html" class="hide-sm">About Sworld</a><a href="sworld-play.html">Play in browser</a><a href="index.html#games">All games</a>', 'Sworld');
+$('#win').href = API + '/download/Sworld-Windows.zip';
+$('#mac').href = API + '/download/Sworld-Mac.zip';
+if (/Mac/.test(navigator.platform) && !/iPhone|iPad/.test(navigator.userAgent)) $('#mac').closest('.card').parentNode.prepend($('#mac').closest('.card'));
+</script>
+</body>
+</html>
