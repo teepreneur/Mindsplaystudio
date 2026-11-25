@@ -216,7 +216,7 @@ footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justi
 <meta name="twitter:title" content="GranED Prix: maths kart racing game for kids | MindsPlay Studios">
 <meta name="twitter:description" content="GranED Prix: a kart racer where knowledge is speed. Steer into the right answer at each Answer Gate for a Spark Boost. Maths from adding to equations, ages 6 to 14. A MindsPlay Studios game.">
 <meta name="twitter:image" content="https://mindsplaystudiogh.com/img/og-graned.jpg">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "GranED Prix", "url": "https://mindsplaystudiogh.com/graned.html", "image": "https://mindsplaystudiogh.com/img/og-graned.jpg", "description": "GranED Prix: a kart racer where knowledge is speed. Steer into the right answer at each Answer Gate for a Spark Boost. Maths from adding to equations, ages 6 to 14. A MindsPlay Studios game.", "genre": ["Educational", "Mathematics"], "about": "Mathematics", "inLanguage": "en", "typicalAgeRange": "6-14", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 6, "suggestedMaxAge": 14}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "GranED Prix", "url": "https://mindsplaystudiogh.com/graned.html", "image": "https://mindsplaystudiogh.com/img/og-graned.jpg", "description": "GranED Prix: a kart racer where knowledge is speed. Steer into the right answer at each Answer Gate for a Spark Boost. Maths from adding to equations, ages 6 to 14. A MindsPlay Studios game.", "genre": ["Educational", "Mathematics"], "about": "Mathematics", "inLanguage": "en", "typicalAgeRange": "6-14", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 6, "suggestedMaxAge": 14}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development", "gamePlatform": ["Windows", "macOS", "Web browser"]}</script>
 </head>
 <body>
 
@@ -239,8 +239,8 @@ footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justi
     <p class="slogan">Think fast. Drive faster.</p>
     <p class="lede">A kart racer where knowledge is speed. Questions float over the track, and you answer by steering into the right lane. Get it right and you fly off on a Spark Boost.</p>
     <div class="ctas">
-      <a class="btn go" href="player.html#new">Make my player account</a>
-      <a class="btn ghost" href="account.html">Add it to your child’s games</a>
+      <a class="btn go" href="graned-play.html">Play free in your browser</a>
+      <a class="btn ghost" href="graned-download.html">Download for Windows / Mac</a>
     </div>
     <div class="ticker"><span><b>7</b> racers</span><span><b>8</b> grade levels</span><span><b>2</b> players, one screen</span><span>Ages <b>6–14</b></span></div>
   </div>
@@ -391,7 +391,7 @@ footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justi
     <span class="lbl" style="color:var(--yellow)">Final lap</span>
     <h2>Start your engines.</h2>
     <p>Make a player account in a minute, or add GranED Prix to your child’s games from your parent account.</p>
-    <div class="ctas" style="justify-content:center"><a class="btn go" href="player.html#new">Make my player account</a><a class="btn ghost" href="account.html">Add it to your child’s games</a></div>
+    <div class="ctas" style="justify-content:center"><a class="btn go" href="graned-play.html">Play free in your browser</a><a class="btn ghost" href="graned-download.html">Download</a><a class="btn ghost" href="player.html#new">Make my player account</a><a class="btn ghost" href="account.html">Add it to your child’s games</a></div>
     <p style="font-size:16px">Questions? Email <a href="mailto:hello@mindsplaystudiogh.com">hello@mindsplaystudiogh.com</a> or <a href="https://wa.me/233248932204" target="_blank" rel="noopener">WhatsApp +233 24 893 2204</a>.</p>
   </div>
 </section>
@@ -420,6 +420,7 @@ fetch(API + "/v1/games").then(r => r.ok ? r.json() : Promise.reject()).then(d =>
   const g = (d.games || d || []).find(x => x.id === "graned"); const s = $("status");
   if (!g) return;
   if (g.status === "live") { s.textContent = "Out now"; s.classList.add("live"); s.hidden = false; }
+  else if (g.status === "beta") { s.textContent = "Early version · play it now"; s.classList.add("live"); s.hidden = false; }
   else if (g.status === "coming_soon") { s.textContent = "Coming soon · add it to your list today"; s.hidden = false; }
 }).catch(() => { $("status").hidden = true; });
 
