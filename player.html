@@ -345,7 +345,7 @@ function render() {
     const acts = s === 'coming_soon' ? '' : [
       playable ? `<button class="btn small" type="button" data-play="${g.id}">Play</button>` : '',
       g.download_url ? `<a class="btn ghost small" href="${esc(g.download_url)}">Download</a>` : '',
-      g.id === 'xed' && !row.access.active ? `<a class="btn ghost small" href="play.html">Try the demo</a>` : '',
+      /browser/i.test(g.platforms || '') ? `<a class="btn ghost small" href="${g.id === 'xed' ? 'play.html' : g.id + '-play.html'}">${row.access.active ? 'Play in browser' : 'Try the demo'}</a>` : '',
     ].join('');
     return `<div class="mygame">${gameIcon(g, 48)}<div><b>${g.page ? `<a href="${esc(g.page)}" style="text-decoration:none">${esc(g.name)}</a>` : esc(g.name)}</b><small>${state}${row.minutes ? ` · ${row.minutes} min played` : ''}</small></div><div class="acts">${acts}</div></div>`;
   }).join('') : '<p class="muted">No games yet. Add one!</p>';
