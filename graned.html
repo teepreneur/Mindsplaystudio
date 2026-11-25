@@ -199,6 +199,7 @@ select { font:600 16px var(--body); background:var(--ink); color:var(--text); bo
 footer { background:#040C29 }
 footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justify-content:space-between; align-items:center; color:var(--dim); font-size:15px }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important } }
+.top .studio { display:flex; flex:none; border-radius:8px } .top .studio img { width:28px; height:28px; display:block }
 </style>
 <link rel="canonical" href="https://mindsplaystudiogh.com/graned.html">
 <meta property="og:type" content="website">
@@ -221,6 +222,7 @@ footer .wrap { padding-block:36px; display:flex; flex-wrap:wrap; gap:20px; justi
 
 <header class="top">
   <div class="wrap">
+    <a class="studio" href="index.html" aria-label="MindsPlay Studios home" title="MindsPlay Studios home"><img src="img/mark.svg" alt="" width="28" height="28"></a>
     <a class="logo" href="#top" aria-label="GranED Prix, back to top"><img src="img/icons/graned.svg" alt="" width="38" height="38"><b>GranED Prix</b></a>
     <nav aria-label="Main"><a href="#about">The game</a><a href="#grades">Grades</a><a href="#racers">Racers</a><a href="#dash">Mini-game</a><a href="#prices">Prices</a></nav>
     <a class="btn go mini" href="player.html#new">Make my player account</a>
