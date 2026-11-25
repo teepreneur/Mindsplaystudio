@@ -8,4 +8,12 @@ const GAME_SKILLS = {
     "sw-metal-acid": { name: "Reactive metal + acid makes a salt and hydrogen", topic: "Reactivity of metals" },
     "sw-reactivity": { name: "The reactivity series: copper does not react with dilute acid", topic: "Reactivity of metals" },
   } },
+  lamplight: { subject: "Religious and Moral Education", skills: {
+    "lp-noah": { name: "Noah’s Ark: God keeps his promises", topic: "Old Testament stories" },
+    "lp-david": { name: "David and Goliath: courage and trusting God", topic: "Old Testament stories" },
+    "lp-daniel": { name: "Daniel and the Lions: staying faithful in prayer", topic: "Old Testament stories" },
+    "lp-loaves": { name: "Five Loaves and Two Fish: sharing what we have", topic: "The life of Jesus" },
+    "lp-storm": { name: "Jesus Calms the Storm: trusting Jesus when we are afraid", topic: "The life of Jesus" },
+    "lp-sheep": { name: "The Lost Sheep: everyone matters to God", topic: "Parables of Jesus" },
+  } },
 };
