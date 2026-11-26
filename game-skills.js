@@ -16,4 +16,10 @@ const GAME_SKILLS = {
     "lp-storm": { name: "Jesus Calms the Storm: trusting Jesus when we are afraid", topic: "The life of Jesus" },
     "lp-sheep": { name: "The Lost Sheep: everyone matters to God", topic: "Parables of Jesus" },
   } },
+  inkbound: { subject: "English", skills: {
+    "ib-adjectives": { name: "Using adjectives (describing words) to change things", topic: "Grammar: adjectives" },
+    "ib-choosing-verbs": { name: "Choosing the right verb (doing word) for the job", topic: "Grammar: verbs" },
+    "ib-past-tense": { name: "Writing verbs in the past tense, including irregular ones like stood and ran", topic: "Grammar: verb tenses" },
+    "ib-future-tense": { name: "Writing verbs in the future tense with will", topic: "Grammar: verb tenses" },
+  } },
 };
