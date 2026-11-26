@@ -291,12 +291,12 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
 <section class="hero" id="top">
   <div class="wrap">
     <div>
-      <a class="pilotbar" href="signup.html?from=pilot"><b>Pilot starts 14 December</b><span>Every game is free for students until 4 January. Sign up now <i aria-hidden="true">→</i></span></a>
+      <a class="pilotbar" href="signup.html?from=pilot"><b>Free this Christmas</b><span>Every game is free from 14 December to 4 January. Sign up now <i aria-hidden="true">→</i></span></a>
       <span class="kicker mono">Game studio · Accra, Ghana</span>
       <h1>Win the game. <em>Keep the skills.</em></h1>
       <p class="sub">MindsPlay Studios makes games kids and teens actually want to play. Every one builds a real skill, from numbers and words to science and engineering, and the confidence to use them.</p>
       <div class="ctas">
-        <a class="btn pink" href="signup.html?from=pilot"><span class="tri"></span>Join the free pilot</a>
+        <a class="btn pink" href="signup.html?from=pilot"><span class="tri"></span>Play free this Christmas</a>
         <a class="btn line" href="#games" id="start">See our games</a>
         <a class="btn line" href="#grow">What you’ll level up</a>
       </div>
@@ -304,7 +304,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     <div class="stage" aria-hidden="true">
       <div class="cut"></div>
       <div class="art reel" id="reel"><img class="on" src="img/xed-key.jpg" alt="" style="object-position:78% 50%"><img src="img/art-graned.jpg" alt="" style="object-position:72% 60%"><img src="img/art-inkbound.jpg" alt="" style="object-position:100% 72%"><img src="img/art-sworld.jpg" alt="" style="object-position:66% 60%"><img src="img/art-brightside.jpg" alt="" style="object-position:62% 60%"><img src="img/art-lamplight.jpg" alt="" style="object-position:82% 60%"></div>
-      <div class="float f1"><span>Pilot from 14 Dec</span><b>Xed</b></div>
+      <div class="float f1"><span>Free 14 Dec – 4 Jan</span><b>Xed</b></div>
       <div class="float f2"><span>Ages 6–14 · Play now</span><b>GranED Prix</b></div>
       <div class="float f3"><span>Ages 13–17 · Soon</span><b>Brightside</b></div>
     </div>
@@ -354,7 +354,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     <div class="head">
       <span class="mono eyebrow">Game library</span>
       <h2>One game out. Five on the way.</h2>
-      <p>Xed is our first game and is heading into school pilots in January 2027. Five more are in the works. Hype the one you want first.</p>
+      <p>Xed is out now and five more are on the way. Every one is free to play from 14 December to 4 January. Hype the one you want first.</p>
     </div>
     <div class="lineup" id="lineup">
       <article class="gcard feature">
@@ -447,7 +447,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
     <div class="who">
       <article class="hot"><span class="mono" style="color:var(--pulse)">Kids and teens</span><h3>Join the playtest crew</h3><ul><li>Play our games before anyone else</li><li>Vote on features and names</li><li>Get credited in the game</li><li>Parent permission needed under 18</li></ul><a href="player.html">Make my player account →</a><a href="player.html" style="color:var(--dim)">Already a player? Sign in →</a><a href="#join" style="color:var(--dim)">Join the playtest crew →</a></article>
       <article><span class="mono" style="color:var(--dim)">Parents</span><h3>Games you can say yes to</h3><ul><li>Try Xed free in your browser</li><li>Free first week, then from GHS 49 a month</li><li>See every skill your child masters</li></ul><a href="signup.html?from=studio">Start a free week →</a><a href="account.html" style="color:var(--dim)">Already signed up? Log in to your family account →</a></article>
-      <article><span class="mono" style="color:var(--dim)">Schools</span><h3>Pilot Xed free</h3><ul><li>Four places, January–March 2027</li><li>Training, support and class reports</li><li>Partner schools earn 5% of parent subscriptions</li></ul><a href="#join">Apply for the pilot →</a></article>
+      <article><span class="mono" style="color:var(--dim)">Schools</span><h3>Become a partner school</h3><ul><li>All our games free on school computers for 1 year</li><li>A partner listing in our games and on our website</li><li>Partner schools earn 5% of parent subscriptions</li></ul><a href="#join">Become a partner school →</a></article>
       <article><span class="mono" style="color:var(--dim)">Partners and investors</span><h3>Build with us</h3><ul><li>A studio, not a single app</li><li>A path of games from 6 to 17</li><li>Built in Ghana, ready for Africa</li></ul><a href="#join">Talk to us →</a></article>
     </div>
   </div>
@@ -651,7 +651,7 @@ $("joinform").addEventListener("submit", e => {
   const lines = {
     crew: `Hi MindsPlay! I'm ${nm}${age ? ` (${age})` : ""} and I want to join the playtest crew. My parent or guardian is happy for me to sign up.`,
     parent: `Hi MindsPlay! I'm ${nm}, a parent${age ? ` (${age})` : ""}. Please add me to your early-access list.`,
-    school: `Hi MindsPlay! I'm ${nm}${age ? ` from ${age}` : ""}. We'd like to hear about piloting Xed. Please get in touch to book a demo.`,
+    school: `Hi MindsPlay! I'm ${nm}${age ? ` from ${age}` : ""}. We'd like to hear about becoming a MindsPlay partner school. Please get in touch to book a demo.`,
     partner: `Hi MindsPlay! I'm ${nm}${age ? ` (${age})` : ""}. I'd like to talk about partnering with or investing in MindsPlay Studios.`,
   };
   $("outtext").textContent = lines[who] + `\nThe game I want first: ${pick}.`;
