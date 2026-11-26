@@ -22,4 +22,14 @@ const GAME_SKILLS = {
     "ib-past-tense": { name: "Writing verbs in the past tense, including irregular ones like stood and ran", topic: "Grammar: verb tenses" },
     "ib-future-tense": { name: "Writing verbs in the future tense with will", topic: "Grammar: verb tenses" },
   } },
+  brightside: { subject: "Physics and Design & Technology", skills: {
+    "bs-truss-triangles": { name: "Triangles make structures rigid", topic: "Forces and structures" },
+    "bs-tension-compression": { name: "Tension and compression in a structure", topic: "Forces and structures" },
+    "bs-buckling": { name: "Long parts buckle under squashing forces", topic: "Forces and materials" },
+    "bs-energy-budget": { name: "Energy = power × time (watt-hours)", topic: "Electricity and energy" },
+    "bs-series-parallel": { name: "Series and parallel circuits: series voltages add up", topic: "Electricity" },
+    "bs-rain-harvesting": { name: "Rain collection: 1 mm on 1 m² = 1 litre", topic: "Water and measurement" },
+    "bs-pressure-head": { name: "Water pressure from height, and pipe friction", topic: "Fluids and pressure" },
+    "bs-design-process": { name: "Engineering design process: test and improve", topic: "Engineering design" },
+  } },
 };
