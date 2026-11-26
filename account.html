@@ -129,7 +129,7 @@ async function load() {
 function render() {
   const p = me.parent, a = me.access;
   $('#hello').textContent = `Hello, ${p.name.split(' ')[0]}`;
-  const pill = { paid: ['good', 'Paid'], school: ['good', 'Paid by school'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'] }[a.status];
+  const pill = { paid: ['good', 'Paid'], school: ['good', 'Paid by school'], pilot: ['good', 'Free play'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'] }[a.status];
   const bySchool = me.children.length > 0 && me.pay_for === 0;
   $('#status').innerHTML = bySchool
     ? `<span class="pill good">Paid by school</span><span class="muted">Your children’s school pays for Xed.</span>`
@@ -181,7 +181,7 @@ function render() {
       <p class="small muted">Forgotten the pictures? Press <b>New picture PIN</b> below to choose new ones.</p>
       <button class="btn ghost small" data-act="printcard" type="button">Print a sign-in card</button>
     </details>`;
-  const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'Free pilot'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
+  const kidPill = k => ['school', 'pilot'].includes(k.access.status) ? `<span class="pill good">${k.access.status === 'school' ? 'Paid by school' : 'Free play'}</span><span class="muted small">until ${day(k.access.until)}</span>` : '';
 
   $('#kids').innerHTML = me.children.length ? me.children.map(k => `
     <article class="card" data-id="${k.id}">
@@ -219,7 +219,7 @@ function render() {
   }).join('');
   const schoolKids = me.children.filter(k => k.access.status === 'school').map(k => k.first_name);
   const pilot = me.children.find(k => k.access.status === 'pilot');
-  $('#paynote').textContent = (pilot && a.status === 'pilot' ? `${pilot.first_name}’s school pilot covers Xed until ${day(pilot.access.until)}, so there’s no need to pay before then. ` : a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that. If you pay now, your paid time starts when the free week ends, so you don’t lose any free days. ` : a.active ? 'Pay ahead: the new period starts when your current one ends. ' : 'Choose a plan to unlock Xed again. ')
+  $('#paynote').textContent = (pilot && a.status === 'pilot' ? `${pilot.first_name}’s free play covers every game until ${day(pilot.access.until)}, so there’s no need to pay before then. ` : a.status === 'trial' ? `Your free week ends on ${day(p.trial_ends)}. Choose a plan to keep playing after that. If you pay now, your paid time starts when the free week ends, so you don’t lose any free days. ` : a.active ? 'Pay ahead: the new period starts when your current one ends. ' : 'Choose a plan to unlock Xed again. ')
     + (schoolKids.length ? `${schoolKids.join(' and ')}’s school pays for them, so the price below is for your other ${me.pay_for > 1 ? me.pay_for + ' children' : 'child'}.` : '');
   $('#autorenew').hidden = !p.card_saved;
   $('#autorenewon').checked = p.autorenew;
@@ -259,7 +259,7 @@ function gameRow(k, row) {
     : a.status === 'paid' ? `Paid until ${day(a.until)}`
     : a.status === 'trial' ? `Free week until ${day(a.until)}`
     : a.status === 'school' ? `Paid by school until ${day(a.until)}`
-    : a.status === 'pilot' ? `Free pilot until ${day(a.until)}`
+    : a.status === 'pilot' ? `Free until ${day(a.until)}`
     : a.status === 'retired' ? 'No longer available' : 'Ended. Renew to keep playing.';
   const play = a.status === 'coming_soon' ? '' : ` · ${row.week_minutes} min this week`;
   return `<div class="gm">${gameIcon(g)}<span><b>${g.page ? `<a href="${esc(g.page)}" style="text-decoration:none">${esc(g.name)}</a>` : esc(g.name)}</b><small>${state}${play}</small></span><button class="x" type="button" data-act="ungame" data-g="${g.id}" aria-label="Remove ${esc(g.name)} from ${esc(k.first_name)}’s games" title="Remove">×</button></div>`;

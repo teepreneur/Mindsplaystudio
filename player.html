@@ -225,6 +225,8 @@ $('#userlogin').addEventListener('submit', e => {
 });
 
 // ---------------------------------------------------------------- sign up
+// Which ad or page sent this player (sign-up page links carry ?from=), kept with the sign-up counts.
+const adFrom = (f => f ? ' ' + f.slice(0, 40) : '')(new URLSearchParams(location.search).get('from'));
 let school = null, pin = [];
 function sstep(n) {
   $$('#su [data-s]').forEach(c => c.hidden = c.dataset.s !== String(n));
@@ -232,7 +234,7 @@ function sstep(n) {
   window.scrollTo(0, 0);
 }
 async function startSignup() {
-  track('signup_view', 'player');
+  track('signup_view', 'player' + adFrom);
   sstep(1);
   pinPicker($('#pin'), p => pin = p);
   if (!games.length) games = (await api('/v1/games')).games;
@@ -282,7 +284,7 @@ $('#su').addEventListener('submit', e => {
       pin, username: f.get('username') || undefined, password: f.get('password') || undefined, games: f.getAll('games'),
       parent_name: f.get('parent_name'), parent_phone: f.get('parent_phone'), parent_email: f.get('parent_email'),
     } });
-    track('signup_done', 'player');
+    track('signup_done', 'player' + adFrom);
     player.token = r.token;
     await load();
     toast(r.emailed ? 'Your account is made, and we emailed your parent.' : 'Your account is made. Now send your parent the link.');
@@ -309,7 +311,7 @@ const wa = p => (p || '').replace(/\D/g, '').replace(/^0/, '233');
 function render() {
   const c = me.child, a = me.access;
   $('#hello').textContent = `Hello, ${c.first_name}`;
-  const pill = { paid: ['good', 'Unlocked'], school: ['good', 'Paid by school'], pilot: ['good', 'School pilot'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'], awaiting_parent: ['warn', 'Waiting for parent'] }[a.status] || ['', a.status];
+  const pill = { paid: ['good', 'Unlocked'], school: ['good', 'Paid by school'], pilot: ['good', 'Free play'], trial: ['warn', 'Free week'], expired: ['bad', 'Ended'], awaiting_parent: ['warn', 'Waiting for parent'] }[a.status] || ['', a.status];
   $('#status').innerHTML = `<span class="pill ${pill[0]}">${pill[1]}</span><span class="muted">${esc(c.class_label)} · ${esc(c.school)}</span>`;
 
   // Waiting for a parent: send the request by WhatsApp, SMS, email or a copied link.
@@ -339,7 +341,7 @@ function render() {
       : s === 'trial' ? `Free week until ${day(row.access.until)}`
       : s === 'paid' ? `Unlocked until ${day(row.access.until)}`
       : s === 'school' ? `Paid by your school until ${day(row.access.until)}`
-      : s === 'pilot' ? `Free pilot until ${day(row.access.until)}`
+      : s === 'pilot' ? `Free until ${day(row.access.until)}`
       : s === 'expired' ? 'Ended. Ask your parent to renew.' : '';
     const playable = row.access.active && g.launch_url;
     const acts = s === 'coming_soon' ? '' : [
@@ -357,7 +359,7 @@ function render() {
     : a.status === 'trial' ? `You’re on your free week until ${day(a.until)}. After that your parent chooses a plan.`
     : a.status === 'paid' ? `Your parent’s plan keeps your games unlocked until ${day(a.until)}.`
     : a.status === 'school' ? `Your school pays for your games until ${day(a.until)}.`
-    : a.status === 'pilot' ? `The pilot keeps your games free until ${day(a.until)}.`
+    : a.status === 'pilot' ? `Your games are free until ${day(a.until)}.`
     : 'Your games are locked. Ask your parent to renew in their account.';
   $('#code').textContent = c.class_code;
   $('#signinhelp').textContent = `In your games, type this class code, tap your name and your 4 secret pictures.${c.username ? ` On this page you can also use your username, ${c.username}.` : ''}`;
