@@ -44,4 +44,17 @@ const GAME_SKILLS = {
     "bs-pressure-head": { name: "Water pressure from height, and pipe friction", topic: "Fluids and pressure" },
     "bs-design-process": { name: "Engineering design process: test and improve", topic: "Engineering design" },
   } },
+  graned: { subject: "Mathematics", skills: {
+    "gp-add": { name: "Adding numbers", topic: "Addition" },
+    "gp-subtract": { name: "Taking away", topic: "Subtraction" },
+    "gp-times": { name: "Times tables", topic: "Multiplication" },
+    "gp-divide": { name: "Sharing and dividing", topic: "Division" },
+    "gp-fractions": { name: "Fractions of a number, e.g. ½ of 24", topic: "Fractions" },
+    "gp-decimals": { name: "Adding and comparing decimals", topic: "Decimals" },
+    "gp-percent": { name: "Percentages of amounts", topic: "Percentages" },
+    "gp-negatives": { name: "Working with negative numbers", topic: "Negative numbers" },
+    "gp-order-ops": { name: "Order of operations, e.g. brackets first", topic: "Order of operations" },
+    "gp-equations": { name: "Solving equations, e.g. 3x + 4 = 19", topic: "Algebra" },
+    "gp-squares-roots": { name: "Square numbers and square roots", topic: "Powers and roots" },
+  } },
 };
