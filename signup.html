@@ -223,7 +223,7 @@ $('#parent').addEventListener('submit', e => {
   busy(e.submitter, $('#e1'), async () => {
     if (String(f.get('phone') || '').replace(/\D/g, '').length < 9) throw new Error('Please enter your WhatsApp number so we can send you news and reminders.');
     if (!f.get('consent')) throw new Error('Please tick the box to agree.');
-    const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: claim ? 'school slip' : from } });
+    const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: claim ? 'school slip' : from, claim: claim ? claim.code : undefined } });
     auth.token = r.token;
     track('signup_done', claim ? 'slip' : from);
     if (window.fbq) fbq('track', 'CompleteRegistration'); // only when the Meta Pixel is switched on in build_site.py
