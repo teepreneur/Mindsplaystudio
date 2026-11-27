@@ -214,7 +214,7 @@ footer nav a { text-decoration:none } footer nav a:hover { color:var(--text) }
 <meta name="twitter:title" content="Inkbound: reading and writing adventure game | MindsPlay Studios">
 <meta name="twitter:description" content="Inkbound: write the story back. A storybook adventure for ages 7 to 11 where children catch golden words and write them onto the world to beat the Eraser. A MindsPlay Studios game.">
 <meta name="twitter:image" content="https://mindsplaystudiogh.com/img/og-inkbound.jpg">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "Inkbound", "url": "https://mindsplaystudiogh.com/inkbound.html", "image": "https://mindsplaystudiogh.com/img/og-inkbound.jpg", "description": "Inkbound: write the story back. A storybook adventure for ages 7 to 11 where children catch golden words and write them onto the world to beat the Eraser. A MindsPlay Studios game.", "genre": ["Educational", "Reading and writing"], "about": "Reading and writing", "inLanguage": "en", "typicalAgeRange": "7-11", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 7, "suggestedMaxAge": 11}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "Inkbound", "url": "https://mindsplaystudiogh.com/inkbound.html", "image": "https://mindsplaystudiogh.com/img/og-inkbound.jpg", "description": "Inkbound: write the story back. A storybook adventure for ages 7 to 11 where children catch golden words and write them onto the world to beat the Eraser. A MindsPlay Studios game.", "genre": ["Educational", "Reading and writing"], "about": "Reading and writing", "inLanguage": "en", "typicalAgeRange": "7-11", "audience": {"@type": "PeopleAudience", "suggestedMinAge": 7, "suggestedMaxAge": 11}, "publisher": {"@type": "Organization", "name": "MindsPlay Studios", "url": "https://mindsplaystudiogh.com/"}, "creativeWorkStatus": "In development", "gamePlatform": ["Windows", "macOS", "Web browser"]}</script>
 </head>
 <body>
 
@@ -237,7 +237,9 @@ footer nav a { text-decoration:none } footer nav a:hover { color:var(--text) }
     <p class="line">Write the story back.</p>
     <p class="lede">The Eraser is rubbing out the book you live in. Catch golden words and write them onto the world: freeze a river to cross it, or grow a seed into a bridge.</p>
     <div class="ctas">
-      <a class="btn gold" href="player.html#new">Make my player account</a>
+      <a class="btn gold" href="inkbound-play.html">Play free in your browser</a>
+      <a class="btn ghost" href="inkbound-download.html">Download for Windows / Mac</a>
+      <a class="btn ghost" href="player.html#new">Make my player account</a>
       <a class="btn ghost" href="account.html">Add it to your child’s games</a>
     </div>
     <div class="facts"><span>Ages <b>7–11</b></span><span>Storybook adventure</span><span>Reading and writing</span><span>No ads</span></div>
@@ -403,6 +405,7 @@ const store = { get(k, d) { try { const v = localStorage.getItem("inkbound_" + k
     const j = await r.json(); const g = (j.games || j || []).find(x => x.id === "inkbound"); if (!g) return;
     const el = $("status");
     if (g.status === "live") { el.textContent = "Out now"; el.classList.add("live"); el.hidden = false; }
+    else if (g.status === "beta") { el.textContent = "Early version · play it now"; el.classList.add("live"); el.hidden = false; }
     else if (g.status === "coming_soon") { el.textContent = "Coming soon · add it to your list today"; el.hidden = false; }
   } catch {}
 })();

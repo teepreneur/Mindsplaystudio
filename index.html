@@ -353,8 +353,8 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
   <div class="wrap">
     <div class="head">
       <span class="mono eyebrow">Game library</span>
-      <h2>One game out. Five on the way.</h2>
-      <p>Xed is out now and five more are on the way. Every one is free to play from 14 December to 4 January. Hype the one you want first.</p>
+      <h2>Five games to play now. One on the way.</h2>
+      <p>Xed is out, four more have early versions you can play today, and Brightside is close behind. Every one is free to play from 14 December to 4 January. Hype the one you want first.</p>
     </div>
     <div class="lineup" id="lineup">
       <article class="gcard feature">
@@ -378,13 +378,13 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
         </div>
       </article>
       <article class="gcard half">
-        <div class="gart"><img src="img/g-inkbound.jpg" alt="Inkbound: a young scribe holds a giant quill on the pages of an open book. Coming soon." loading="lazy"></div>
+        <div class="gart"><img src="img/g-inkbound.jpg" alt="Inkbound: a young scribe holds a giant quill on the pages of an open book. Early version out now." loading="lazy"></div>
         <div class="gbody">
-          <div class="meta"><span class="soon">Coming soon</span><span>Ages 7–11</span><span>Storybook adventure</span></div>
+          <div class="meta"><span class="live">Early version</span><span>Ages 7–11</span><span>Storybook adventure</span><span>Windows · Mac · Browser</span></div>
           <h3>Inkbound</h3>
           <p>The Eraser is rubbing out the book you live in. Catch golden words and write them onto the world: freeze a river to cross it, or grow a seed into a bridge.</p>
           <p class="skills">Builds: adjectives, verbs, past, present and future tense, reading for meaning.</p>
-          <div class="row"><a class="more" href="inkbound.html">Know more <span aria-hidden="true">→</span></a><button class="hype" type="button" data-game="inkbound" aria-pressed="false">Hype it</button></div>
+          <div class="row"><a class="btn pink" href="inkbound-play.html"><span class="tri"></span>Play free in your browser</a><a class="more" href="inkbound.html">Know more <span aria-hidden="true">→</span></a><button class="hype" type="button" data-game="inkbound" aria-pressed="false">Hype it</button></div>
         </div>
       </article>
       <article class="gcard half">
@@ -617,7 +617,7 @@ function showStage(i, user) {
   $("sname").textContent = s.n + ", ages " + s.r; $("sclass").textContent = s.c; $("sdesc").textContent = s.d;
   Object.values(s.s).forEach((v, j) => { const row = $("sstats").children[j]; row.querySelector("i").style.width = v + "%"; row.querySelector("b").textContent = v; });
   $("slife").innerHTML = s.life.map(l => `<span>${l}</span>`).join("");
-  $("sgames").innerHTML = "Games: " + s.g.map(g => `<span class="gtag" style="background:${GAMECOL[g][0]};color:${GAMECOL[g][1]}">${g}${g === "Xed" ? "" : g === "Sworld" ? " · demo" : g === "Lamplight" || g === "GranED Prix" ? "" : " · soon"}</span>`).join("");
+  $("sgames").innerHTML = "Games: " + s.g.map(g => `<span class="gtag" style="background:${GAMECOL[g][0]};color:${GAMECOL[g][1]}">${g}${g === "Xed" ? "" : g === "Sworld" ? " · demo" : g === "Lamplight" || g === "GranED Prix" || g === "Inkbound" ? "" : " · soon"}</span>`).join("");
   if (user) { seen.add(i); store.set("stages", [...seen]); renderHud(); if (seen.size === 4) complete("grow"); }
 }
 $("ages").addEventListener("click", e => { const b = e.target.closest(".age"); if (b) showStage([...$("ages").children].indexOf(b), true); });

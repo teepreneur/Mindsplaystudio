@@ -6,7 +6,10 @@ const GAME_SKILLS = {
     "sw-neutralise": { name: "Neutralisation: choosing an acid or an alkali to cancel the other", topic: "Acids and alkalis" },
     "sw-ph-scale": { name: "The pH scale: stopping at neutral (pH 7) without overshooting", topic: "Acids and alkalis" },
     "sw-metal-acid": { name: "Reactive metal + acid makes a salt and hydrogen", topic: "Reactivity of metals" },
-    "sw-reactivity": { name: "The reactivity series: copper does not react with dilute acid", topic: "Reactivity of metals" },
+    "sw-reactivity": { name: "The reactivity series: copper, silver and gold do not react with dilute acid", topic: "Reactivity of metals" },
+    "sw-indicators": { name: "Universal indicator: reading acid, neutral and alkali from the colour", topic: "Acids and alkalis" },
+    "sw-salts": { name: "Salts: naming the salt an acid makes, and getting crystals from a solution", topic: "Making salts" },
+    "sw-displacement": { name: "Displacement and the order of the reactivity series", topic: "Reactivity of metals" },
   } },
   lamplight: { subject: "Religious and Moral Education", skills: {
     "lp-noah": { name: "Noah’s Ark: God keeps his promises", topic: "Old Testament stories" },
