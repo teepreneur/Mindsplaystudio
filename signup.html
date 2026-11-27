@@ -75,9 +75,9 @@ main:has(#s0:not([hidden])) .pilotnote { display:none } /* the start screen alre
     <form id="parent" class="card" novalidate>
       <label>Your name <input name="name" autocomplete="name" required></label>
       <label>Email <input name="email" type="email" autocomplete="email" required></label>
-      <label>Phone (WhatsApp) <span class="hint">For renewal reminders. Optional.</span><input name="phone" type="tel" autocomplete="tel" placeholder="024 000 0000"></label>
+      <label>WhatsApp number <span class="hint">We send game news, updates and reminders here. If WhatsApp can’t reach you, we send an SMS.</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="024 000 0000" required></label>
       <label>Password <span class="hint">At least 8 characters.</span><input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
-      <label class="check"><input type="checkbox" name="consent" required><span>I’m the parent or guardian. I agree to the <a href="terms.html" target="_blank">terms</a> and to MindsPlay keeping my child’s first name and learning progress to run the game and show me reports. We never show ads or sell data.</span></label>
+      <label class="check"><input type="checkbox" name="consent" required><span>I’m the parent or guardian. I agree to the <a href="terms.html" target="_blank">terms</a> and to MindsPlay keeping my child’s first name and learning progress to run the game and show me reports, and to getting news and reminders from MindsPlay by WhatsApp, SMS and email. We never show ads or sell data.</span></label>
       <p class="err" id="e1" role="alert"></p>
       <button class="btn" type="submit">Create my account</button>
       <p class="small muted">Already have an account? <a href="account.html">Log in</a> · Are you the player? <a id="toplayer" href="player.html#new">Make a player account</a></p>
@@ -132,6 +132,16 @@ main:has(#s0:not([hidden])) .pilotnote { display:none } /* the start screen alre
     <div class="grid2">
       <a class="card" href="index.html#games" style="text-decoration:none;color:inherit"><h3>Get the games</h3><p class="muted">Play in the browser or download for Windows and Mac.</p></a>
       <a class="card" href="account.html#pay" style="text-decoration:none;color:inherit"><h3>Your account</h3><p class="muted">Add games or another child, see what they learn, and choose a plan when free play ends.</p></a>
+    </div>
+    <div class="card follow">
+      <h3>Stay in the loop</h3>
+      <p class="muted">We’ll message you on WhatsApp and by email. Follow MindsPlay too, so you see new games, tips and news first.</p>
+      <div class="row followrow">
+        <a class="btn small" href="https://www.facebook.com/profile.php?id=61595251694672" target="_blank" rel="noopener">Follow on Facebook</a>
+        <a class="btn small" href="https://www.instagram.com/mindsplaystudio/" target="_blank" rel="noopener">Follow on Instagram</a>
+        <a class="btn small ghost" href="https://www.tiktok.com/@mindsplay.studio" target="_blank" rel="noopener">TikTok</a>
+        <a class="btn small ghost" href="https://x.com/mindsplaystudio" target="_blank" rel="noopener">X</a>
+      </div>
     </div>
     <button class="btn ghost" id="another" type="button">Add another child</button>
   </section>
@@ -211,6 +221,7 @@ $('#parent').addEventListener('submit', e => {
   e.preventDefault();
   const f = new FormData(e.target);
   busy(e.submitter, $('#e1'), async () => {
+    if (String(f.get('phone') || '').replace(/\D/g, '').length < 9) throw new Error('Please enter your WhatsApp number so we can send you news and reminders.');
     if (!f.get('consent')) throw new Error('Please tick the box to agree.');
     const r = await api('/v1/auth/signup', { method: 'POST', body: { name: f.get('name'), email: f.get('email'), phone: f.get('phone'), password: f.get('password'), consent: true, source: claim ? 'school slip' : from } });
     auth.token = r.token;
