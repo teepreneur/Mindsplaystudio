@@ -182,7 +182,7 @@ async function loadGames() {
 // A slip from school: ?claim=CODE (the QR code) or the parent code typed in. The child is linked after sign-up.
 async function findSlip(code) {
   const r = await api('/v1/claim/' + encodeURIComponent(code));
-  if (r.claimed) throw new Error(`${r.child.first_name} is already linked to a parent account. If that’s you, log in to see them. If not, WhatsApp us on +233 24 893 2204.`);
+  if (r.claimed) throw new Error(`${r.child.first_name} is already linked to a parent account. If that’s you, log in to see them. If not, WhatsApp us on +233 54 419 8026.`);
   claim = { code, ...r.child, from: r.from };
   $('#slipentry').hidden = true;
   $('#slipcard').hidden = false;
