@@ -306,7 +306,7 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
       <div class="art reel" id="reel"><img class="on" src="img/xed-key.jpg" alt="" style="object-position:78% 50%"><img src="img/art-graned.jpg" alt="" style="object-position:72% 60%"><img src="img/art-inkbound.jpg" alt="" style="object-position:100% 72%"><img src="img/art-sworld.jpg" alt="" style="object-position:66% 60%"><img src="img/art-brightside.jpg" alt="" style="object-position:62% 60%"><img src="img/art-lamplight.jpg" alt="" style="object-position:82% 60%"></div>
       <div class="float f1"><span>Free 14 Dec – 4 Jan</span><b>Xed</b></div>
       <div class="float f2"><span>Ages 6–14 · Play now</span><b>GranED Prix</b></div>
-      <div class="float f3"><span>Ages 13–17 · Soon</span><b>Brightside</b></div>
+      <div class="float f3"><span>Ages 13–17 · Play now</span><b>Brightside</b></div>
     </div>
   </div>
 </section>
@@ -353,8 +353,8 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
   <div class="wrap">
     <div class="head">
       <span class="mono eyebrow">Game library</span>
-      <h2>Five games to play now. One on the way.</h2>
-      <p>Xed is out, four more have early versions you can play today, and Brightside is close behind. Every one is free to play from 14 December to 4 January. Hype the one you want first.</p>
+      <h2>Six games to play now.</h2>
+      <p>Xed is out, and five more have early versions you can play today in your browser. Every one is free to play from 14 December to 4 January. Hype the one you want first.</p>
     </div>
     <div class="lineup" id="lineup">
       <article class="gcard feature">
@@ -398,13 +398,13 @@ canvas#fx { position:fixed; inset:0; pointer-events:none; z-index:40 }
         </div>
       </article>
       <article class="gcard half">
-        <div class="gart"><img src="img/g-brightside.jpg" alt="Brightside: three teen friends walk by a river in a colourful town. Coming soon." loading="lazy"></div>
+        <div class="gart"><img src="img/g-brightside.jpg" alt="Brightside: three teen friends walk by a river in a colourful town. Early version out now." loading="lazy"></div>
         <div class="gbody">
-          <div class="meta"><span class="soon">Coming soon</span><span>Ages 13–17</span><span>Open world</span></div>
+          <div class="meta"><span class="live">Early version</span><span>Ages 13–17</span><span>Open world</span><span>Browser</span></div>
           <h3>Brightside</h3>
           <p>Three friends roam a sunny riverside town and fix real problems the way engineers do. Design a bridge, power the lights, bring water to a garden, then watch the town change.</p>
           <p class="skills">Builds: structures, energy, water, budgeting, the engineering design process.</p>
-          <div class="row"><a class="more" href="brightside.html">Know more <span aria-hidden="true">→</span></a><button class="hype" type="button" data-game="brightside" aria-pressed="false">Hype it</button></div>
+          <div class="row"><a class="btn pink" href="brightside-play.html"><span class="tri"></span>Play free in your browser</a><a class="more" href="brightside.html">Know more <span aria-hidden="true">→</span></a><button class="hype" type="button" data-game="brightside" aria-pressed="false">Hype it</button></div>
         </div>
       </article>
       <article class="gcard half wide">
@@ -617,7 +617,7 @@ function showStage(i, user) {
   $("sname").textContent = s.n + ", ages " + s.r; $("sclass").textContent = s.c; $("sdesc").textContent = s.d;
   Object.values(s.s).forEach((v, j) => { const row = $("sstats").children[j]; row.querySelector("i").style.width = v + "%"; row.querySelector("b").textContent = v; });
   $("slife").innerHTML = s.life.map(l => `<span>${l}</span>`).join("");
-  $("sgames").innerHTML = "Games: " + s.g.map(g => `<span class="gtag" style="background:${GAMECOL[g][0]};color:${GAMECOL[g][1]}">${g}${g === "Xed" ? "" : g === "Sworld" ? " · demo" : g === "Lamplight" || g === "GranED Prix" || g === "Inkbound" ? "" : " · soon"}</span>`).join("");
+  $("sgames").innerHTML = "Games: " + s.g.map(g => `<span class="gtag" style="background:${GAMECOL[g][0]};color:${GAMECOL[g][1]}">${g}${g === "Xed" ? "" : g === "Sworld" ? " · demo" : g === "Lamplight" || g === "GranED Prix" || g === "Inkbound" || g === "Brightside" ? "" : " · soon"}</span>`).join("");
   if (user) { seen.add(i); store.set("stages", [...seen]); renderHud(); if (seen.size === 4) complete("grow"); }
 }
 $("ages").addEventListener("click", e => { const b = e.target.closest(".age"); if (b) showStage([...$("ages").children].indexOf(b), true); });

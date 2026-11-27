@@ -72,6 +72,8 @@
 <script>
 topBar('<a href="inkbound.html" class="hide-sm">About Inkbound</a><a href="inkbound-download.html?from=play">Download</a><a href="index.html#games">All games</a>', 'Inkbound');
 const BUILD = API + '/play/inkbound/Build/';
+// Changes with every new build so browsers never reuse an old copy of the game files.
+const V = '?v=202611270210';
 const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 if (mobile) $('#covertext').textContent = 'Inkbound is made for computers. On a phone the demo may be slow and needs a keyboard. For the best time, open this page on a laptop or desktop.';
 
@@ -81,12 +83,12 @@ $('#start').addEventListener('click', () => {
   $('#meter').hidden = false;
   $('#covertext').textContent = 'Loading Inkbound… (about 14 MB the first time, then it’s saved)';
   const s = document.createElement('script');
-  s.src = BUILD + 'inkbound.loader.js';
+  s.src = BUILD + 'inkbound.loader.js' + V;
   s.onerror = () => { $('#err').textContent = 'The demo couldn’t load. Check your connection and refresh the page.'; };
   s.onload = () => createUnityInstance($('#unity'), {
-    dataUrl: BUILD + 'inkbound.data.br',
-    frameworkUrl: BUILD + 'inkbound.framework.js.br',
-    codeUrl: BUILD + 'inkbound.wasm.br',
+    dataUrl: BUILD + 'inkbound.data.br' + V,
+    frameworkUrl: BUILD + 'inkbound.framework.js.br' + V,
+    codeUrl: BUILD + 'inkbound.wasm.br' + V,
     companyName: 'MindsPlay Studios', productName: 'Inkbound', productVersion: '0.1',
   }, p => { $('#meter i').style.width = Math.round(p * 100) + '%'; })
     .then(u => { instance = u; $('#cover').hidden = true; $('#fs').hidden = false; $('#unity').focus(); })

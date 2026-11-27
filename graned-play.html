@@ -72,6 +72,8 @@
 <script>
 topBar('<a href="graned.html" class="hide-sm">About GranED Prix</a><a href="graned-download.html?from=play">Download</a><a href="index.html#games">All games</a>', 'GranED Prix');
 const BUILD = API + '/play/graned/Build/';
+// Changes with every new build so browsers never reuse an old copy of the game files.
+const V = '?v=202611270210';
 const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 if (mobile) $('#covertext').textContent = 'GranED Prix is made for computers. On a phone the demo may be slow and needs a keyboard. For the best time, open this page on a laptop or desktop.';
 
@@ -81,12 +83,12 @@ $('#start').addEventListener('click', () => {
   $('#meter').hidden = false;
   $('#covertext').textContent = 'Loading GranED Prix… (about 71 MB the first time, then it’s saved)';
   const s = document.createElement('script');
-  s.src = BUILD + 'graned.loader.js';
+  s.src = BUILD + 'graned.loader.js' + V;
   s.onerror = () => { $('#err').textContent = 'The demo couldn’t load. Check your connection and refresh the page.'; };
   s.onload = () => createUnityInstance($('#unity'), {
-    dataUrl: BUILD + 'graned.data.br',
-    frameworkUrl: BUILD + 'graned.framework.js.br',
-    codeUrl: BUILD + 'graned.wasm.br',
+    dataUrl: BUILD + 'graned.data.br' + V,
+    frameworkUrl: BUILD + 'graned.framework.js.br' + V,
+    codeUrl: BUILD + 'graned.wasm.br' + V,
     companyName: 'MindsPlay Studios', productName: 'GranED Prix', productVersion: '0.1',
   }, p => { $('#meter i').style.width = Math.round(p * 100) + '%'; })
     .then(u => { instance = u; $('#cover').hidden = true; $('#fs').hidden = false; $('#unity').focus(); })
